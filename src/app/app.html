@@ -1,1 +1,12 @@
-<router-outlet></router-outlet>
+<div class="app-container">
+  <header class="app-header">
+    <div class="container flex-between">
+      <h1 class="app-title">{{ title() }}</h1>
+      <app-theme-toggle></app-theme-toggle>
+    </div>
+  </header>
+  
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+</div>

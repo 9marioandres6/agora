@@ -1,0 +1,328 @@
+
+:root {
+
+  --color-primary: #667eea;
+  --color-secondary: #764ba2;
+  --color-background: #ffffff;
+  --color-surface: #f8fafc;
+  --color-text: #1a202c;
+  --color-text-secondary: #4a5568;
+  --color-border: #e2e8f0;
+  --color-accent: #3182ce;
+  --color-success: #38a169;
+  --color-warning: #d69e2e;
+  --color-error: #e53e3e;
+
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+}
+
+
+.theme-dark {
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+}
+
+
+@mixin themed-color($property, $color) {
+  #{$property}: var(--color-#{$color});
+}
+
+@mixin themed-gradient($direction: 135deg, $color1: primary, $color2: secondary) {
+  background: linear-gradient(#{$direction}, var(--color-#{$color1}), var(--color-#{$color2}));
+}
+
+
+@mixin surface($elevation: 'md') {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-#{$elevation});
+}
+
+@mixin card() {
+  @include surface();
+  padding: var(--spacing-lg);
+  transition: box-shadow var(--transition-normal);
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+
+@mixin button-base() {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@mixin button-primary() {
+  @include button-base();
+  @include themed-gradient();
+  color: white;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+@mixin button-secondary() {
+  @include button-base();
+  background-color: transparent;
+  @include themed-color(color, text);
+  @include themed-color(border, border);
+  border: 1px solid;
+
+  &:hover:not(:disabled) {
+    @include themed-color(background-color, surface);
+    @include themed-color(border-color, accent);
+  }
+}
+
+@mixin button-ghost() {
+  @include button-base();
+  background-color: transparent;
+  @include themed-color(color, text);
+
+  &:hover:not(:disabled) {
+    @include themed-color(background-color, surface);
+  }
+}
+
+
+@mixin input-base() {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  @include themed-color(background-color, background);
+  @include themed-color(color, text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+  &::placeholder {
+    @include themed-color(color, text-secondary);
+  }
+
+  &:focus {
+    outline: none;
+    @include themed-color(border-color, accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+
+@mixin container($max-width: 1200px) {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+
+  @media (min-width: 768px) {
+    padding: 0 var(--spacing-lg);
+  }
+}
+
+@mixin flex-center() {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between() {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+@mixin heading($level: 1) {
+  @include themed-color(color, text);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin: 0;
+
+  @if $level == 1 {
+    font-size: var(--font-size-4xl);
+  } @else if $level == 2 {
+    font-size: var(--font-size-3xl);
+  } @else if $level == 3 {
+    font-size: var(--font-size-2xl);
+  } @else if $level == 4 {
+    font-size: var(--font-size-xl);
+  } @else if $level == 5 {
+    font-size: var(--font-size-lg);
+  } @else {
+    font-size: var(--font-size-base);
+  }
+}
+
+@mixin text($variant: 'base') {
+  @include themed-color(color, text);
+  margin: 0;
+
+  @if $variant == 'small' {
+    font-size: var(--font-size-sm);
+  } @else if $variant == 'large' {
+    font-size: var(--font-size-lg);
+  } @else {
+    font-size: var(--font-size-base);
+  }
+}
+
+@mixin text-secondary() {
+  @include themed-color(color, text-secondary);
+}
+
+
+@mixin loading-spinner($size: 20px) {
+  width: $size;
+  height: $size;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@mixin fade-in($duration: var(--transition-normal)) {
+  animation: fadeIn $duration ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+@mixin mobile {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: 768px) and (max-width: 1023px) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+
+
+@mixin generate-spacing-utilities() {
+  $spacings: (
+    'xs': var(--spacing-xs),
+    'sm': var(--spacing-sm),
+    'md': var(--spacing-md),
+    'lg': var(--spacing-lg),
+    'xl': var(--spacing-xl),
+    '2xl': var(--spacing-2xl)
+  );
+
+  @each $name, $value in $spacings {
+    .m-#{$name} { margin: #{$value} !important; }
+    .mt-#{$name} { margin-top: #{$value} !important; }
+    .mr-#{$name} { margin-right: #{$value} !important; }
+    .mb-#{$name} { margin-bottom: #{$value} !important; }
+    .ml-#{$name} { margin-left: #{$value} !important; }
+    .mx-#{$name} { margin-left: #{$value} !important; margin-right: #{$value} !important; }
+    .my-#{$name} { margin-top: #{$value} !important; margin-bottom: #{$value} !important; }
+
+    .p-#{$name} { padding: #{$value} !important; }
+    .pt-#{$name} { padding-top: #{$value} !important; }
+    .pr-#{$name} { padding-right: #{$value} !important; }
+    .pb-#{$name} { padding-bottom: #{$value} !important; }
+    .pl-#{$name} { padding-left: #{$value} !important; }
+    .px-#{$name} { padding-left: #{$value} !important; padding-right: #{$value} !important; }
+    .py-#{$name} { padding-top: #{$value} !important; padding-bottom: #{$value} !important; }
+  }
+}

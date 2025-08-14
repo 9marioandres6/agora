@@ -1,0 +1,189 @@
+@import '../../styles/theme-mixins';
+
+.theme-toggle-container {
+  position: relative;
+  display: inline-block;
+}
+
+::ng-deep .theme-toggle-btn {
+  .p-button {
+    @include themed-color(background-color, surface);
+    @include themed-color(border-color, border);
+    @include themed-color(color, text);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-sm);
+    min-width: auto;
+    transition: all var(--transition-normal);
+
+    &:hover {
+      @include themed-color(background-color, background);
+      transform: scale(1.05);
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 2px var(--color-accent);
+    }
+
+    .p-button-icon {
+      font-size: 18px;
+    }
+
+    .p-button-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      margin-left: var(--spacing-xs);
+    }
+  }
+
+  &.p-highlight .p-button {
+    @include themed-color(background-color, primary);
+    @include themed-color(border-color, primary);
+    color: white;
+
+    &:hover {
+      @include themed-color(background-color, primary);
+      opacity: 0.9;
+    }
+  }
+}
+
+.theme-dropdown-container {
+  position: relative;
+}
+
+.theme-dropdown-btn {
+  @include button-ghost();
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-xl);
+  min-width: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  
+  &:hover {
+    @include themed-color(background-color, surface);
+  }
+  
+  &[aria-expanded="true"] {
+    @include themed-color(background-color, surface);
+  }
+
+  i {
+    font-size: 16px;
+  }
+
+  span {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .dropdown-arrow {
+    font-size: 12px;
+    @include themed-color(color, text-secondary);
+    transition: transform var(--transition-fast);
+  }
+
+  &[aria-expanded="true"] .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--spacing-xs);
+  min-width: 140px;
+  @include surface();
+  padding: var(--spacing-xs);
+  z-index: 1000;
+  @include fade-in();
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    right: var(--spacing-md);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid var(--color-border);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    right: calc(var(--spacing-md) + 1px);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid var(--color-surface);
+  }
+}
+
+.dropdown-item {
+  @include button-base();
+  width: 100%;
+  justify-content: flex-start;
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  @include themed-color(color, text);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  
+  &:hover {
+    @include themed-color(background-color, background);
+  }
+
+  &.active {
+    @include themed-color(background-color, primary);
+    color: white;
+  }
+
+  i {
+    font-size: 16px;
+    width: 16px;
+    text-align: center;
+  }
+
+  .check-icon {
+    margin-left: auto;
+    font-size: var(--font-size-sm);
+  }
+}
+
+@include mobile {
+  .dropdown-menu {
+    right: auto;
+    left: 0;
+    
+    &::before,
+    &::after {
+      right: auto;
+      left: var(--spacing-md);
+    }
+    
+    &::after {
+      left: calc(var(--spacing-md) + 1px);
+    }
+  }
+}
+
+@media (prefers-contrast: high) {
+  ::ng-deep .theme-toggle-btn .p-button,
+  .theme-dropdown-btn,
+  .dropdown-item {
+    border: 1px solid var(--color-border);
+  }
+  
+  .dropdown-menu {
+    border: 2px solid var(--color-border);
+  }
+}

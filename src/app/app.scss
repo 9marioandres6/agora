@@ -1,11 +1,48 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import 'shared/styles/theme-mixins';
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  @include themed-color(background-color, background);
 }
 
-body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background: #f8fafc;
-  line-height: 1.6;
+.app-header {
+  @include themed-color(background-color, surface);
+  @include themed-color(border-bottom-color, border);
+  border-bottom: 1px solid;
+  padding: var(--spacing-md) 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  
+  .container {
+    align-items: center;
+  }
+}
+
+.app-title {
+  @include heading(4);
+  @include themed-gradient(135deg, primary, secondary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
