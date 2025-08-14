@@ -1,0 +1,204 @@
+@import '../../styles/theme-mixins';
+
+.navbar {
+  @include themed-color(background-color, surface);
+  @include themed-color(border-bottom-color, border);
+  border-bottom: 1px solid;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-container {
+  @include container();
+  @include flex-between();
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  min-height: 64px;
+  
+  @include mobile {
+    padding: var(--spacing-sm) var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    min-height: auto;
+  }
+}
+
+.navbar-brand {
+  flex-shrink: 0;
+}
+
+.brand-title {
+  @include heading(4);
+  @include themed-gradient(135deg, primary, secondary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease-in-out infinite;
+  margin: 0;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.navbar-content {
+  @include flex-between();
+  align-items: center;
+  flex: 1;
+  margin-left: var(--spacing-xl);
+  
+  @include mobile {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+}
+
+.user-section {
+  @include mobile {
+    order: -1;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.user-greeting {
+  @include text('base');
+  @include text-secondary();
+  font-weight: var(--font-weight-medium);
+  
+  @include mobile {
+    font-size: var(--font-size-sm);
+  }
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  
+  @include mobile {
+    gap: var(--spacing-sm);
+  }
+}
+
+.logout-btn {
+  @include button-base();
+  background: linear-gradient(135deg, var(--color-error) 0%, var(--color-error) 100%);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-sm);
+  min-width: 100px;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+    filter: brightness(1.1);
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    filter: none;
+  }
+  
+  i {
+    font-size: 14px;
+  }
+  
+  span {
+    font-weight: var(--font-weight-medium);
+  }
+  
+  @include mobile {
+    padding: var(--spacing-xs) var(--spacing-md);
+    min-width: 80px;
+    font-size: var(--font-size-xs);
+    
+    span {
+      display: none;
+    }
+    
+    &:not(:disabled) i {
+      margin: 0;
+    }
+  }
+}
+
+.loading-spinner {
+  @include loading-spinner(14px);
+}
+
+// Theme toggle integration
+::ng-deep app-theme-toggle {
+  .theme-toggle-container {
+    display: flex;
+    align-items: center;
+  }
+}
+
+// Responsive adjustments
+@include tablet {
+  .navbar-container {
+    padding: var(--spacing-sm) var(--spacing-lg);
+  }
+  
+  .user-greeting {
+    font-size: var(--font-size-sm);
+  }
+  
+  .navbar-content {
+    margin-left: var(--spacing-lg);
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .navbar {
+    border-bottom-width: 2px;
+  }
+  
+  .logout-btn {
+    border: 1px solid var(--color-error);
+  }
+}
+
+// Print styles
+@media print {
+  .navbar {
+    display: none;
+  }
+}
+
+// Accessibility improvements
+.logout-btn:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+// Animation for navbar entrance
+.navbar {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

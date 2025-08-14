@@ -1,0 +1,30 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <h1 class="brand-title">{{ appTitle() }}</h1>
+    </div>
+    
+    <div class="navbar-content">
+        <div></div>      
+      <div class="navbar-actions">
+        <app-theme-toggle></app-theme-toggle>
+        
+        @if (user()) {
+          <button 
+            class="logout-btn"
+            (click)="onLogout()"
+            [disabled]="isLoggingOut()"
+            type="button">
+            @if (!isLoggingOut()) {
+              <i class="pi pi-sign-out"></i>
+              <span>Logout</span>
+            } @else {
+              <div class="loading-spinner"></div>
+              <span>Logging out...</span>
+            }
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

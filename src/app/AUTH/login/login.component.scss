@@ -5,7 +5,7 @@
   @include flex-center();
   padding: var(--spacing-lg);
   @include themed-gradient();
-  min-height: calc(100vh - 80px);
+  min-height: 100vh;
 }
 
 .login-card {
