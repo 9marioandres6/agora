@@ -1,4 +1,4 @@
-@import '../../styles/theme-mixins';
+@import '../../shared/styles/theme-mixins';
 
 .navbar {
   @include themed-color(background-color, surface);

@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ToggleButtonModule } from 'primeng/togglebutton';
+import { GenericSwitchComponent } from '../generic-switch/generic-switch.component';
 import { ThemeService, Theme } from '../../services/theme.service';
 
 @Component({
   selector: 'app-theme-toggle',
   standalone: true,
-  imports: [CommonModule, FormsModule, ToggleButtonModule],
+  imports: [CommonModule, FormsModule, GenericSwitchComponent],
   templateUrl: './theme-toggle.component.html',
   styleUrl: './theme-toggle.component.scss'
 })
@@ -62,13 +62,13 @@ export class ThemeToggleComponent {
   getThemeIcon(theme: Theme): string {
     switch (theme) {
       case 'light':
-        return 'pi pi-sun';
+        return '☀️';
       case 'dark':
-        return 'pi pi-moon';
+        return '🌙';
       case 'system':
-        return 'pi pi-desktop';
+        return '💻';
       default:
-        return 'pi pi-sun';
+        return '☀️';
     }
   }
 

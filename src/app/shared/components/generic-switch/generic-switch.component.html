@@ -1,0 +1,28 @@
+<div 
+  [ngClass]="switchClasses()"
+  [attr.aria-checked]="checked"
+  [attr.aria-disabled]="disabled"
+  role="switch"
+  tabindex="0"
+  (click)="toggle()"
+  (keydown)="onKeydown($event)">
+  
+  <div class="switch__track">
+    <div class="switch__thumb"></div>
+  </div>
+  
+  @if (showLabels) {
+    <div class="switch__labels">
+      @if (offLabel) {
+        <span class="switch__label switch__label--off" [class.active]="!checked">
+          {{ offLabel }}
+        </span>
+      }
+      @if (onLabel) {
+        <span class="switch__label switch__label--on" [class.active]="checked">
+          {{ onLabel }}
+        </span>
+      }
+    </div>
+  }
+</div>

@@ -6,9 +6,9 @@
         [attr.aria-expanded]="isDropdownOpen()"
         (click)="toggleDropdown()"
         type="button">
-        <i [class]="getThemeIcon(selectedTheme())"></i>
+        <span class="theme-icon">{{ getThemeIcon(selectedTheme()) }}</span>
         <span>{{ getThemeLabel(selectedTheme()) }}</span>
-        <i class="pi pi-chevron-down dropdown-arrow"></i>
+        <span class="dropdown-arrow">▼</span>
       </button>
       
       @if (isDropdownOpen()) {
@@ -19,10 +19,10 @@
               [class.active]="option.value === selectedTheme()"
               (click)="selectTheme(option.value)"
               type="button">
-              <i [class]="getThemeIcon(option.value)"></i>
+              <span class="theme-icon">{{ getThemeIcon(option.value) }}</span>
               <span>{{ option.label }}</span>
               @if (option.value === selectedTheme()) {
-                <i class="pi pi-check check-icon"></i>
+                <span class="check-icon">✓</span>
               }
             </button>
           }
@@ -30,14 +30,14 @@
       }
     </div>
   } @else {
-    <p-toggleButton 
-      [(ngModel)]="isDarkMode"
-      (onChange)="onToggleChange()"
-      [onIcon]="'pi pi-moon'" 
-      [offIcon]="'pi pi-sun'"
+    <app-generic-switch 
+      [(checked)]="isDarkMode"
+      (change)="onToggleChange()"
       [onLabel]="'Dark'"
       [offLabel]="'Light'"
-      [ngClass]="'theme-toggle-btn'">
-    </p-toggleButton>
+      [showLabels]="true"
+      size="medium"
+      class="theme-toggle-btn">
+    </app-generic-switch>
   }
 </div>

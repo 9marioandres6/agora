@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../AUTH/auth.service';
-import { NavbarComponent } from '../shared/components/navbar/navbar.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @Component({
   selector: 'app-home',

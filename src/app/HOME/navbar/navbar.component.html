@@ -7,6 +7,7 @@
     <div class="navbar-content">
         <div></div>      
       <div class="navbar-actions">
+        <app-language-selector></app-language-selector>
         <app-theme-toggle></app-theme-toggle>
         
         @if (user()) {
@@ -16,11 +17,11 @@
             [disabled]="isLoggingOut()"
             type="button">
             @if (!isLoggingOut()) {
-              <i class="pi pi-sign-out"></i>
-              <span>Logout</span>
+              <span class="logout-icon">🚪</span>
+              <span>{{ 'navbar.logout' | translate }}</span>
             } @else {
               <div class="loading-spinner"></div>
-              <span>Logging out...</span>
+              <span>{{ 'navbar.logging.out' | translate }}</span>
             }
           </button>
         }

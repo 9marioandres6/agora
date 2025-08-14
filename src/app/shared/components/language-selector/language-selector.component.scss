@@ -1,0 +1,103 @@
+.language-selector {
+  .language-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+    .flag {
+      font-size: 1.1rem;
+      min-width: 20px;
+    }
+    
+    .label {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+  
+  :host ::ng-deep {
+    .p-select {
+      border: 1px solid var(--border-color, #e0e0e0);
+      background: var(--surface-color, #ffffff);
+      border-radius: 6px;
+      
+      .p-select-label {
+        padding: 0.5rem 0.75rem;
+        color: var(--text-color, #333333);
+        font-size: 0.9rem;
+      }
+      
+      .p-select-dropdown {
+        color: var(--text-color, #333333);
+        background: transparent;
+      }
+      
+      &:not(.p-disabled):hover {
+        border-color: var(--primary-color, #007bff);
+      }
+      
+      &.p-focus {
+        border-color: var(--primary-color, #007bff);
+        box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+      }
+    }
+    
+    .p-select-overlay {
+      background: #ffffff !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+      
+      .p-select-items {
+        background: #ffffff !important;
+        
+        .p-select-option {
+          color: #333333 !important;
+          padding: 0.5rem 0.75rem !important;
+          background: #ffffff !important;
+          
+          &:hover {
+            background: #f8f9fa !important;
+          }
+          
+          &.p-highlight {
+            background: #007bff !important;
+            color: #ffffff !important;
+          }
+        }
+      }
+    }
+    
+    .p-component-overlay {
+      background: #ffffff !important;
+    }
+    
+    .p-overlay-panel {
+      background: #ffffff !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .p-dropdown-panel {
+      background: #ffffff !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .p-listbox {
+      background: #ffffff !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    .p-multiselect-panel {
+      background: #ffffff !important;
+      border: 1px solid #e0e0e0 !important;
+      border-radius: 6px !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+  }
+}

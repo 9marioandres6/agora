@@ -1,0 +1,99 @@
+@import '../../styles/theme-mixins';
+
+.switch {
+  @include flex-center();
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--transition-fast);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.switch__track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background-color: var(--color-border);
+  border-radius: 12px;
+  transition: background-color var(--transition-normal);
+
+  .switch--checked & {
+    background-color: var(--color-primary);
+  }
+
+  .switch--small & {
+    width: 36px;
+    height: 20px;
+    border-radius: 10px;
+  }
+
+  .switch--large & {
+    width: 52px;
+    height: 28px;
+    border-radius: 14px;
+  }
+}
+
+.switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal);
+
+  .switch--checked & {
+    transform: translateX(20px);
+  }
+
+  .switch--small & {
+    width: 16px;
+    height: 16px;
+    top: 2px;
+    left: 2px;
+
+    .switch--checked & {
+      transform: translateX(16px);
+    }
+  }
+
+  .switch--large & {
+    width: 24px;
+    height: 24px;
+    top: 2px;
+    left: 2px;
+
+    .switch--checked & {
+      transform: translateX(24px);
+    }
+  }
+}
+
+.switch__labels {
+  @include flex-center();
+  gap: var(--spacing-sm);
+}
+
+.switch__label {
+  @include text('small');
+  @include text-secondary();
+  transition: color var(--transition-fast);
+
+  &.active {
+    @include themed-color(color, text);
+    font-weight: var(--font-weight-medium);
+  }
+}

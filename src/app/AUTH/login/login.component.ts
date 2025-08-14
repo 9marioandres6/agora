@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -14,7 +15,7 @@ import { AuthService } from '../auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslatePipe],
 })
 export class LoginComponent {
   loginForm: FormGroup;

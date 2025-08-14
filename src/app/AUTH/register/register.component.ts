@@ -9,6 +9,7 @@ import {
   ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -16,7 +17,7 @@ import { AuthService } from '../auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, TranslatePipe],
 })
 export class RegisterComponent {
   registerForm: FormGroup;

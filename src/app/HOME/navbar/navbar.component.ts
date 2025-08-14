@@ -1,12 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
-import { AuthService } from '../../../AUTH/auth.service';
+import { ThemeToggleComponent } from '../../shared/components/theme-toggle/theme-toggle.component';
+import { LanguageSelectorComponent } from '../../shared/components/language-selector/language-selector.component';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { AuthService } from '../../AUTH/auth.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, ThemeToggleComponent],
+  imports: [CommonModule, ThemeToggleComponent, LanguageSelectorComponent, TranslatePipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
 })

@@ -1,0 +1,57 @@
+<div 
+  [ngClass]="dropdownClasses()"
+  [attr.aria-expanded]="isOpen()"
+  [attr.aria-haspopup]="true"
+  role="combobox"
+  tabindex="0"
+  (click)="toggle()"
+  (keydown)="onKeydown($event)">
+  
+  <div class="dropdown__trigger">
+    <span class="dropdown__value">
+      @if (selectedOption()) {
+        {{ selectedOption()?.label }}
+      } @else {
+        <span class="dropdown__placeholder">{{ placeholder }}</span>
+      }
+    </span>
+    <i class="dropdown__arrow" [class.rotated]="isOpen()">▼</i>
+  </div>
+  
+  @if (isOpen()) {
+    <div class="dropdown__menu">
+      @if (searchable) {
+        <div class="dropdown__search">
+          <input 
+            type="text"
+            class="dropdown__search-input"
+            [value]="searchTerm()"
+            (input)="onSearchInput($event)"
+            placeholder="Search..."
+            (click)="$event.stopPropagation()">
+        </div>
+      }
+      
+      <div class="dropdown__options">
+        @for (option of filteredOptions(); track option.value) {
+          <div 
+            class="dropdown__option"
+            [class.active]="option.value === value"
+            [class.disabled]="option.disabled"
+            (click)="selectOption(option)">
+            {{ option.label }}
+            @if (option.value === value) {
+              <i class="dropdown__check">✓</i>
+            }
+          </div>
+        }
+        
+        @if (filteredOptions().length === 0) {
+          <div class="dropdown__no-results">
+            No options found
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
