@@ -1,0 +1,80 @@
+<div class="create-post-container">
+  <div class="create-post-header">
+    <button class="back-btn" (click)="goBack()">{{ 'create.project.back' | translate }}</button>
+    <h1>{{ 'create.project.title' | translate }}</h1>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="create-post-form">
+    <div class="form-group">
+      <label for="title">{{ 'create.project.title.label' | translate }}</label>
+      <input 
+        id="title"
+        type="text" 
+        formControlName="title"
+        [placeholder]="'create.project.title.placeholder' | translate"
+        class="form-input">
+    </div>
+
+    <div class="form-group">
+      <label for="description">{{ 'create.project.description.label' | translate }}</label>
+      <textarea 
+        id="description"
+        formControlName="description"
+        [placeholder]="'create.project.description.placeholder' | translate"
+        rows="4"
+        class="form-textarea">
+      </textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="scope">{{ 'create.project.scope.label' | translate }}</label>
+      <select id="scope" formControlName="scope" class="form-select">
+        <option value="">{{ 'create.project.scope.placeholder' | translate }}</option>
+        @for (scope of scopes; track scope) {
+          <option [value]="scope.value">{{ scope.label | translate }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'create.project.needed.label' | translate }}</label>
+      <div class="needed-input-container">
+        <input 
+          #neededInput
+          type="text" 
+          [placeholder]="'create.project.needed.placeholder' | translate"
+          class="form-input needed-input"
+          (keyup.enter)="addNeededItem(neededInput.value); neededInput.value = ''">
+        <button 
+          type="button"
+          class="add-btn"
+          (click)="addNeededItem(neededInput.value); neededInput.value = ''">
+          {{ 'create.project.add' | translate }}
+        </button>
+      </div>
+      
+      @if (neededItems.length > 0) {
+        <div class="needed-items-list">
+          @for (item of neededItems; track $index) {
+            <div class="needed-item">
+              <span>{{ item }}</span>
+              <button 
+                type="button"
+                class="remove-btn"
+                (click)="removeNeededItem($index)">
+                ×
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <button 
+      type="submit" 
+      class="create-btn"
+      [disabled]="!form.valid">
+      {{ 'create.project.create' | translate }}
+    </button>
+  </form>
+</div>

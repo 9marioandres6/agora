@@ -28,6 +28,24 @@ interface TranslationKeys {
   'auth.signin.link': string;
   'navbar.logout': string;
   'navbar.logging.out': string;
+  'navbar.new.project': string;
+  'create.project.title': string;
+  'create.project.back': string;
+  'create.project.title.label': string;
+  'create.project.title.placeholder': string;
+  'create.project.description.label': string;
+  'create.project.description.placeholder': string;
+  'create.project.scope.label': string;
+  'create.project.scope.placeholder': string;
+  'create.project.scope.grupal': string;
+  'create.project.scope.local': string;
+  'create.project.scope.state': string;
+  'create.project.scope.national': string;
+  'create.project.scope.international': string;
+  'create.project.needed.label': string;
+  'create.project.needed.placeholder': string;
+  'create.project.add': string;
+  'create.project.create': string;
   'language.english': string;
   'language.spanish': string;
 }
@@ -68,6 +86,24 @@ export class TranslationService {
       'auth.signin.link': 'Sign in',
       'navbar.logout': 'Logout',
       'navbar.logging.out': 'Logging out...',
+      'navbar.new.project': 'New Project',
+      'create.project.title': 'Create New Project',
+      'create.project.back': '← Back',
+      'create.project.title.label': 'Title',
+      'create.project.title.placeholder': 'Enter project title',
+      'create.project.description.label': 'Description',
+      'create.project.description.placeholder': 'Enter project description',
+      'create.project.scope.label': 'Scope',
+      'create.project.scope.placeholder': 'Select scope',
+      'create.project.scope.grupal': 'Grupal',
+      'create.project.scope.local': 'Local',
+      'create.project.scope.state': 'State',
+      'create.project.scope.national': 'National',
+      'create.project.scope.international': 'International',
+      'create.project.needed.label': "What's needed",
+      'create.project.needed.placeholder': 'Add needed item',
+      'create.project.add': 'Add',
+      'create.project.create': 'Create Project',
       'language.english': 'English',
       'language.spanish': 'Español'
     },
@@ -96,6 +132,24 @@ export class TranslationService {
       'auth.signin.link': 'Iniciar sesión',
       'navbar.logout': 'Cerrar sesión',
       'navbar.logging.out': 'Cerrando sesión...',
+      'navbar.new.project': 'Nuevo Proyecto',
+      'create.project.title': 'Crear Nuevo Proyecto',
+      'create.project.back': '← Volver',
+      'create.project.title.label': 'Título',
+      'create.project.title.placeholder': 'Ingresa el título del proyecto',
+      'create.project.description.label': 'Descripción',
+      'create.project.description.placeholder': 'Ingresa la descripción del proyecto',
+      'create.project.scope.label': 'Alcance',
+      'create.project.scope.placeholder': 'Selecciona el alcance',
+      'create.project.scope.grupal': 'Grupal',
+      'create.project.scope.local': 'Local',
+      'create.project.scope.state': 'Estatal',
+      'create.project.scope.national': 'Nacional',
+      'create.project.scope.international': 'Internacional',
+      'create.project.needed.label': 'Qué se necesita',
+      'create.project.needed.placeholder': 'Agregar elemento necesario',
+      'create.project.add': 'Agregar',
+      'create.project.create': 'Crear Proyecto',
       'language.english': 'English',
       'language.spanish': 'Español'
     }

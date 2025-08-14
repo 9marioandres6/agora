@@ -1,0 +1,113 @@
+@import '../../shared/styles/theme-mixins';
+
+.create-post-container {
+  @include container(600px);
+  padding: var(--spacing-xl);
+}
+
+.create-post-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+
+  h1 {
+    margin: 0;
+    @include heading(3);
+    @include themed-color(color, text);
+  }
+}
+
+.back-btn {
+  @include button-secondary();
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.create-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+
+  label {
+    @include text('base');
+    @include themed-color(color, text);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  @include input-base();
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.needed-input-container {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.needed-input {
+  flex: 1;
+}
+
+.add-btn {
+  @include button-base();
+  @include themed-color(background-color, success);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+  }
+}
+
+.needed-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.needed-item {
+  @include surface('sm');
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.remove-btn {
+  @include button-base();
+  @include themed-color(background-color, error);
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: var(--font-size-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.1);
+  }
+}
+
+.create-btn {
+  @include button-primary();
+  padding: var(--spacing-md);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}

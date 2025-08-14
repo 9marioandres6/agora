@@ -14,6 +14,11 @@ export const routes: Routes = [
     canActivate: [() => import('./HOME/home.guard').then((m) => m.homeGuard)],
   },
   {
+    path: 'create-post',
+    loadComponent: () =>
+      import('./HOME/create-post/create-post.component').then((m) => m.CreatePostComponent),
+  },
+  {
     path: '**',
     redirectTo: 'auth',
     pathMatch: 'full',

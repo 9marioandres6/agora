@@ -20,6 +20,10 @@ export class NavbarComponent {
   readonly user = this.authService.user;
   readonly isLoggingOut = signal(false);
 
+  onNewProject(): void {
+    this.router.navigate(['/create-post']);
+  }
+
   async onLogout(): Promise<void> {
     if (this.isLoggingOut()) return;
 
