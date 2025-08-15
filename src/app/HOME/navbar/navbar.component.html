@@ -15,24 +15,7 @@
           </button>
         </div>      
       <div class="navbar-actions">
-        <app-language-selector></app-language-selector>
-        <app-theme-toggle></app-theme-toggle>
-        
-        @if (user()) {
-          <button 
-            class="logout-btn"
-            (click)="onLogout()"
-            [disabled]="isLoggingOut()"
-            type="button">
-            @if (!isLoggingOut()) {
-              <span class="logout-icon">🚪</span>
-              <span>{{ 'navbar.logout' | translate }}</span>
-            } @else {
-              <div class="loading-spinner"></div>
-              <span>{{ 'navbar.logging.out' | translate }}</span>
-            }
-          </button>
-        }
+        <app-settings-dropdown></app-settings-dropdown>
       </div>
     </div>
   </div>

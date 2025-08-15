@@ -84,6 +84,8 @@ export class ThemeService {
   constructor() {
     this.initializeSystemThemeDetection();
     this.setupThemeEffects();
+    // Apply theme when DOM is ready
+    this.initializeTheme();
   }
 
 
@@ -135,19 +137,31 @@ export class ThemeService {
     });
   }
 
+  private initializeTheme(): void {
+    // Wait for DOM to be ready, then apply the theme
+    if (typeof window !== 'undefined') {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        this.applyThemeToDOM(this.themeConfig());
+      });
+    }
+  }
+
   private applyThemeToDOM(config: ThemeConfig): void {
     const root = this.document.documentElement;
     
-
+    // Remove any existing theme classes
     root.className = root.className.replace(/theme-\w+/g, '');
-    root.classList.add(`theme-${config.theme}`);
-
-
+    
+    // Set the data-theme attribute for CSS selectors
+    root.setAttribute('data-theme', config.theme);
+    
+    // Apply CSS variables for colors
     Object.entries(config.colors).forEach(([key, value]) => {
       root.style.setProperty(`--color-${this.kebabCase(key)}`, value);
     });
-
-
+    
+    // Set the theme variable
     root.style.setProperty('--theme', config.theme);
   }
 

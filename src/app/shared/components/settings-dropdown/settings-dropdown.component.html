@@ -1,0 +1,46 @@
+<div class="settings-dropdown">
+  <button 
+    class="settings-toggle"
+    (click)="toggle()"
+    type="button"
+    [attr.aria-expanded]="isOpen()"
+    [attr.aria-label]="'navbar.settings' | translate">
+    <span class="settings-icon">⚙️</span>
+  </button>
+  
+  @if (isOpen()) {
+    <div class="settings-menu">
+      <div class="settings-section">
+        <div class="settings-item">
+          <span class="settings-label">{{ 'navbar.language' | translate }}</span>
+          <app-language-selector></app-language-selector>
+        </div>
+        
+        <div class="settings-item">
+          <span class="settings-label">{{ 'navbar.theme' | translate }}</span>
+          <app-theme-toggle></app-theme-toggle>
+        </div>
+      </div>
+      
+      @if (user()) {
+        <div class="settings-divider"></div>
+        
+        <div class="settings-section">
+          <button 
+            class="logout-btn"
+            (click)="onLogout()"
+            [disabled]="isLoggingOut()"
+            type="button">
+            @if (!isLoggingOut()) {
+              <span class="logout-icon">🚪</span>
+              <span>{{ 'navbar.logout' | translate }}</span>
+            } @else {
+              <div class="loading-spinner"></div>
+              <span>{{ 'navbar.logging.out' | translate }}</span>
+            }
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -29,6 +29,9 @@ interface TranslationKeys {
   'navbar.logout': string;
   'navbar.logging.out': string;
   'navbar.new.project': string;
+  'navbar.settings': string;
+  'navbar.language': string;
+  'navbar.theme': string;
   'create.project.title': string;
   'create.project.back': string;
   'create.project.title.label': string;
@@ -97,6 +100,9 @@ export class TranslationService {
       'navbar.logout': 'Logout',
       'navbar.logging.out': 'Logging out...',
       'navbar.new.project': 'New Project',
+      'navbar.settings': 'Settings',
+      'navbar.language': 'Language',
+      'navbar.theme': 'Theme',
       'create.project.title': 'Create New Project',
       'create.project.back': '← Back',
       'create.project.title.label': 'Title',
@@ -153,6 +159,9 @@ export class TranslationService {
       'navbar.logout': 'Cerrar sesión',
       'navbar.logging.out': 'Cerrando sesión...',
       'navbar.new.project': 'Nuevo Proyecto',
+      'navbar.settings': 'Configuración',
+      'navbar.language': 'Idioma',
+      'navbar.theme': 'Tema',
       'create.project.title': 'Crear Nuevo Proyecto',
       'create.project.back': '← Volver',
       'create.project.title.label': 'Título',
