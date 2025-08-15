@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { PostService } from '../../shared/services/post.service';
-import { CreatePostRequest } from '../posts-list/post.models';
+import { CreatePostRequest } from '../../shared/services/post.models';
 
 @Component({
   selector: 'app-create-post',

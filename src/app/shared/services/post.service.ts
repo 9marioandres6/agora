@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Firestore, collection, addDoc, getDocs, query, orderBy, limit, where, doc, updateDoc, deleteDoc, Timestamp } from '@angular/fire/firestore';
 import { AuthService } from '../../AUTH/auth.service';
-import { Post, CreatePostRequest, PostQueryOptions, PostScope } from '../../HOME/posts-list/post.models';
+import { Post, CreatePostRequest, PostQueryOptions, PostScope } from './post.models';
 import { Observable, from, map } from 'rxjs';
 
 @Injectable({

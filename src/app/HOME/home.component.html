@@ -46,11 +46,21 @@
           @for (post of posts(); track post.id) {
             <div class="post-card">
               <div class="post-header">
-                <h3 class="post-title">{{ post.title }}</h3>
+                <div class="post-header-left">
+                  <div class="author-info">
+                    <div class="author-photo">
+                      <span class="author-initial">{{ post.authorName.charAt(0).toUpperCase() }}</span>
+                    </div>
+                    <span class="author-name">{{ post.authorName }}</span>
+                  </div>
+                </div>
                 <span class="post-scope">{{ post.scope | titlecase }}</span>
               </div>
               
-              <p class="post-description">{{ post.description }}</p>
+              <div class="post-body">
+                <h3 class="post-title">{{ post.title }}</h3>
+                <p class="post-description">{{ post.description }}</p>
+              </div>
               
               @if (post.needed.length > 0) {
                 <div class="post-needed">
@@ -64,10 +74,6 @@
               }
               
               <div class="post-footer">
-                <div class="post-author">
-                  <span class="author-label">{{ 'home.post.author.by' | translate }}</span>
-                  <span class="author-name">{{ post.authorName }}</span>
-                </div>
                 <span class="post-date">{{ formatDate(post.createdAt) }}</span>
               </div>
             </div>
