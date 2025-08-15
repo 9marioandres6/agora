@@ -1,9 +1,9 @@
 import { Component, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
-import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { ThemeToggleComponent } from '../../../shared/components/theme-toggle/theme-toggle.component';
+import { LanguageSelectorComponent } from '../../../shared/components/language-selector/language-selector.component';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { AuthService } from '../../../AUTH/auth.service';
 
 @Component({

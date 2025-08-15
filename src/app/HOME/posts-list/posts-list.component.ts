@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { PostService } from '../../shared/services/post.service';
-import { Post, PostScope } from '../../shared/models/post.models';
+import { Post, PostScope } from './post.models';
 
 @Component({
   selector: 'app-posts-list',
@@ -66,5 +66,6 @@ export class PostsListComponent implements OnInit {
     }).format(date);
   }
 }
+
 
 

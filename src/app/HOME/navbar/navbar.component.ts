@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { SettingsDropdownComponent } from '../../shared/components/settings-dropdown/settings-dropdown.component';
+import { SettingsDropdownComponent } from './settings-dropdown/settings-dropdown.component';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({

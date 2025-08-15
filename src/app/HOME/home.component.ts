@@ -5,7 +5,7 @@ import { AuthService } from '../AUTH/auth.service';
 import { NavbarComponent } from './navbar/navbar.component';
 import { TranslatePipe } from '../shared/pipes/translate.pipe';
 import { PostService } from '../shared/services/post.service';
-import { Post, PostScope } from '../shared/models/post.models';
+import { Post, PostScope } from './posts-list/post.models';
 
 @Component({
   selector: 'app-home',
