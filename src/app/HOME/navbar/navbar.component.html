@@ -5,16 +5,14 @@
     </div>
     
     <div class="navbar-content">
-        <div class="navbar-nav">
-          <button 
-            class="new-project-btn"
-            (click)="onNewProject()"
-            type="button">
-            <span class="new-project-icon">➕</span>
-            <span>{{ 'navbar.new.project' | translate }}</span>
-          </button>
-        </div>      
       <div class="navbar-actions">
+        <button 
+          class="new-project-btn"
+          (click)="onNewProject()"
+          type="button">
+          <span class="new-project-icon">➕</span>
+          <span>{{ 'navbar.new.project' | translate }}</span>
+        </button>
         <app-settings-dropdown></app-settings-dropdown>
       </div>
     </div>
