@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../AUTH/auth.service';
@@ -34,7 +34,20 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.loadPosts();
+    // Don't load posts here - let the effect handle it
+  }
+
+  constructor() {
+    // Watch for authentication changes and load posts when user logs in
+    effect(() => {
+      const user = this.user();
+      if (user) {
+        // Small delay to ensure authentication is fully established
+        setTimeout(() => {
+          this.loadPosts();
+        }, 100);
+      }
+    });
   }
 
   async loadPosts(): Promise<void> {
