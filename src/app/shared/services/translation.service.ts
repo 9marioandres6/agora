@@ -46,6 +46,16 @@ interface TranslationKeys {
   'create.project.needed.placeholder': string;
   'create.project.add': string;
   'create.project.create': string;
+  'home.filter.scope': string;
+  'home.filter.all.scopes': string;
+  'home.loading.projects': string;
+  'home.error.loading': string;
+  'home.retry': string;
+  'home.empty.title': string;
+  'home.empty.description': string;
+  'home.empty.create.first': string;
+  'home.post.author.by': string;
+  'home.post.needed.title': string;
   'language.english': string;
   'language.spanish': string;
 }
@@ -104,6 +114,16 @@ export class TranslationService {
       'create.project.needed.placeholder': 'Add needed item',
       'create.project.add': 'Add',
       'create.project.create': 'Create Project',
+      'home.filter.scope': 'Filter by Scope:',
+      'home.filter.all.scopes': 'All Scopes',
+      'home.loading.projects': 'Loading projects...',
+      'home.error.loading': 'Failed to load posts',
+      'home.retry': 'Retry',
+      'home.empty.title': 'No projects yet',
+      'home.empty.description': 'Be the first to create a project!',
+      'home.empty.create.first': 'Create Your First Project',
+      'home.post.author.by': 'By:',
+      'home.post.needed.title': "What's needed:",
       'language.english': 'English',
       'language.spanish': 'Español'
     },
@@ -150,6 +170,16 @@ export class TranslationService {
       'create.project.needed.placeholder': 'Agregar elemento necesario',
       'create.project.add': 'Agregar',
       'create.project.create': 'Crear Proyecto',
+      'home.filter.scope': 'Filtrar por Alcance:',
+      'home.filter.all.scopes': 'Todos los Alcances',
+      'home.loading.projects': 'Cargando proyectos...',
+      'home.error.loading': 'Error al cargar los posts',
+      'home.retry': 'Reintentar',
+      'home.empty.title': 'Aún no hay proyectos',
+      'home.empty.description': '¡Sé el primero en crear un proyecto!',
+      'home.empty.create.first': 'Crea Tu Primer Proyecto',
+      'home.post.author.by': 'Por:',
+      'home.post.needed.title': 'Qué se necesita:',
       'language.english': 'English',
       'language.spanish': 'Español'
     }

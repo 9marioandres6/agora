@@ -69,6 +69,8 @@
   gap: var(--spacing-md);
 }
 
+
+
 .new-project-btn {
   @include button-base();
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);

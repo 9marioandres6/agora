@@ -1,31 +1,28 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../AUTH/auth.service';
-import { NavbarComponent } from './navbar/navbar.component';
-import { TranslatePipe } from '../shared/pipes/translate.pipe';
-import { PostService } from '../shared/services/post.service';
-import { Post, PostScope } from '../shared/models/post.models';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { PostService } from '../../shared/services/post.service';
+import { Post, PostScope } from '../../shared/models/post.models';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
-  imports: [CommonModule, NavbarComponent, TranslatePipe],
+  selector: 'app-posts-list',
+  standalone: true,
+  imports: [CommonModule, TranslatePipe],
+  templateUrl: './posts-list.component.html',
+  styleUrl: './posts-list.component.scss'
 })
-export class HomeComponent implements OnInit {
-  private readonly authService = inject(AuthService);
+export class PostsListComponent implements OnInit {
   private readonly postService = inject(PostService);
   private readonly router = inject(Router);
-  
-  readonly user = this.authService.user;
+
   readonly posts = this.postService.posts;
   readonly loading = this.postService.loading;
   readonly error = this.postService.error;
   readonly selectedScope = signal<PostScope | ''>('');
 
   readonly scopes = [
-    { value: '', label: 'home.filter.all.scopes' },
+    { value: '', label: 'All Scopes' },
     { value: 'grupal', label: 'create.project.scope.grupal' },
     { value: 'local', label: 'create.project.scope.local' },
     { value: 'state', label: 'create.project.scope.state' },
@@ -69,3 +66,4 @@ export class HomeComponent implements OnInit {
     }).format(date);
   }
 }
+

@@ -18,6 +18,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./HOME/create-post/create-post.component').then((m) => m.CreatePostComponent),
   },
+
   {
     path: '**',
     redirectTo: 'auth',

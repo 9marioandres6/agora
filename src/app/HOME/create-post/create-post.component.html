@@ -73,8 +73,13 @@
     <button 
       type="submit" 
       class="create-btn"
-      [disabled]="!form.valid">
-      {{ 'create.project.create' | translate }}
+      [disabled]="!form.valid || isSubmitting()">
+      @if (!isSubmitting()) {
+        {{ 'create.project.create' | translate }}
+      } @else {
+        <div class="loading-spinner"></div>
+        <span>Creating...</span>
+      }
     </button>
   </form>
 </div>

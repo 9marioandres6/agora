@@ -1,8 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { PostService } from '../../shared/services/post.service';
+import { CreatePostRequest } from '../../shared/models/post.models';
 
 @Component({
   selector: 'app-create-post',
@@ -14,6 +16,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class CreatePostComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly postService = inject(PostService);
 
   readonly scopes = [
     { value: 'grupal', label: 'create.project.scope.grupal' },
@@ -23,6 +26,7 @@ export class CreatePostComponent {
     { value: 'international', label: 'create.project.scope.international' }
   ];
   readonly neededItems: string[] = [];
+  readonly isSubmitting = signal(false);
 
   form: FormGroup = this.fb.group({
     title: ['', Validators.required],
@@ -40,13 +44,25 @@ export class CreatePostComponent {
     this.neededItems.splice(index, 1);
   }
 
-  onSubmit(): void {
-    if (this.form.valid) {
-      const projectData = {
-        ...this.form.value,
-        needed: this.neededItems
-      };
-      console.log('Project data:', projectData);
+  async onSubmit(): Promise<void> {
+    if (this.form.valid && !this.isSubmitting()) {
+      try {
+        this.isSubmitting.set(true);
+        
+        const postData: CreatePostRequest = {
+          title: this.form.value.title,
+          description: this.form.value.description,
+          scope: this.form.value.scope,
+          needed: this.neededItems
+        };
+
+        await this.postService.createPost(postData);
+        await this.router.navigate(['/home']);
+      } catch (error) {
+        console.error('Failed to create post:', error);
+      } finally {
+        this.isSubmitting.set(false);
+      }
     }
   }
 

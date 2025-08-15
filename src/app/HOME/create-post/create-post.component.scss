@@ -110,4 +110,11 @@
   padding: var(--spacing-md);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.loading-spinner {
+  @include loading-spinner(16px);
 }

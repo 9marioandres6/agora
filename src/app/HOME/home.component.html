@@ -3,6 +3,77 @@
   
   <div class="home-container">
     <div class="home-content">
+      <div class="posts-filters">
+        <label for="scope-filter">{{ 'home.filter.scope' | translate }}</label>
+        <select 
+          id="scope-filter" 
+          class="scope-select"
+          #scopeSelect
+          (change)="onScopeChange(scopeSelect.value)">
+          @for (scope of scopes; track scope.value) {
+            <option [value]="scope.value">
+              @if (scope.value === '') {
+                {{ 'home.filter.all.scopes' | translate }}
+              } @else {
+                {{ scope.label | translate }}
+              }
+            </option>
+          }
+        </select>
+      </div>
+
+      @if (loading()) {
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <span>{{ 'home.loading.projects' | translate }}</span>
+        </div>
+      } @else if (error()) {
+        <div class="error-container">
+          <span class="error-message">{{ error() }}</span>
+          <button class="retry-btn" (click)="loadPosts()">{{ 'home.retry' | translate }}</button>
+        </div>
+      } @else if (posts().length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">📝</span>
+          <h3>{{ 'home.empty.title' | translate }}</h3>
+          <p>{{ 'home.empty.description' | translate }}</p>
+          <button class="create-first-btn" (click)="onCreateNew()">
+            {{ 'home.empty.create.first' | translate }}
+          </button>
+        </div>
+      } @else {
+        <div class="posts-grid">
+          @for (post of posts(); track post.id) {
+            <div class="post-card">
+              <div class="post-header">
+                <h3 class="post-title">{{ post.title }}</h3>
+                <span class="post-scope">{{ post.scope | titlecase }}</span>
+              </div>
+              
+              <p class="post-description">{{ post.description }}</p>
+              
+              @if (post.needed.length > 0) {
+                <div class="post-needed">
+                  <h4>{{ 'home.post.needed.title' | translate }}</h4>
+                  <ul class="needed-list">
+                    @for (item of post.needed; track item) {
+                      <li>{{ item }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+              
+              <div class="post-footer">
+                <div class="post-author">
+                  <span class="author-label">{{ 'home.post.author.by' | translate }}</span>
+                  <span class="author-name">{{ post.authorName }}</span>
+                </div>
+                <span class="post-date">{{ formatDate(post.createdAt) }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
     </div>
   </div>
 </div>
