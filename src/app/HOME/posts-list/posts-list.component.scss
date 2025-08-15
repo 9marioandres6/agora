@@ -1,8 +1,11 @@
-@import '../../shared/styles/theme-mixins';
+@use '../../shared/styles/modern-theme-mixins' as *;
 
 .posts-list-container {
   @include container();
-  padding: var(--spacing-xl);
+  
+  & {
+    padding: var(--spacing-xl);
+  }
 }
 
 .posts-header {

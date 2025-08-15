@@ -1,4 +1,4 @@
-@import 'app/shared/styles/theme-mixins';
+@use 'app/shared/styles/modern-theme-mixins' as *;
 
 @include generate-spacing-utilities();
 @include generate-spacing-utilities();

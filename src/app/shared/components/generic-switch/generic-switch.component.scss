@@ -1,4 +1,4 @@
-@import '../../styles/theme-mixins';
+@use '../../styles/modern-theme-mixins' as *;
 
 .switch {
   @include flex-center();

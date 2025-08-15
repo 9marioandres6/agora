@@ -1,4 +1,4 @@
-@import '../../shared/styles/theme-mixins';
+@use '../../shared/styles/modern-theme-mixins' as *;
 
 .register-container {
   flex: 1;

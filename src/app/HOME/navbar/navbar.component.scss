@@ -1,4 +1,4 @@
-@import '../../shared/styles/theme-mixins';
+@use '../../shared/styles/modern-theme-mixins' as *;
 
 .navbar {
   @include themed-color(background-color, surface);
@@ -14,9 +14,12 @@
 .navbar-container {
   @include container();
   @include flex-between();
-  align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  min-height: 64px;
+  
+  & {
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    min-height: 64px;
+  }
   
   @include mobile {
     padding: var(--spacing-sm) var(--spacing-md);
@@ -52,9 +55,12 @@
 
 .navbar-content {
   @include flex-between();
-  align-items: center;
-  flex: 1;
-  margin-left: var(--spacing-xl);
+  
+  & {
+    align-items: center;
+    flex: 1;
+    margin-left: var(--spacing-xl);
+  }
   
   @include mobile {
     width: 100%;
