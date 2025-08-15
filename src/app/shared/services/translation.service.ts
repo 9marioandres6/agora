@@ -32,6 +32,16 @@ interface TranslationKeys {
   'navbar.settings': string;
   'navbar.language': string;
   'navbar.theme': string;
+  'navbar.profile': string;
+  'profile.title': string;
+  'profile.back': string;
+  'profile.member.since': string;
+  'profile.last.login': string;
+  'profile.email.verified': string;
+  'profile.verified': string;
+  'profile.unverified': string;
+  'profile.loading': string;
+  'profile.signin.method': string;
   'create.project.title': string;
   'create.project.back': string;
   'create.project.title.label': string;
@@ -103,6 +113,16 @@ export class TranslationService {
       'navbar.settings': 'Settings',
       'navbar.language': 'Language',
       'navbar.theme': 'Theme',
+      'navbar.profile': 'My Profile',
+      'profile.title': 'My Profile',
+      'profile.back': '← Back to Home',
+      'profile.member.since': 'Member since',
+      'profile.last.login': 'Last login',
+      'profile.email.verified': 'Email verified',
+      'profile.verified': 'Verified',
+      'profile.unverified': 'Not verified',
+      'profile.loading': 'Loading profile...',
+      'profile.signin.method': 'Sign-in method',
       'create.project.title': 'Create New Project',
       'create.project.back': '← Back',
       'create.project.title.label': 'Title',
@@ -162,6 +182,16 @@ export class TranslationService {
       'navbar.settings': 'Configuración',
       'navbar.language': 'Idioma',
       'navbar.theme': 'Tema',
+      'navbar.profile': 'Mi Perfil',
+      'profile.title': 'Mi Perfil',
+      'profile.back': '← Volver al Inicio',
+      'profile.member.since': 'Miembro desde',
+      'profile.last.login': 'Último inicio de sesión',
+      'profile.email.verified': 'Email verificado',
+      'profile.verified': 'Verificado',
+      'profile.unverified': 'No verificado',
+      'profile.loading': 'Cargando perfil...',
+      'profile.signin.method': 'Método de inicio de sesión',
       'create.project.title': 'Crear Nuevo Proyecto',
       'create.project.back': '← Volver',
       'create.project.title.label': 'Título',

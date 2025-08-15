@@ -1,0 +1,76 @@
+<div class="profile-page">
+  <app-navbar></app-navbar>
+  
+  <div class="profile-container">
+    <div class="profile-content">
+      <div class="profile-header">
+        <button class="back-btn" (click)="onBack()">
+          {{ 'profile.back' | translate }}
+        </button>
+        
+        <h1 class="profile-title">{{ 'profile.title' | translate }}</h1>
+      </div>
+      
+      @if (user()) {
+        <div class="profile-card">
+          <div class="profile-avatar">
+            @if (user()?.photoURL) {
+              <img 
+                [src]="user()?.photoURL" 
+                [alt]="'Profile photo of ' + (user()?.displayName || user()?.email)"
+                class="avatar-image">
+            } @else {
+              <span class="avatar-icon">👤</span>
+            }
+          </div>
+          
+          <div class="profile-info">
+            <h2 class="user-name">{{ user()?.displayName || user()?.email || 'Anonymous' }}</h2>
+            <p class="user-email">{{ user()?.email }}</p>
+            
+            <div class="profile-details">
+              @if (user()?.providerId) {
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'profile.signin.method' | translate }}</span>
+                  <span class="detail-value">
+                    @if (user()?.providerId === 'google.com') {
+                      <span class="provider-badge">🔐 Google</span>
+                    } @else {
+                      <span class="provider-badge">{{ user()?.providerId }}</span>
+                    }
+                  </span>
+                </div>
+              }
+              
+              <div class="detail-item">
+                <span class="detail-label">{{ 'profile.member.since' | translate }}</span>
+                <span class="detail-value">{{ user()?.creationTime | date:'mediumDate' }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <span class="detail-label">{{ 'profile.last.login' | translate }}</span>
+                <span class="detail-value">{{ user()?.lastSignInTime | date:'mediumDate' }}</span>
+              </div>
+              
+              <div class="detail-item">
+                <span class="detail-label">{{ 'profile.email.verified' | translate }}</span>
+                <span class="detail-value">
+                  @if (user()?.emailVerified) {
+                    <span class="verified-badge">✅ {{ 'profile.verified' | translate }}</span>
+                  } @else {
+                    <span class="unverified-badge">❌ {{ 'profile.unverified' | translate }}</span>
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <span>{{ 'profile.loading' | translate }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

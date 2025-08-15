@@ -27,6 +27,18 @@
         
         <div class="settings-section">
           <button 
+            class="profile-btn"
+            (click)="onProfile()"
+            type="button">
+            <span class="profile-icon">👤</span>
+            <span>{{ 'navbar.profile' | translate }}</span>
+          </button>
+        </div>
+        
+        <div class="settings-divider"></div>
+        
+        <div class="settings-section">
+          <button 
             class="logout-btn"
             (click)="onLogout()"
             [disabled]="isLoggingOut()"

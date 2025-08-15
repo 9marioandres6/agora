@@ -37,6 +37,11 @@ export class SettingsDropdownComponent {
     this.isOpen.set(false);
   }
 
+  onProfile(): void {
+    this.router.navigate(['/profile']);
+    this.close();
+  }
+
   async onLogout(): Promise<void> {
     if (this.isLoggingOut()) return;
 

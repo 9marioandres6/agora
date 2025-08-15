@@ -18,6 +18,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./HOME/create-post/create-post.component').then((m) => m.CreatePostComponent),
   },
+  {
+    path: 'profile',
+    loadComponent: () =>
+      import('./PROFILE/profile.component').then((m) => m.ProfileComponent),
+  },
 
   {
     path: '**',
