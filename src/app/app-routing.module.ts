@@ -29,6 +29,11 @@ const routes: Routes = [
     canActivate: [publicGuard]
   },
   {
+    path: 'no-connection',
+    loadComponent: () => import('./no-connection/no-connection.component').then(c => c.NoConnectionComponent)
+  },
+
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'

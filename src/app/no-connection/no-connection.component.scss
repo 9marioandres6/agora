@@ -1,0 +1,103 @@
+.no-connection-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.icon-container {
+  margin-bottom: 2rem;
+}
+
+.offline-icon {
+  font-size: 8rem;
+  color: var(--ion-color-medium);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: var(--ion-color-dark);
+}
+
+.message {
+  font-size: 1.1rem;
+  color: var(--ion-color-medium);
+  margin-bottom: 2rem;
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.status-info {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 2rem;
+}
+
+.actions {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 3rem;
+}
+
+.retry-button {
+  margin-bottom: 1rem;
+}
+
+.home-button {
+  --border-color: var(--ion-color-medium);
+  --color: var(--ion-color-medium);
+}
+
+.tips {
+  width: 100%;
+  max-width: 500px;
+  text-align: left;
+}
+
+.tips h3 {
+  color: var(--ion-color-dark);
+  margin-bottom: 1rem;
+}
+
+.tips ul {
+  list-style: none;
+  padding: 0;
+}
+
+.tips li {
+  padding: 0.5rem 0;
+  color: var(--ion-color-medium);
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.tips li::before {
+  content: "•";
+  color: var(--ion-color-primary);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+@media (max-width: 768px) {
+  .no-connection-container {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .message {
+    font-size: 1rem;
+  }
+  
+  .offline-icon {
+    font-size: 6rem;
+  }
+}

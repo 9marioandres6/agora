@@ -138,5 +138,27 @@
     "MAX_LENGTH": "Maximum length is {{max}} characters",
     "EMAIL_FORMAT": "Please enter a valid email address",
     "PASSWORD_STRENGTH": "Password must be at least 8 characters long"
+  },
+  "NO_CONNECTION": {
+    "TITLE": "No Internet Connection",
+    "MESSAGE": "It looks like you've lost your internet connection. Please check your network settings and try again.",
+    "STATUS": "Connection Status",
+    "LAST_CHECK": "Last Check",
+    "CHECKING": "Checking...",
+    "RETRY": "Retry Connection",
+    "GO_HOME": "Go to Home",
+    "TIPS_TITLE": "Troubleshooting Tips",
+    "TIP_1": "Check if your Wi-Fi or mobile data is turned on",
+    "TIP_2": "Try moving closer to your router or switching networks",
+    "TIP_3": "Restart your device or router if the problem persists"
+  },
+  "CONNECTION": {
+    "EXCELLENT": "Excellent",
+    "GOOD": "Good",
+    "FAIR": "Fair",
+    "POOR": "Poor",
+    "OFFLINE": "Offline",
+    "UNKNOWN": "Unknown",
+    "LAST_CHECK": "Last Check"
   }
 }
