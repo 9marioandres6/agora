@@ -78,7 +78,16 @@ export class TranslationService {
         "NO_PROJECTS_MESSAGE": "Be the first to create a project and start collaborating with others!",
         "CREATE_FIRST_PROJECT": "Create First Project",
         "WHAT_WE_NEED": "What We Need",
-        "PARTICIPANTS": "participants"
+        "PARTICIPANTS": "participants",
+        "STATE_BUILDING": "Building",
+        "STATE_IMPLEMENTING": "Implementing",
+        "STATE_DONE": "Done",
+        "SUPPORT": "Support",
+        "OPPOSE": "Oppose",
+        "COMMENTS": "Comments",
+        "ADD_COMMENT": "Add Comment",
+        "COMMENT_PLACEHOLDER": "Write your comment...",
+        "SUBMIT_COMMENT": "Submit"
       },
       "SETTINGS": {
         "GENERAL": "General",
@@ -199,7 +208,16 @@ export class TranslationService {
         "NO_PROJECTS_MESSAGE": "¡Sé el primero en crear un proyecto y comenzar a colaborar con otros!",
         "CREATE_FIRST_PROJECT": "Crear Primer Proyecto",
         "WHAT_WE_NEED": "Lo Que Necesitamos",
-        "PARTICIPANTS": "participantes"
+        "PARTICIPANTS": "participantes",
+        "STATE_BUILDING": "Construyendo",
+        "STATE_IMPLEMENTING": "Implementando",
+        "STATE_DONE": "Completado",
+        "SUPPORT": "Apoyar",
+        "OPPOSE": "Oponer",
+        "COMMENTS": "Comentarios",
+        "ADD_COMMENT": "Agregar Comentario",
+        "COMMENT_PLACEHOLDER": "Escribe tu comentario...",
+        "SUBMIT_COMMENT": "Enviar"
       },
       "SETTINGS": {
         "GENERAL": "General",

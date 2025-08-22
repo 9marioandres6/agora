@@ -64,6 +64,12 @@
             </ion-card-header>
 
             <ion-card-content class="project-body">
+              <div class="state-chip-container">
+                <ion-chip [color]="getStateColor(project.state || 'building')" class="state-chip">
+                  {{ getStateLabel(project.state || 'building') | translate }}
+                </ion-chip>
+              </div>
+              
               <h2 class="project-title">{{ project.title }}</h2>
               <p class="project-description">{{ project.description }}</p>
               
@@ -82,11 +88,79 @@
             </ion-card-content>
 
             <div class="project-footer">
-              <ion-note class="creation-date">
-                <ion-icon name="time-outline" slot="start"></ion-icon>
-                {{ project.createdAt | date:'medium' }}
-              </ion-note>
+              <div class="voting-section">
+                <ion-button 
+                  fill="clear" 
+                  size="small" 
+                  color="success"
+                  (click)="supportProject(project.id!)"
+                  class="vote-button">
+                  {{ 'HOME.SUPPORT' | translate }} ({{ project.supports || 0 }})
+                </ion-button>
+                
+                <ion-button 
+                  fill="clear" 
+                  size="small" 
+                  color="danger"
+                  (click)="opposeProject(project.id!)"
+                  class="vote-button">
+                  {{ 'HOME.OPPOSE' | translate }} ({{ project.opposes || 0 }})
+                </ion-button>
+              </div>
+              
+              <div class="comments-section">
+                <ion-button 
+                  fill="clear" 
+                  size="small" 
+                  color="medium"
+                  (click)="toggleComments(project.id!)"
+                  class="comments-button">
+                  <ion-icon name="chatbubble-outline"></ion-icon>
+                  @if ((project.comments || []).length > 0) {
+                    ({{ (project.comments || []).length }})
+                  }
+                </ion-button>
+              </div>
             </div>
+
+            <!-- Comments Section -->
+            @if (expandedComments() === project.id) {
+              <div class="comments-container">
+                @if (project.comments && project.comments.length > 0) {
+                  <div class="comments-list">
+                    @for (comment of project.comments; track comment.id) {
+                      <div class="comment-item">
+                        <div class="comment-header">
+                          <strong>{{ comment.creatorName }}</strong>
+                          <small>{{ comment.createdAt | date:'short' }}</small>
+                        </div>
+                        <p class="comment-text">{{ comment.text }}</p>
+                      </div>
+                    }
+                  </div>
+                }
+                
+                <div class="add-comment-section">
+                  <ion-item>
+                    <ion-textarea
+                      [(ngModel)]="newCommentText"
+                      [placeholder]="'HOME.COMMENT_PLACEHOLDER' | translate"
+                      rows="2"
+                      class="comment-textarea">
+                    </ion-textarea>
+                  </ion-item>
+                  <ion-button 
+                    fill="clear" 
+                    size="small" 
+                    color="primary"
+                    (click)="addComment(project.id!)"
+                    [disabled]="!newCommentText.trim()"
+                    class="submit-comment-button">
+                    {{ 'HOME.SUBMIT_COMMENT' | translate }}
+                  </ion-button>
+                </div>
+              </div>
+            }
           </ion-card>
         }
       </div>

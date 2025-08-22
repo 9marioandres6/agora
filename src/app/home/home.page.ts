@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { SettingsModalComponent } from '../components/settings-modal/settings-modal.component';
@@ -26,6 +27,8 @@ export class HomePage implements OnInit, ViewWillEnter {
   
   projects = signal<Project[]>([]);
   isLoading = signal(false);
+  expandedComments = signal<string | null>(null);
+  newCommentText = '';
 
   async presentSettingsModal() {
     const modal = await this.modalCtrl.create({
@@ -94,5 +97,61 @@ export class HomePage implements OnInit, ViewWillEnter {
       'global': 'Global - International level'
     };
     return scopeLabels[scope] || scope;
+  }
+
+  getStateColor(state: string): string {
+    const stateColors: { [key: string]: string } = {
+      'building': 'warning',
+      'implementing': 'primary',
+      'done': 'success'
+    };
+    return stateColors[state] || 'medium';
+  }
+
+  getStateLabel(state: string): string {
+    const stateLabels: { [key: string]: string } = {
+      'building': 'HOME.STATE_BUILDING',
+      'implementing': 'HOME.STATE_IMPLEMENTING',
+      'done': 'HOME.STATE_DONE'
+    };
+    return stateLabels[state] || 'HOME.STATE_BUILDING';
+  }
+
+  async supportProject(projectId: string) {
+    try {
+      await this.projectsService.supportProject(projectId);
+      await this.loadProjects();
+    } catch (error) {
+      console.error('Error supporting project:', error);
+    }
+  }
+
+  async opposeProject(projectId: string) {
+    try {
+      await this.projectsService.opposeProject(projectId);
+      await this.loadProjects();
+    } catch (error) {
+      console.error('Error opposing project:', error);
+    }
+  }
+
+  toggleComments(projectId: string) {
+    if (this.expandedComments() === projectId) {
+      this.expandedComments.set(null);
+    } else {
+      this.expandedComments.set(projectId);
+    }
+  }
+
+  async addComment(projectId: string) {
+    if (!this.newCommentText.trim()) return;
+    
+    try {
+      await this.projectsService.addComment(projectId, this.newCommentText.trim());
+      this.newCommentText = '';
+      await this.loadProjects();
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
   }
 }
