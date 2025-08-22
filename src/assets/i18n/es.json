@@ -58,7 +58,7 @@
     "NO_PROJECTS": "Aún No Hay Proyectos",
     "NO_PROJECTS_MESSAGE": "¡Sé el primero en crear un proyecto y comenzar a colaborar con otros!",
     "CREATE_FIRST_PROJECT": "Crear Primer Proyecto",
-    "WHAT_WE_NEED": "Lo Que Necesitamos",
+    "WHAT_WE_NEED": "Qué Necesitamos",
     "PARTICIPANTS": "participantes"
   },
   "SETTINGS": {
@@ -91,7 +91,7 @@
     "TITLE_PLACEHOLDER": "Ingresa un título para tu elemento",
     "DESCRIPTION": "Descripción",
     "DESCRIPTION_PLACEHOLDER": "Describe lo que necesitas o quieres ofrecer",
-    "WHAT_WE_NEED": "Lo Que Necesitamos",
+    "WHAT_WE_NEED": "Qué Necesitamos",
     "NEED_PLACEHOLDER": "Agrega una necesidad o requisito",
     "SCOPE": "Alcance",
     "SCOPE_PLACEHOLDER": "Selecciona el alcance de tu elemento",

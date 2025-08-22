@@ -86,7 +86,7 @@ export class TranslationService {
         "OPPOSE": "Oppose",
         "COMMENTS": "Comments",
         "ADD_COMMENT": "Add Comment",
-        "COMMENT_PLACEHOLDER": "Write your comment...",
+        "COMMENT_PLACEHENTER": "Write your comment and press Enter to submit...",
         "SUBMIT_COMMENT": "Submit"
       },
       "SETTINGS": {
@@ -207,7 +207,7 @@ export class TranslationService {
         "NO_PROJECTS": "Aún No Hay Proyectos",
         "NO_PROJECTS_MESSAGE": "¡Sé el primero en crear un proyecto y comenzar a colaborar con otros!",
         "CREATE_FIRST_PROJECT": "Crear Primer Proyecto",
-        "WHAT_WE_NEED": "Lo Que Necesitamos",
+        "WHAT_WE_NEED": "Qué Necesitamos",
         "PARTICIPANTS": "participantes",
         "STATE_BUILDING": "Construyendo",
         "STATE_IMPLEMENTING": "Implementando",
@@ -216,7 +216,7 @@ export class TranslationService {
         "OPPOSE": "Oponer",
         "COMMENTS": "Comentarios",
         "ADD_COMMENT": "Agregar Comentario",
-        "COMMENT_PLACEHOLDER": "Escribe tu comentario...",
+        "COMMENT_PLACEHENTER": "Escribe tu comentario y presiona Enter para enviar...",
         "SUBMIT_COMMENT": "Enviar"
       },
       "SETTINGS": {
@@ -249,7 +249,7 @@ export class TranslationService {
         "TITLE_PLACEHOLDER": "Ingresa un título para tu elemento",
         "DESCRIPTION": "Descripción",
         "DESCRIPTION_PLACEHOLDER": "Describe lo que necesitas o quieres ofrecer",
-        "WHAT_WE_NEED": "Lo Que Necesitamos",
+        "WHAT_WE_NEED": "Qué Necesitamos",
         "NEED_PLACEHOLDER": "Agrega una necesidad o requisito",
         "SCOPE": "Alcance",
         "SCOPE_PLACEHOLDER": "Selecciona el alcance de tu elemento",

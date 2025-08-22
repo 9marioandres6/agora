@@ -225,6 +225,21 @@
           height: 32px;
           --padding-start: 8px;
           --padding-end: 8px;
+          transition: all 0.2s ease;
+
+          &[fill="solid"] {
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          &[fill="clear"] {
+            opacity: 0.8;
+            
+            &:hover {
+              opacity: 1;
+              background: rgba(var(--ion-color-medium-rgb), 0.1);
+            }
+          }
         }
       }
 
@@ -283,14 +298,6 @@
         .comment-textarea {
           --background: var(--ion-color-light);
           --border-radius: 8px;
-          --padding-start: 12px;
-          --padding-end: 12px;
-          margin-bottom: 8px;
-        }
-
-        .submit-comment-button {
-          font-size: 12px;
-          height: 32px;
           --padding-start: 12px;
           --padding-end: 12px;
         }

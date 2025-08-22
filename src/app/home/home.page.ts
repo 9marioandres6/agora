@@ -119,8 +119,16 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   async supportProject(projectId: string) {
     try {
-      await this.projectsService.supportProject(projectId);
-      await this.loadProjects();
+      const currentUser = this.user();
+      if (!currentUser?.uid) return;
+
+      const result = await this.projectsService.toggleSupport(projectId, currentUser.uid);
+      this.updateProjectVoting(projectId, 'supports', result.action, currentUser.uid);
+      
+      // If support was added, also remove from opposes array in UI
+      if (result.action === 'added') {
+        this.removeUserFromOpposes(projectId, currentUser.uid);
+      }
     } catch (error) {
       console.error('Error supporting project:', error);
     }
@@ -128,8 +136,16 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   async opposeProject(projectId: string) {
     try {
-      await this.projectsService.opposeProject(projectId);
-      await this.loadProjects();
+      const currentUser = this.user();
+      if (!currentUser?.uid) return;
+
+      const result = await this.projectsService.toggleOppose(projectId, currentUser.uid);
+      this.updateProjectVoting(projectId, 'opposes', result.action, currentUser.uid);
+      
+      // If oppose was added, also remove from supports array in UI
+      if (result.action === 'added') {
+        this.removeUserFromSupports(projectId, currentUser.uid);
+      }
     } catch (error) {
       console.error('Error opposing project:', error);
     }
@@ -147,11 +163,96 @@ export class HomePage implements OnInit, ViewWillEnter {
     if (!this.newCommentText.trim()) return;
     
     try {
+      const currentUser = this.user();
+      if (!currentUser?.uid) return;
+
+      const newComment = {
+        id: this.generateCommentId(),
+        text: this.newCommentText.trim(),
+        createdBy: currentUser.uid,
+        creatorName: currentUser.displayName || 'Anonymous',
+        createdAt: new Date().toISOString()
+      };
+
       await this.projectsService.addComment(projectId, this.newCommentText.trim());
+      
+      this.addCommentToProject(projectId, newComment);
       this.newCommentText = '';
-      await this.loadProjects();
     } catch (error) {
       console.error('Error adding comment:', error);
     }
+  }
+
+  onCommentKeydown(event: Event, projectId: string) {
+    const keyboardEvent = event as KeyboardEvent;
+    if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
+      keyboardEvent.preventDefault();
+      this.addComment(projectId);
+    }
+  }
+
+  private updateProjectVoting(projectId: string, field: 'supports' | 'opposes', action: 'added' | 'removed', userId: string) {
+    this.projects.update(projects => 
+      projects.map(project => {
+        if (project.id !== projectId) return project;
+        
+        const currentArray = project[field] || [];
+        let newArray: string[];
+        
+        if (action === 'added') {
+          newArray = [...currentArray, userId];
+        } else {
+          newArray = currentArray.filter(id => id !== userId);
+        }
+        
+        return { ...project, [field]: newArray };
+      })
+    );
+  }
+
+  private addCommentToProject(projectId: string, newComment: any) {
+    this.projects.update(projects => 
+      projects.map(project => 
+        project.id === projectId 
+          ? { ...project, comments: [...(project.comments || []), newComment] }
+          : project
+      )
+    );
+  }
+
+  private generateCommentId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  isUserSupported(project: Project): boolean {
+    const currentUser = this.user();
+    if (!currentUser?.uid) return false;
+    return project.supports?.includes(currentUser.uid) || false;
+  }
+
+  isUserOpposed(project: Project): boolean {
+    const currentUser = this.user();
+    if (!currentUser?.uid) return false;
+    return project.opposes?.includes(currentUser.uid) || false;
+  }
+
+  private removeUserFromSupports(projectId: string, userId: string) {
+    this.projects.update(projects => 
+      projects.map(project => {
+        if (project.id !== projectId) return project;
+        const newSupports = (project.supports || []).filter(id => id !== userId);
+        return { ...project, supports: newSupports };
+      })
+    );
+  }
+
+  private removeUserFromOpposes(projectId: string, userId: string) {
+    this.projects.update(projects => 
+      projects.map(project => {
+        if (project.id !== projectId) return project;
+        const newOpposes = (project.opposes || []).filter(id => id !== userId);
+        return { ...project, opposes: newOpposes };
+      })
+    );
   }
 }

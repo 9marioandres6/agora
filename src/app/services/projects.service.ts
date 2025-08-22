@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, DocumentData, arrayUnion, arrayRemove, increment } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, DocumentData, arrayUnion, arrayRemove } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 
 export interface Project {
@@ -15,8 +15,8 @@ export interface Project {
   participants?: string[];
   tags?: string[];
   state: 'building' | 'implementing' | 'done';
-  supports: number;
-  opposes: number;
+  supports: string[];
+  opposes: string[];
   comments: Comment[];
   creator?: {
     uid: string;
@@ -57,8 +57,8 @@ export class ProjectsService {
         createdAt: new Date().toISOString(),
         status: 'active',
         state: 'building',
-        supports: 0,
-        opposes: 0,
+        supports: [],
+        opposes: [],
         comments: [],
         participants: [projectData.createdBy],
         tags: this.generateTags(projectData.title, projectData.description, projectData.needs),
@@ -110,11 +110,11 @@ export class ProjectsService {
         if (project.state === undefined) {
           project.state = 'building';
         }
-        if (project.supports === undefined) {
-          project.supports = 0;
+        if (project.supports === undefined || typeof project.supports === 'number') {
+          project.supports = [];
         }
-        if (project.opposes === undefined) {
-          project.opposes = 0;
+        if (project.opposes === undefined || typeof project.opposes === 'number') {
+          project.opposes = [];
         }
         if (project.comments === undefined) {
           project.comments = [];
@@ -144,8 +144,8 @@ export class ProjectsService {
       // Ensure new fields have default values for existing projects
       return projects.map(project => {
         if (project.state === undefined) project.state = 'building';
-        if (project.supports === undefined) project.supports = 0;
-        if (project.opposes === undefined) project.opposes = 0;
+        if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
+        if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
         if (project.comments === undefined) project.comments = [];
         return project;
       });
@@ -172,8 +172,8 @@ export class ProjectsService {
       // Ensure new fields have default values for existing projects
       return projects.map(project => {
         if (project.state === undefined) project.state = 'building';
-        if (project.supports === undefined) project.supports = 0;
-        if (project.opposes === undefined) project.opposes = 0;
+        if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
+        if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
         if (project.comments === undefined) project.comments = [];
         return project;
       });
@@ -243,11 +243,18 @@ export class ProjectsService {
     }
   }
 
-  async supportProject(projectId: string): Promise<void> {
+  async supportProject(projectId: string, userId: string): Promise<void> {
     try {
       const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // First, remove any existing oppose vote from this user
       await updateDoc(projectRef, {
-        supports: increment(1)
+        opposes: arrayRemove(userId)
+      });
+      
+      // Then add the support vote
+      await updateDoc(projectRef, {
+        supports: arrayUnion(userId)
       });
     } catch (error) {
       console.error('Error supporting project:', error);
@@ -255,14 +262,114 @@ export class ProjectsService {
     }
   }
 
-  async opposeProject(projectId: string): Promise<void> {
+  async opposeProject(projectId: string, userId: string): Promise<void> {
     try {
       const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // First, remove any existing support vote from this user
       await updateDoc(projectRef, {
-        opposes: increment(1)
+        supports: arrayRemove(userId)
+      });
+      
+      // Then add the oppose vote
+      await updateDoc(projectRef, {
+        opposes: arrayUnion(userId)
       });
     } catch (error) {
       console.error('Error opposing project:', error);
+      throw error;
+    }
+  }
+
+  async removeSupport(projectId: string, userId: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      await updateDoc(projectRef, {
+        supports: arrayRemove(userId)
+      });
+    } catch (error) {
+      console.error('Error removing support:', error);
+      throw error;
+    }
+  }
+
+  async removeOppose(projectId: string, userId: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      await updateDoc(projectRef, {
+        opposes: arrayRemove(userId)
+      });
+    } catch (error) {
+      console.error('Error removing oppose:', error);
+      throw error;
+    }
+  }
+
+  async toggleSupport(projectId: string, userId: string): Promise<{ action: 'added' | 'removed' }> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      const projectDoc = await getDocs(query(this.projectsCollection, where('__name__', '==', projectId)));
+      
+      if (projectDoc.empty) {
+        throw new Error('Project not found');
+      }
+      
+      const project = projectDoc.docs[0].data() as Project;
+      
+      // Ensure supports is an array (handle old numeric data)
+      if (typeof project.supports === 'number') {
+        project.supports = [];
+      }
+      if (!Array.isArray(project.supports)) {
+        project.supports = [];
+      }
+      
+      const hasSupported = project.supports.includes(userId);
+      
+      if (hasSupported) {
+        await this.removeSupport(projectId, userId);
+        return { action: 'removed' };
+      } else {
+        await this.supportProject(projectId, userId);
+        return { action: 'added' };
+      }
+    } catch (error) {
+      console.error('Error toggling support:', error);
+      throw error;
+    }
+  }
+
+  async toggleOppose(projectId: string, userId: string): Promise<{ action: 'added' | 'removed' }> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      const projectDoc = doc(this.firestore, 'projects', projectId);
+      const projectDocSnap = await getDocs(query(this.projectsCollection, where('__name__', '==', projectId)));
+      
+      if (projectDocSnap.empty) {
+        throw new Error('Project not found');
+      }
+      
+      const project = projectDocSnap.docs[0].data() as Project;
+      
+      // Ensure opposes is an array (handle old numeric data)
+      if (typeof project.opposes === 'number') {
+        project.opposes = [];
+      }
+      if (!Array.isArray(project.opposes)) {
+        project.opposes = [];
+      }
+      
+      const hasOpposed = project.opposes.includes(userId);
+      
+      if (hasOpposed) {
+        await this.removeOppose(projectId, userId);
+        return { action: 'removed' };
+      } else {
+        await this.opposeProject(projectId, userId);
+        return { action: 'added' };
+      }
+    } catch (error) {
+      console.error('Error toggling oppose:', error);
       throw error;
     }
   }

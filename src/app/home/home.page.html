@@ -90,21 +90,21 @@
             <div class="project-footer">
               <div class="voting-section">
                 <ion-button 
-                  fill="clear" 
+                  [fill]="isUserSupported(project) ? 'solid' : 'clear'"
                   size="small" 
                   color="success"
                   (click)="supportProject(project.id!)"
                   class="vote-button">
-                  {{ 'HOME.SUPPORT' | translate }} ({{ project.supports || 0 }})
+                  {{ 'HOME.SUPPORT' | translate }} ({{ (project.supports || []).length }})
                 </ion-button>
                 
                 <ion-button 
-                  fill="clear" 
+                  [fill]="isUserOpposed(project) ? 'solid' : 'clear'"
                   size="small" 
                   color="danger"
                   (click)="opposeProject(project.id!)"
                   class="vote-button">
-                  {{ 'HOME.OPPOSE' | translate }} ({{ project.opposes || 0 }})
+                  {{ 'HOME.OPPOSE' | translate }} ({{ (project.opposes || []).length }})
                 </ion-button>
               </div>
               
@@ -144,20 +144,12 @@
                   <ion-item>
                     <ion-textarea
                       [(ngModel)]="newCommentText"
-                      [placeholder]="'HOME.COMMENT_PLACEHOLDER' | translate"
+                      [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
                       rows="2"
-                      class="comment-textarea">
+                      class="comment-textarea"
+                      (keydown.enter)="onCommentKeydown($event, project.id!)">
                     </ion-textarea>
                   </ion-item>
-                  <ion-button 
-                    fill="clear" 
-                    size="small" 
-                    color="primary"
-                    (click)="addComment(project.id!)"
-                    [disabled]="!newCommentText.trim()"
-                    class="submit-comment-button">
-                    {{ 'HOME.SUBMIT_COMMENT' | translate }}
-                  </ion-button>
                 </div>
               </div>
             }
