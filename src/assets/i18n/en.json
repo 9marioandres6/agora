@@ -59,7 +59,16 @@
     "NO_PROJECTS_MESSAGE": "Be the first to create a project and start collaborating with others!",
     "CREATE_FIRST_PROJECT": "Create First Project",
     "WHAT_WE_NEED": "What We Need",
-    "PARTICIPANTS": "participants"
+    "PARTICIPANTS": "participants",
+    "STATE_BUILDING": "Building",
+    "STATE_IMPLEMENTING": "Implementing",
+    "STATE_DONE": "Done",
+    "SUPPORT": "Support",
+    "OPPOSE": "Oppose",
+    "COMMENTS": "Comments",
+    "ADD_COMMENT": "Add Comment",
+    "COMMENT_PLACEHENTER": "Write your comment and press Enter to submit...",
+    "SUBMIT_COMMENT": "Submit"
   },
   "SETTINGS": {
     "GENERAL": "General",
