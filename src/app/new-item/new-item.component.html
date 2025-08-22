@@ -1,0 +1,116 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'NEW_ITEM.CREATE_NEW' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (isAuthenticated()) {
+    <form class="new-item-form">
+      <ion-card class="form-card">
+        <ion-card-content>
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'NEW_ITEM.TITLE' | translate }}</ion-label>
+            <ion-input 
+              [(ngModel)]="title" 
+              name="title"
+              type="text"
+              placeholder="{{ 'NEW_ITEM.TITLE_PLACEHOLDER' | translate }}"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'NEW_ITEM.DESCRIPTION' | translate }}</ion-label>
+            <ion-textarea 
+              [(ngModel)]="description" 
+              name="description"
+              placeholder="{{ 'NEW_ITEM.DESCRIPTION_PLACEHOLDER' | translate }}"
+              rows="4"
+              required>
+            </ion-textarea>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'NEW_ITEM.WHAT_WE_NEED' | translate }}</ion-label>
+            <div class="needs-input-container">
+              <ion-input 
+                [(ngModel)]="newNeed" 
+                name="newNeed"
+                placeholder="{{ 'NEW_ITEM.NEED_PLACEHOLDER' | translate }}"
+                (keyup.enter)="addNeed()">
+              </ion-input>
+              <ion-button 
+                fill="clear" 
+                size="small" 
+                (click)="addNeed()"
+                [disabled]="!newNeed.trim()"
+                class="add-need-btn">
+                <ion-icon name="add" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+            
+            @if (needs.length > 0) {
+              <div class="needs-chips">
+                @for (need of needs; track need) {
+                  <ion-chip 
+                    color="primary" 
+                    (click)="removeNeed(need)"
+                    class="need-chip">
+                    <ion-label>{{ need }}</ion-label>
+                    <ion-icon name="close" slot="end"></ion-icon>
+                  </ion-chip>
+                }
+              </div>
+            }
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'NEW_ITEM.SCOPE' | translate }}</ion-label>
+            <ion-button 
+              fill="outline" 
+              expand="block"
+              (click)="openScopeModal()"
+              class="scope-selector-btn"
+              [color]="scope ? 'primary' : 'medium'">
+              @if (scope) {
+                <ion-icon [name]="getScopeIcon(scope)" slot="start"></ion-icon>
+                {{ 'NEW_ITEM.SCOPE_' + scope.toUpperCase() | translate }}
+              } @else {
+                <ion-icon name="chevron-down" slot="start"></ion-icon>
+                {{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}
+              }
+            </ion-button>
+          </ion-item>
+
+          <div class="form-actions">
+            <ion-button 
+              expand="block" 
+              (click)="saveItem()" 
+              [disabled]="!title.trim() || !description.trim() || !scope || isSaving"
+              [color]="isSaving ? 'medium' : 'primary'"
+              class="send-button">
+              <ion-icon [name]="isSaving ? 'hourglass' : 'send'" slot="start"></ion-icon>
+              {{ isSaving ? ('COMMON.LOADING' | translate) : ('NEW_ITEM.SEND_PROJECT' | translate) }}
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </form>
+  } @else {
+    <ion-card class="auth-required-card">
+      <ion-card-content>
+        <div class="auth-required">
+          <ion-icon name="lock-closed" size="large" color="medium"></ion-icon>
+          <h2>{{ 'NEW_ITEM.AUTH_REQUIRED' | translate }}</h2>
+          <p>{{ 'NEW_ITEM.AUTH_REQUIRED_MESSAGE' | translate }}</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

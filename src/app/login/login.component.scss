@@ -1,0 +1,86 @@
+.container {
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.google-auth-section {
+  margin-bottom: 20px;
+  
+  ion-button {
+    margin-bottom: 10px;
+  }
+}
+
+.divider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--ion-color-medium);
+  }
+  
+  span {
+    background: var(--ion-background-color);
+    padding: 0 15px;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.button-container {
+  margin-top: 20px;
+  
+  ion-button {
+    margin-bottom: 10px;
+  }
+}
+
+ion-card {
+  margin-top: 20px;
+}
+
+ion-item {
+  margin-bottom: 15px;
+}
+
+ion-text {
+  margin-top: 15px;
+  
+  p {
+    margin: 10px 0;
+  }
+}
+
+.register-link {
+  margin-top: 20px;
+  text-align: center;
+  
+  ion-text {
+    margin-top: 0;
+  }
+}
+
+/* Theme-aware styles */
+ion-card {
+  background-color: var(--app-card-background);
+  border: 1px solid var(--app-card-border);
+}
+
+ion-item {
+  --background: var(--app-input-background);
+  --border-color: var(--app-input-border);
+}
+
+.divider::before {
+  background: var(--app-divider);
+}

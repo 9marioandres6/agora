@@ -1,0 +1,10 @@
+<ion-button
+  fill="clear"
+  size="small"
+  (click)="toggleTheme()"
+  [attr.aria-label]="'Switch to ' + (isDark() ? ('SETTINGS.LIGHT_THEME' | translate) : ('SETTINGS.DARK_THEME' | translate)) + ' mode'">
+  <ion-icon
+    [name]="isDark() ? 'sunny' : 'moon'"
+    slot="icon-only">
+  </ion-icon>
+</ion-button>

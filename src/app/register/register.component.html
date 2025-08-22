@@ -1,0 +1,76 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ 'COMMON.REGISTER' | translate }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ 'AUTH.REGISTER_TITLE' | translate }}</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">{{ 'FORMS.DISPLAY_NAME' | translate }}</ion-label>
+          <ion-input type="text" [(ngModel)]="displayName" [placeholder]="'FORMS.DISPLAY_NAME' | translate"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'COMMON.EMAIL' | translate }}</ion-label>
+          <ion-input type="email" [(ngModel)]="email" [placeholder]="'COMMON.EMAIL' | translate"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'COMMON.PASSWORD' | translate }}</ion-label>
+          <ion-input type="password" [(ngModel)]="password" [placeholder]="'COMMON.PASSWORD' | translate"></ion-input>
+        </ion-item>
+
+        <div class="button-container">
+          <ion-button expand="block" (click)="signUp()" [disabled]="loading()">
+            @if (loading()) {
+              <ion-spinner></ion-spinner>
+            }
+            {{ 'AUTH.REGISTER_TITLE' | translate }}
+          </ion-button>
+        </div>
+
+        <div class="divider">
+          <span>{{ 'FORMS.OR' | translate }}</span>
+        </div>
+
+        <div class="google-auth-section">
+          <ion-button expand="block" fill="outline" (click)="signInWithGoogle()" [disabled]="loading()">
+            <ion-icon name="logo-google" slot="start"></ion-icon>
+            @if (loading()) {
+              <ion-spinner></ion-spinner>
+            }
+            {{ 'FORMS.CONTINUE_WITH_GOOGLE' | translate }}
+          </ion-button>
+        </div>
+
+        @if (error()) {
+          <ion-text color="danger">
+            <p>{{ error() }}</p>
+            <ion-button fill="clear" size="small" (click)="clearError()">{{ 'COMMON.CLOSE' | translate }}</ion-button>
+          </ion-text>
+        }
+
+        @if (user()) {
+          <div>
+            <ion-text color="success">
+              <p>{{ 'AUTH.REGISTER_SUCCESS' | translate }}, {{ user()?.displayName || user()?.email }}!</p>
+            </ion-text>
+          </div>
+        }
+
+        <div class="login-link">
+          <ion-text color="medium">
+            <p>{{ 'AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <ion-button fill="clear" size="small" routerLink="/login">{{ 'COMMON.LOGIN' | translate }}</ion-button></p>
+          </ion-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'PROFILE.EDIT_PROFILE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+              <ion-button (click)="saveProfile()" fill="clear" [disabled]="!displayName">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (isAuthenticated()) {
+    <ion-card class="profile-form-card">
+      <ion-card-content>
+        <div class="avatar-section">
+          <ion-avatar class="profile-avatar">
+            @if (photoURL) {
+              <img [src]="photoURL" [alt]="displayName || 'User'">
+            } @else {
+              <ion-icon name="person" size="large"></ion-icon>
+            }
+          </ion-avatar>
+          <ion-button fill="clear" size="small" class="change-avatar-btn">
+            <ion-icon name="camera" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+
+        <form class="profile-form">
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'PROFILE.DISPLAY_NAME' | translate }}</ion-label>
+            <ion-input 
+              [(ngModel)]="displayName" 
+              name="displayName"
+              type="text"
+              placeholder="{{ 'PROFILE.DISPLAY_NAME_PLACEHOLDER' | translate }}"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'PROFILE.EMAIL' | translate }}</ion-label>
+            <ion-input 
+              [value]="email" 
+              name="email"
+              type="email"
+              readonly>
+            </ion-input>
+            <ion-note slot="helper">{{ 'PROFILE.EMAIL_READONLY' | translate }}</ion-note>
+          </ion-item>
+
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'PROFILE.PHOTO_URL' | translate }}</ion-label>
+            <ion-input 
+              [(ngModel)]="photoURL" 
+              name="photoURL"
+              type="url"
+              placeholder="{{ 'PROFILE.PHOTO_URL_PLACEHOLDER' | translate }}">
+            </ion-input>
+          </ion-item>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  } @else {
+    <ion-card class="auth-required-card">
+      <ion-card-content>
+        <div class="auth-required">
+          <ion-icon name="lock-closed" size="large" color="medium"></ion-icon>
+          <h2>{{ 'PROFILE.AUTH_REQUIRED' | translate }}</h2>
+          <p>{{ 'PROFILE.AUTH_REQUIRED_MESSAGE' | translate }}</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

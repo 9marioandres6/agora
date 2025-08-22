@@ -1,0 +1,12 @@
+ion-button {
+  --color: var(--ion-color-primary);
+  --color-hover: var(--ion-color-primary-shade);
+  
+  &:hover {
+    --background: var(--ion-color-primary-tint);
+  }
+}
+
+ion-icon {
+  font-size: 1.2em;
+}

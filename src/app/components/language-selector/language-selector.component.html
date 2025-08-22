@@ -1,0 +1,21 @@
+<ion-item button class="setting-item" (click)="onItemClick()">
+  <ion-icon name="language-outline" slot="start" class="setting-icon"></ion-icon>
+  <ion-label>{{ 'SETTINGS.LANGUAGE' | translate }}</ion-label>
+  <ion-badge slot="end" color="secondary" class="language-badge">
+    {{ getLanguageName((currentLang$ | async) || 'en') }}
+  </ion-badge>
+
+  <ion-select 
+    #languageSelect
+    [value]="currentLang$ | async" 
+    (ionChange)="onLanguageChange($event)"
+    interface="popover"
+    [interfaceOptions]="{ cssClass: getPopoverClass() }"
+    class="hidden-select">
+    @for (lang of availableLanguages; track lang) {
+      <ion-select-option [value]="lang">
+        {{ getLanguageName(lang) }}
+      </ion-select-option>
+    }
+  </ion-select>
+</ion-item>

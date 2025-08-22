@@ -1,0 +1,112 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      {{ 'COMMON.HOME' | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="createNew()" fill="clear" class="new-button">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+      <app-settings-button (onSettingsClick)="presentSettingsModal()"></app-settings-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'COMMON.HOME' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Projects Feed -->
+  @if (isAuthenticated()) {
+    <ion-refresher slot="fixed" (ionRefresh)="refreshProjects($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    @if (isLoading()) {
+      <div class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>{{ 'COMMON.LOADING' | translate }}</p>
+      </div>
+    } @else if (projects().length === 0) {
+      <div class="empty-state">
+        <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
+        <h2>{{ 'HOME.NO_PROJECTS' | translate }}</h2>
+        <p>{{ 'HOME.NO_PROJECTS_MESSAGE' | translate }}</p>
+        <ion-button (click)="createNew()" fill="outline">
+          <ion-icon name="add" slot="start"></ion-icon>
+          {{ 'HOME.CREATE_FIRST_PROJECT' | translate }}
+        </ion-button>
+      </div>
+    } @else {
+      <div class="projects-feed">
+        @for (project of projects(); track project.id) {
+          <ion-card class="project-card">
+            <ion-card-header class="project-header">
+              <div class="creator-info">
+                <ion-avatar class="creator-avatar">
+                  @if (project.creator && project.creator.photoURL) {
+                    <img [src]="project.creator.photoURL" [alt]="project.creator.displayName || 'Creator'">
+                  } @else {
+                    <ion-icon name="person" size="large"></ion-icon>
+                  }
+                </ion-avatar>
+                <div class="creator-details">
+                  <h3 class="creator-name">{{ project.creator?.displayName || 'Anonymous' }}</h3>
+                  <p class="creator-email">{{ project.creator?.email || '' }}</p>
+                </div>
+                <div class="scope-icon-container">
+                  <ion-icon [name]="getScopeIcon(project.scope || '')" class="scope-icon"></ion-icon>
+                </div>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content class="project-body">
+              <h2 class="project-title">{{ project.title }}</h2>
+              <p class="project-description">{{ project.description }}</p>
+              
+              @if (project.needs && project.needs.length > 0) {
+                <div class="project-needs">
+                  <h4>{{ 'HOME.WHAT_WE_NEED' | translate }}</h4>
+                  <div class="needs-chips">
+                    @for (need of project.needs; track need) {
+                      <ion-chip color="primary" outline>
+                        {{ need }}
+                      </ion-chip>
+                    }
+                  </div>
+                </div>
+              }
+            </ion-card-content>
+
+            <div class="project-footer">
+              <ion-note class="creation-date">
+                <ion-icon name="time-outline" slot="start"></ion-icon>
+                {{ project.createdAt | date:'medium' }}
+              </ion-note>
+            </div>
+          </ion-card>
+        }
+      </div>
+    }
+  } @else {
+    <div class="ion-padding">
+      <div class="welcome-section">
+        <h1>{{ 'HOME.WELCOME' | translate }}</h1>
+        <p>{{ 'HOME.DESCRIPTION' | translate }}</p>
+        
+        <ion-card>
+          <ion-card-content>
+            <h2>{{ 'HOME.GET_STARTED' | translate }}</h2>
+            <p>{{ 'HOME.ABOUT' | translate }}</p>
+            <ion-button expand="block" routerLink="/login">
+              {{ 'AUTH.LOGIN' | translate }}
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  }
+</ion-content>

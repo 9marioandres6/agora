@@ -1,0 +1,25 @@
+.custom-settings-button {
+  --color: var(--button-color) !important;
+  --color-hover: var(--ion-color-primary) !important;
+  --color-activated: var(--ion-color-primary) !important;
+  --background: transparent !important;
+  --background-hover: var(--button-hover-bg) !important;
+  --background-activated: var(--button-active-bg) !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    --background: var(--button-hover-bg) !important;
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    --background: var(--button-active-bg) !important;
+    transform: scale(0.95);
+  }
+}
+
+.custom-settings-button ion-icon {
+  color: var(--button-color) !important;
+  font-size: 24px;
+}

@@ -1,0 +1,332 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+/* Custom Theme Variables */
+:root {
+  --app-background: #ffffff;
+  --app-text: #000000;
+  --app-card-background: #ffffff;
+  --app-card-border: #e0e0e0;
+  --app-input-background: #f8f9fa;
+  --app-input-border: #ced4da;
+  --app-divider: #e0e0e0;
+  --app-toolbar-background: #ffffff;
+  --app-toolbar-text: #000000;
+  --app-toolbar-border: #e0e0e0;
+}
+
+.dark {
+  --app-background: #1a1a1a;
+  --app-text: #ffffff;
+  --app-card-background: #2d2d2d;
+  --app-card-border: #404040;
+  --app-input-background: #404040;
+  --app-input-border: #555555;
+  --app-divider: #404040;
+  --app-toolbar-background: #2d2d2d;
+  --app-toolbar-text: #ffffff;
+  --app-toolbar-border: #404040;
+  --app-button-hover: #404040;
+  --app-button-active: #555555;
+}
+
+.light-theme {
+  --app-background: #ffffff;
+  --app-text: #000000;
+  --app-card-background: #ffffff;
+  --app-card-border: #e0e0e0;
+  --app-input-background: #f8f9fa;
+  --app-input-border: #ced4da;
+  --app-divider: #e0e0e0;
+  --app-toolbar-background: #ffffff;
+  --app-toolbar-text: #000000;
+  --app-toolbar-border: #e0e0e0;
+  --app-button-hover: #f8f9fa;
+  --app-button-active: #e9ecef;
+}
+
+/* Apply theme variables to body */
+body {
+  background-color: var(--app-background);
+  color: var(--app-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure smooth transitions for all themed elements */
+ion-toolbar,
+ion-header,
+ion-card,
+ion-item {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Theme-aware card styles */
+ion-card {
+  background-color: var(--app-card-background) !important;
+  border: 1px solid var(--app-card-border) !important;
+}
+
+/* Theme-aware input styles */
+ion-item {
+  --background: var(--app-input-background);
+  --border-color: var(--app-input-border);
+}
+
+/* Theme-aware divider styles */
+.divider::before {
+  background: var(--app-divider);
+}
+
+/* Ensure proper theme application */
+.dark {
+  --ion-background-color: var(--app-background);
+  --ion-text-color: var(--app-text);
+  --ion-card-background: var(--app-card-background);
+  --ion-toolbar-background: #2d2d2d;
+  --ion-toolbar-color: #ffffff;
+  --ion-toolbar-border-color: #404040;
+}
+
+.light-theme {
+  --ion-background-color: var(--app-background);
+  --ion-text-color: var(--app-text);
+  --ion-card-background: var(--app-card-background);
+  --ion-toolbar-background: #ffffff;
+  --ion-toolbar-color: #000000;
+  --ion-toolbar-border-color: #e0e0e0;
+}
+
+/* Force light theme button colors */
+.light-theme ion-toolbar ion-button[fill="clear"] {
+  --color: #000000 !important;
+  --color-hover: var(--ion-color-primary) !important;
+  --color-activated: var(--ion-color-primary) !important;
+  --background: transparent !important;
+  --background-hover: #f8f9fa !important;
+  --background-activated: #e9ecef !important;
+}
+
+.light-theme ion-toolbar ion-button[fill="clear"] ion-icon {
+  color: #000000 !important;
+}
+
+/* Additional light theme debugging */
+.light-theme {
+  --app-toolbar-text: #000000 !important;
+  --app-toolbar-background: #ffffff !important;
+}
+
+.light-theme ion-toolbar {
+  --color: #000000 !important;
+  --background: #ffffff !important;
+}
+
+.light-theme ion-toolbar ion-button {
+  --color: #000000 !important;
+}
+
+.light-theme ion-toolbar ion-title {
+  --color: #000000 !important;
+}
+
+/* Force dark theme button colors */
+.dark ion-toolbar ion-button[fill="clear"] {
+  --color: #ffffff !important;
+  --color-hover: var(--ion-color-primary) !important;
+  --color-activated: var(--ion-color-primary) !important;
+  --background: transparent !important;
+  --background-hover: #404040 !important;
+  --background-activated: #555555 !important;
+}
+
+.dark ion-toolbar ion-button[fill="clear"] ion-icon {
+  color: #ffffff !important;
+}
+
+/* Theme-aware toolbar styles */
+ion-toolbar {
+  --background: var(--app-toolbar-background);
+  --color: var(--app-toolbar-text);
+  --border-color: var(--app-toolbar-border);
+}
+
+ion-header {
+  --background: var(--app-toolbar-background);
+}
+
+/* Ensure toolbar buttons adapt to theme */
+ion-toolbar ion-button {
+  --color: var(--app-toolbar-text);
+  --color-hover: var(--ion-color-primary);
+  --color-activated: var(--ion-color-primary);
+  --background: transparent;
+  --background-hover: var(--ion-color-light-tint);
+  --background-activated: var(--ion-color-light-shade);
+}
+
+ion-toolbar ion-title {
+  --color: var(--app-toolbar-text);
+}
+
+/* Settings button specific styling */
+ion-toolbar ion-button[fill="clear"] {
+  --color: var(--app-toolbar-text) !important;
+  --color-hover: var(--ion-color-primary) !important;
+  --color-activated: var(--ion-color-primary) !important;
+  --background: transparent !important;
+  --background-hover: var(--app-button-hover) !important;
+  --background-activated: var(--app-button-active) !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    --background: var(--app-button-hover) !important;
+    transform: scale(1.05);
+  }
+  
+  &:active {
+    --background: var(--app-button-active) !important;
+    transform: scale(0.95);
+  }
+}
+
+/* Ensure settings icon has proper color in both themes */
+ion-toolbar ion-button[fill="clear"] ion-icon {
+  color: var(--app-toolbar-text) !important;
+  font-size: 24px;
+}
+
+/* Force button colors with higher specificity */
+ion-toolbar ion-buttons ion-button[fill="clear"] {
+  --color: var(--app-toolbar-text) !important;
+  --color-hover: var(--ion-color-primary) !important;
+  --color-activated: var(--ion-color-primary) !important;
+  --background: transparent !important;
+  --background-hover: var(--app-button-hover) !important;
+  --background-activated: var(--app-button-active) !important;
+}
+
+/* Additional specificity for the settings button */
+ion-header ion-toolbar ion-buttons ion-button[fill="clear"] {
+  --color: var(--app-toolbar-text) !important;
+  --color-hover: var(--ion-color-primary) !important;
+  --color-activated: var(--ion-color-primary) !important;
+  --background: transparent !important;
+  --background-hover: var(--app-button-hover) !important;
+  --background-activated: var(--app-button-active) !important;
+}
+
+/* Theme toggle button specific styling */
+ion-toolbar app-theme-toggle ion-button {
+  --color: var(--app-toolbar-text);
+  --color-hover: var(--ion-color-primary);
+}
+
+/* Settings modal styling */
+.settings-modal {
+  --background: var(--app-background);
+  --color: var(--app-text);
+  
+  ion-content {
+    --background: var(--app-background);
+  }
+  
+  ion-list {
+    background: var(--app-background);
+    padding: 0;
+  }
+  
+  ion-item {
+    --background: var(--app-card-background);
+    --color: var(--app-text);
+    --border-color: var(--app-divider);
+    margin: 8px 16px;
+    border-radius: 8px;
+  }
+}
+
+/* Language selector popover theme styling */
+.light-theme-popover {
+  --background: #ffffff;
+  --color: #000000;
+  
+  .popover-content {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+  }
+  
+  ion-item {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+    --border-color: #e0e0e0 !important;
+  }
+  
+  ion-radio {
+    --color: var(--ion-color-primary) !important;
+    --color-checked: var(--ion-color-primary) !important;
+  }
+  
+  ion-label {
+    color: #000000 !important;
+  }
+}
+
+.dark-theme-popover {
+  --background: #2d2d2d;
+  --color: #ffffff;
+  
+  .popover-content {
+    --background: #2d2d2d !important;
+    --color: #ffffff !important;
+  }
+  
+  ion-item {
+    --background: #2d2d2d !important;
+    --color: #ffffff !important;
+    --border-color: #404040 !important;
+  }
+  
+  ion-radio {
+    --color: var(--ion-color-primary) !important;
+    --color-checked: var(--ion-color-primary) !important;
+  }
+  
+  ion-label {
+    color: #ffffff !important;
+  }
+}

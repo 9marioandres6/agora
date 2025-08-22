@@ -1,0 +1,33 @@
+.setting-item {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --inner-padding-end: 0;
+  margin: 0;
+  transition: all 0.3s ease;
+  
+  .setting-icon {
+    margin-right: 16px;
+    font-size: 22px;
+    color: var(--ion-color-medium);
+  }
+  
+  ion-label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .language-badge {
+    margin-right: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+
+}
+
+.hidden-select {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
