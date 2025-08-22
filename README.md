@@ -162,6 +162,8 @@ Dynamic theme management (light/dark mode):
 - **Home Component**: Protected page showing user information and provider details
 - **My Profile Component**: User profile management
 - **New Item Component**: Project creation interface
+- **Private Inner Project Component**: Project detail page for creators and editors
+- **Public Inner Project Component**: Project detail page for viewers
 
 #### UI Components
 - **Theme Toggle Component**: Toggle between light/dark themes
@@ -244,6 +246,23 @@ const routes: Routes = [
     canActivate: [publicGuard]
   }
 ];
+```
+
+### Project Navigation
+
+```typescript
+// Navigate to project based on user role
+navigateToProject(project: Project) {
+  const currentUser = this.user();
+  if (currentUser && (project.creator?.uid === currentUser.uid || 
+      (project.collaborators || []).some(c => c.uid === currentUser.uid))) {
+    // User is creator or editor - navigate to private page
+    this.navCtrl.navigateForward(`/project/${project.id}/private`);
+  } else {
+    // User is viewer - navigate to public page
+    this.navCtrl.navigateForward(`/project/${project.id}/public`);
+  }
+}
 ```
 
 ## Authentication Methods

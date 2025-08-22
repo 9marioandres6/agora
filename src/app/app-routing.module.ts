@@ -28,11 +28,20 @@ const routes: Routes = [
     loadComponent: () => import('./register/register.component').then(c => c.RegisterComponent),
     canActivate: [publicGuard]
   },
-  {
+    {
     path: 'no-connection',
     loadComponent: () => import('./no-connection/no-connection.component').then(c => c.NoConnectionComponent)
   },
-
+  {
+    path: 'project/:id/private',
+    loadComponent: () => import('./private-inner-project/private-inner-project.component').then(c => c.PrivateInnerProjectComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'project/:id/public',
+    loadComponent: () => import('./public-inner-project/public-inner-project.component').then(c => c.PublicInnerProjectComponent),
+    canActivate: [authGuard]
+  },
   {
     path: '',
     redirectTo: 'home',

@@ -43,7 +43,7 @@
     } @else {
       <div class="projects-feed">
         @for (project of projects(); track project.id) {
-          <ion-card class="project-card">
+          <ion-card class="project-card" (click)="navigateToProject(project)">
             <ion-card-header class="project-header">
               <div class="creator-info">
                 <ion-avatar class="creator-avatar">

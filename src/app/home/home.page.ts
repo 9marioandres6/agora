@@ -52,6 +52,19 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.navCtrl.navigateForward('/new-item');
   }
 
+  navigateToProject(project: Project) {
+    // Check if user is creator or editor of the project
+    const currentUser = this.user();
+    if (currentUser && (project.creator?.uid === currentUser.uid || 
+        (project.collaborators || []).some(c => c.uid === currentUser.uid))) {
+      // User is creator or editor - navigate to private page
+      this.navCtrl.navigateForward(`/project/${project.id}/private`);
+    } else {
+      // User is viewer - navigate to public page
+      this.navCtrl.navigateForward(`/project/${project.id}/public`);
+    }
+  }
+
   ngOnInit() {
     this.loadProjects();
   }
