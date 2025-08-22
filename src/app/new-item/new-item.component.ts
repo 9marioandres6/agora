@@ -105,7 +105,9 @@ export class NewItemComponent {
         description: this.description.trim(),
         needs: this.needs,
         scope: this.scope,
-        createdBy: currentUser.uid
+        createdBy: currentUser.uid,
+        collaborators: [],
+        collaborationRequests: []
       };
 
       const projectId = await this.projectsService.createProject(projectData);

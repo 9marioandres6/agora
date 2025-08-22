@@ -28,7 +28,9 @@ export class HomePage implements OnInit, ViewWillEnter {
   projects = signal<Project[]>([]);
   isLoading = signal(false);
   expandedComments = signal<string | null>(null);
+  expandedCollaborators = signal<string | null>(null);
   newCommentText = '';
+  collaborationMessage = '';
 
   async presentSettingsModal() {
     const modal = await this.modalCtrl.create({
@@ -188,6 +190,63 @@ export class HomePage implements OnInit, ViewWillEnter {
     if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
       keyboardEvent.preventDefault();
       this.addComment(projectId);
+    }
+  }
+
+  toggleCollaborators(projectId: string) {
+    if (this.expandedCollaborators() === projectId) {
+      this.expandedCollaborators.set(null);
+    } else {
+      this.expandedCollaborators.set(projectId);
+    }
+  }
+
+  isProjectCreator(project: Project): boolean {
+    const currentUser = this.user();
+    if (!currentUser?.uid) return false;
+    return project.createdBy === currentUser.uid;
+  }
+
+  hasCollaborationRequest(project: Project): boolean {
+    const currentUser = this.user();
+    if (!currentUser?.uid) return false;
+    return project.collaborationRequests?.some(req => req.uid === currentUser.uid) || false;
+  }
+
+  async requestCollaboration(projectId: string) {
+    try {
+      await this.projectsService.requestCollaboration(projectId, this.collaborationMessage.trim());
+      this.collaborationMessage = '';
+      await this.loadProjects();
+    } catch (error) {
+      console.error('Error requesting collaboration:', error);
+    }
+  }
+
+  async acceptCollaboration(projectId: string, requestUid: string) {
+    try {
+      await this.projectsService.acceptCollaboration(projectId, requestUid);
+      await this.loadProjects();
+    } catch (error) {
+      console.error('Error accepting collaboration:', error);
+    }
+  }
+
+  async rejectCollaboration(projectId: string, requestUid: string) {
+    try {
+      await this.projectsService.rejectCollaboration(projectId, requestUid);
+      await this.loadProjects();
+    } catch (error) {
+      console.error('Error rejecting collaboration:', error);
+    }
+  }
+
+  async removeCollaborator(projectId: string, collaboratorUid: string) {
+    try {
+      await this.projectsService.removeCollaborator(projectId, collaboratorUid);
+      await this.loadProjects();
+    } catch (error) {
+      console.error('Error removing collaborator:', error);
     }
   }
 

@@ -18,12 +18,33 @@ export interface Project {
   supports: string[];
   opposes: string[];
   comments: Comment[];
+  collaborators: Collaborator[];
+  collaborationRequests: CollaborationRequest[];
   creator?: {
     uid: string;
     displayName?: string;
     email?: string;
     photoURL?: string;
   };
+}
+
+export interface Collaborator {
+  uid: string;
+  displayName: string;
+  email: string;
+  photoURL?: string;
+  joinedAt: string;
+  role: 'collaborator' | 'admin';
+}
+
+export interface CollaborationRequest {
+  uid: string;
+  displayName: string;
+  email: string;
+  photoURL?: string;
+  requestedAt: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  message?: string;
 }
 
 export interface Comment {
@@ -60,6 +81,8 @@ export class ProjectsService {
         supports: [],
         opposes: [],
         comments: [],
+        collaborators: [],
+        collaborationRequests: [],
         participants: [projectData.createdBy],
         tags: this.generateTags(projectData.title, projectData.description, projectData.needs),
         creator: {
@@ -119,6 +142,12 @@ export class ProjectsService {
         if (project.comments === undefined) {
           project.comments = [];
         }
+        if (project.collaborators === undefined) {
+          project.collaborators = [];
+        }
+        if (project.collaborationRequests === undefined) {
+          project.collaborationRequests = [];
+        }
         return project;
       });
     } catch (error) {
@@ -147,6 +176,8 @@ export class ProjectsService {
         if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
         if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
         if (project.comments === undefined) project.comments = [];
+        if (project.collaborators === undefined) project.collaborators = [];
+        if (project.collaborationRequests === undefined) project.collaborationRequests = [];
         return project;
       });
     } catch (error) {
@@ -175,6 +206,8 @@ export class ProjectsService {
         if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
         if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
         if (project.comments === undefined) project.comments = [];
+        if (project.collaborators === undefined) project.collaborators = [];
+        if (project.collaborationRequests === undefined) project.collaborationRequests = [];
         return project;
       });
     } catch (error) {
@@ -395,6 +428,125 @@ export class ProjectsService {
       });
     } catch (error) {
       console.error('Error adding comment:', error);
+      throw error;
+    }
+  }
+
+  async requestCollaboration(projectId: string, message?: string): Promise<void> {
+    try {
+      const currentUser = this.authService.user();
+      if (!currentUser?.uid) {
+        throw new Error('User not authenticated');
+      }
+
+      const request: CollaborationRequest = {
+        uid: currentUser.uid,
+        displayName: currentUser.displayName || 'Anonymous',
+        email: currentUser.email || '',
+        photoURL: currentUser.photoURL || '',
+        requestedAt: new Date().toISOString(),
+        status: 'pending',
+        message: message || ''
+      };
+
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      await updateDoc(projectRef, {
+        collaborationRequests: arrayUnion(request)
+      });
+    } catch (error) {
+      console.error('Error requesting collaboration:', error);
+      throw error;
+    }
+  }
+
+  async acceptCollaboration(projectId: string, requestUid: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // Get the project to find the request
+      const projectDoc = await getDocs(query(this.projectsCollection, where('__name__', '==', projectId)));
+      if (projectDoc.empty) {
+        throw new Error('Project not found');
+      }
+      
+      const project = projectDoc.docs[0].data() as Project;
+      const request = project.collaborationRequests?.find(r => r.uid === requestUid);
+      
+      if (!request) {
+        throw new Error('Collaboration request not found');
+      }
+
+      // Create collaborator from request
+      const collaborator: Collaborator = {
+        uid: request.uid,
+        displayName: request.displayName,
+        email: request.email,
+        photoURL: request.photoURL,
+        joinedAt: new Date().toISOString(),
+        role: 'collaborator'
+      };
+
+      // Update the project
+      await updateDoc(projectRef, {
+        collaborators: arrayUnion(collaborator),
+        collaborationRequests: arrayRemove(request)
+      });
+    } catch (error) {
+      console.error('Error accepting collaboration:', error);
+      throw error;
+    }
+  }
+
+  async rejectCollaboration(projectId: string, requestUid: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // Get the project to find the request
+      const projectDoc = await getDocs(query(this.projectsCollection, where('__name__', '==', projectId)));
+      if (projectDoc.empty) {
+        throw new Error('Project not found');
+      }
+      
+      const project = projectDoc.docs[0].data() as Project;
+      const request = project.collaborationRequests?.find(r => r.uid === requestUid);
+      
+      if (!request) {
+        throw new Error('Collaboration request not found');
+      }
+
+      // Remove the request
+      await updateDoc(projectRef, {
+        collaborationRequests: arrayRemove(request)
+      });
+    } catch (error) {
+      console.error('Error rejecting collaboration:', error);
+      throw error;
+    }
+  }
+
+  async removeCollaborator(projectId: string, collaboratorUid: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // Get the project to find the collaborator
+      const projectDoc = await getDocs(query(this.projectsCollection, where('__name__', '==', projectId)));
+      if (projectDoc.empty) {
+        throw new Error('Project not found');
+      }
+      
+      const project = projectDoc.docs[0].data() as Project;
+      const collaborator = project.collaborators?.find(c => c.uid === collaboratorUid);
+      
+      if (!collaborator) {
+        throw new Error('Collaborator not found');
+      }
+
+      // Remove the collaborator
+      await updateDoc(projectRef, {
+        collaborators: arrayRemove(collaborator)
+      });
+    } catch (error) {
+      console.error('Error removing collaborator:', error);
       throw error;
     }
   }
