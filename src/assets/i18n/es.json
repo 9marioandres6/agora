@@ -167,7 +167,7 @@
     "LAST_CHECK": "Última Verificación"
   },
   "CHAPTERS": {
-    "TITLE": "Secciones del Proyecto",
+    "TITLE": "Secciones",
     "ADD_CHAPTER": "Agregar Sección",
     "NO_CHAPTERS": "Aún no hay secciones",
     "NO_CHAPTERS_DESC": "Comienza a construir tu proyecto agregando la primera sección",
@@ -194,9 +194,9 @@
   },
   "PROJECT": {
     "LOADING": "Cargando proyecto...",
-    "MEMBERS": "Miembros del Proyecto",
+    "MEMBERS": "Miembros",
     "PENDING_COLLABORATORS": "Colaboradores Pendientes",
-    "INFORMATION": "Información del Proyecto",
+    "INFORMATION": "Información",
     "TITLE_LABEL": "Título:",
     "SCOPE_LABEL": "Alcance:",
     "DESCRIPTION_LABEL": "Descripción:",

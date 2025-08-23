@@ -167,7 +167,7 @@
     "LAST_CHECK": "Last Check"
   },
   "CHAPTERS": {
-    "TITLE": "Project Sections",
+    "TITLE": "Sections",
     "ADD_CHAPTER": "Add Section",
     "NO_CHAPTERS": "No sections yet",
     "NO_CHAPTERS_DESC": "Start building your project by adding the first section",
@@ -194,9 +194,9 @@
   },
   "PROJECT": {
     "LOADING": "Loading project...",
-    "MEMBERS": "Project Members",
+    "MEMBERS": "Members",
     "PENDING_COLLABORATORS": "Pending Collaborators",
-    "INFORMATION": "Project Information",
+    "INFORMATION": "Information",
     "TITLE_LABEL": "Title:",
     "SCOPE_LABEL": "Scope:",
     "DESCRIPTION_LABEL": "Description:",

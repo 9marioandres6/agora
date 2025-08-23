@@ -107,7 +107,9 @@
   }
 }
 
-/* Project Information */
+
+
+
 .project-info {
   margin-bottom: 1rem;
 }
@@ -128,8 +130,6 @@
   .info-content {
     flex: 1;
   }
-
-
 }
 
 .needs-editor {
@@ -143,8 +143,6 @@
       flex: 1;
     }
   }
-
-
 }
 
 .needs-display {
@@ -407,6 +405,8 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 0.75rem;
   }
+
+
 
   .info-row {
     flex-direction: column;

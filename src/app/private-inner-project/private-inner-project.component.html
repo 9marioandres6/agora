@@ -15,7 +15,7 @@
     </div>
   } @else if (project()) {
     <div class="container">
-      <!-- Project Members Section -->
+      <!-- Members Section -->
       <ion-card class="members-section">
         <ion-card-header>
           <ion-card-title>{{ 'PROJECT.MEMBERS' | translate }}</ion-card-title>
@@ -96,10 +96,11 @@
         </ion-card>
       }
 
-      <!-- Project Information Section -->
+
+
+            <!-- Information Section -->
       <ion-card class="project-info">
         <ion-card-header>
-          <ion-card-title>{{ 'PROJECT.INFORMATION' | translate }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <div class="info-row">
@@ -160,13 +161,13 @@
                 <div class="needs-editor">
                   @for (need of editingProject().needs || project()?.needs || []; track $index) {
                     <div class="need-item">
-                                        <ion-input 
-                    [ngModel]="need"
-                    (ngModelChange)="updateProjectNeed($index, $event)"
-                    placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"
-                    (ionBlur)="saveProjectField('needs')"
-                    (keyup.enter)="saveProjectField('needs')">
-                  </ion-input>
+                      <ion-input 
+                        [ngModel]="need"
+                        (ngModelChange)="updateProjectNeed($index, $event)"
+                        placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"
+                        (ionBlur)="saveProjectField('needs')"
+                        (keyup.enter)="saveProjectField('needs')">
+                      </ion-input>
                       <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
                         <ion-icon name="trash-outline"></ion-icon>
                       </ion-button>
@@ -189,7 +190,7 @@
         </ion-card-content>
       </ion-card>
 
-      <!-- Project Sections Section -->
+      <!-- Sections Section -->
       <ion-card class="chapters-section">
         <ion-card-header>
           <div class="section-header">
