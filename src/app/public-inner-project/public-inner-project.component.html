@@ -4,6 +4,16 @@
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ 'PUBLIC.PUBLIC_PROJECT' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        fill="clear" 
+        size="small" 
+        color="primary"
+        (click)="showCollaborationModal()"
+        class="collaborate-button">
+        {{ 'HOME.COLLABORATE' | translate }}
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

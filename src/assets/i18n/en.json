@@ -83,7 +83,10 @@
         "COLLABORATION_MESSAGE_PLACEHOLDER": "Tell the creator why you want to collaborate...",
         "SEND_REQUEST": "Send Request",
         "NO_COLLABORATORS": "No collaborators yet",
-        "NO_REQUESTS": "No pending requests"
+        "NO_REQUESTS": "No pending requests",
+        "ALREADY_COLLABORATING": "You are already collaborating or have a pending request",
+        "COLLABORATION_REQUEST_SENT": "Collaboration request sent successfully",
+        "ERROR_SENDING_COLLABORATION_REQUEST": "Error sending collaboration request"
   },
   "SETTINGS": {
     "GENERAL": "General",

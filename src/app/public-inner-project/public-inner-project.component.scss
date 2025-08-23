@@ -2,6 +2,31 @@ ion-content {
   --background: var(--app-background); 
 }
 
+ion-header {
+  ion-toolbar {
+    .collaborate-button {
+      --color: var(--app-text);
+      --color-hover: var(--ion-color-primary);
+      --color-activated: var(--ion-color-primary);
+      --background: transparent;
+      --background-hover: var(--app-button-hover);
+      --background-activated: var(--app-button-active);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        --background: var(--app-button-hover);
+        transform: scale(1.05);
+      }
+      
+      &:active {
+        --background: var(--app-button-active);
+        transform: scale(0.95);
+      }
+    }
+  }
+}
+
 .project-container {
   padding: 16px;
   max-width: 800px;

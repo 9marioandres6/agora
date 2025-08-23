@@ -83,7 +83,10 @@
         "COLLABORATION_MESSAGE_PLACEHOLDER": "Dile al creador por qué quieres colaborar...",
         "SEND_REQUEST": "Enviar Solicitud",
         "NO_COLLABORATORS": "Aún no hay colaboradores",
-        "NO_REQUESTS": "No hay solicitudes pendientes"
+        "NO_REQUESTS": "No hay solicitudes pendientes",
+        "ALREADY_COLLABORATING": "Ya estás colaborando o tienes una solicitud pendiente",
+        "COLLABORATION_REQUEST_SENT": "Solicitud de colaboración enviada exitosamente",
+        "ERROR_SENDING_COLLABORATION_REQUEST": "Error al enviar solicitud de colaboración"
   },
   "SETTINGS": {
     "GENERAL": "General",
