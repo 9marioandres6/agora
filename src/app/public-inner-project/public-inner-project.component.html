@@ -3,15 +3,15 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Public Project</ion-title>
+    <ion-title>{{ 'PUBLIC.PUBLIC_PROJECT' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <div class="container">
-    <h1>Public Inner Project Page</h1>
-    <p>Project ID: {{ projectId }}</p>
-    <p>This page is for project viewers.</p>
-    <p>Content will be added in the next iteration.</p>
+    <h1>{{ 'PUBLIC.PUBLIC_INNER_PROJECT_PAGE' | translate }}</h1>
+    <p>{{ 'PUBLIC.PROJECT_ID' | translate }} {{ projectId }}</p>
+    <p>{{ 'PUBLIC.VIEWERS_MESSAGE' | translate }}</p>
+    <p>{{ 'PUBLIC.NEXT_ITERATION' | translate }}</p>
   </div>
 </ion-content>

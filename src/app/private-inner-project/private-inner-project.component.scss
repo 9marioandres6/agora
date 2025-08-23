@@ -29,7 +29,8 @@
 }
 
 .error-container p {
-  color: var(--ion-color-medium);
+  color: var(--app-text);
+  opacity: 0.7;
 }
 
 /* Members Section */
@@ -42,7 +43,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--ion-color-light);
+  border-bottom: 1px solid var(--app-divider);
 
   &:last-child {
     border-bottom: none;
@@ -53,7 +54,7 @@
 
     h4 {
       margin: 0 0 0.5rem 0;
-      color: var(--ion-color-dark);
+      color: var(--app-text);
     }
   }
 }
@@ -68,7 +69,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
-  border-bottom: 1px solid var(--ion-color-light);
+  border-bottom: 1px solid var(--app-divider);
 
   &:last-child {
     border-bottom: none;
@@ -83,12 +84,13 @@
     .request-details {
       h4 {
         margin: 0 0 0.25rem 0;
-        color: var(--ion-color-dark);
+        color: var(--app-text);
       }
 
       p {
         margin: 0;
-        color: var(--ion-color-medium);
+        color: var(--app-text);
+        opacity: 0.7;
         font-size: 0.9rem;
       }
 
@@ -117,7 +119,7 @@
 
   label {
     font-weight: 600;
-    color: var(--ion-color-dark);
+    color: var(--app-text);
     min-width: 120px;
     margin-right: 1rem;
     margin-top: 0.5rem;
@@ -162,7 +164,8 @@
 .empty-sections {
   text-align: center;
   padding: 2rem;
-  color: var(--ion-color-medium);
+  color: var(--app-text);
+  opacity: 0.7;
   
   ion-icon {
     margin-bottom: 1rem;
@@ -170,7 +173,7 @@
   
   h3 {
     margin: 0 0 0.5rem 0;
-    color: var(--ion-color-dark);
+    color: var(--app-text);
   }
   
   p {
@@ -198,17 +201,28 @@
   margin: 0;
   
   &:hover {
-    --background: var(--ion-color-light);
+    --background: var(--app-input-background);
   }
 }
 
 
 .chapter-item {
-  border: 1px solid var(--ion-color-light);
+  border: 1px solid var(--app-divider);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  background: var(--ion-color-light-tint);
+  background: var(--app-card-background);
+  transition: all 0.2s ease;
+
+  &.clickable {
+    cursor: pointer;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-color: var(--ion-color-primary);
+    }
+  }
 
   .chapter-header {
     display: flex;
@@ -224,7 +238,8 @@
       }
 
       .chapter-subtitle {
-        color: var(--ion-color-dark);
+        color: var(--app-text);
+        opacity: 0.8;
         font-size: 0.9rem;
         font-weight: 500;
       }
@@ -240,14 +255,14 @@
     margin-bottom: 1.5rem;
 
     .chapter-title-display {
-      color: var(--ion-color-dark);
+      color: var(--app-text);
       margin: 0 0 0.75rem 0;
       font-size: 1.1rem;
       font-weight: 600;
     }
 
     .chapter-description {
-      color: var(--ion-color-dark);
+      color: var(--app-text);
       line-height: 1.6;
       margin: 0;
     }
@@ -277,7 +292,7 @@
 
       h4 {
         margin: 0;
-        color: var(--ion-color-dark);
+        color: var(--app-text);
         font-size: 1rem;
       }
     }
@@ -285,7 +300,8 @@
     .empty-media {
       text-align: center;
       padding: 2rem;
-      color: var(--ion-color-medium);
+      color: var(--app-text);
+      opacity: 0.7;
 
       p {
         margin: 0.5rem 0 0 0;
@@ -294,34 +310,48 @@
 
     .media-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 1rem;
 
       .media-item {
-        border: 1px solid var(--ion-color-light);
+        border: 1px solid var(--app-divider);
         border-radius: 8px;
         overflow: hidden;
-        background: white;
+        background: var(--app-card-background);
 
         .media-preview {
           position: relative;
-          cursor: pointer;
+          cursor: default;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 200px;
+          background: var(--app-media-background);
+          overflow: hidden;
+
+          &.clickable {
+            cursor: pointer;
+            
+            &:hover {
+              .media-image,
+              .media-video {
+                transform: scale(1.05);
+              }
+            }
+          }
 
           .media-image {
             width: 100%;
-            max-height: 300px;
-            object-fit: contain;
+            height: 100%;
+            object-fit: cover;
             transition: transform 0.2s ease;
-
-            &:hover {
-              transform: scale(1.05);
-            }
+            display: block;
           }
 
           .video-thumbnail {
             position: relative;
             width: 100%;
-            max-height: 300px;
+            height: 100%;
             overflow: hidden;
 
             .media-video {
@@ -341,38 +371,22 @@
           }
 
           .delete-media-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            --background: rgba(255, 255, 255, 0.9);
+            --background: transparent;
             --color: var(--ion-color-danger);
             --border-radius: 50%;
             --padding-start: 0;
             --padding-end: 0;
             --width: 32px;
             --height: 32px;
-            z-index: 10;
             margin: 0;
           }
         }
 
         .media-info {
-          padding: 0.75rem;
-
-          .media-caption {
-            margin: 0 0 0.25rem 0;
-            color: var(--ion-color-dark);
-            font-size: 0.9rem;
-            font-weight: 500;
-          }
-
-          .media-type {
-            margin: 0;
-            color: var(--ion-color-medium);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-          }
+          padding: 0.5rem;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
         }
       }
     }
@@ -383,6 +397,11 @@
 @media (max-width: 768px) {
   .container {
     padding: 0.5rem;
+  }
+
+  .media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
   }
 
   .info-row {
@@ -406,5 +425,18 @@
 
   .edit-actions {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .media-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .media-item {
+    .media-preview {
+      min-height: 150px;
+    }
   }
 }

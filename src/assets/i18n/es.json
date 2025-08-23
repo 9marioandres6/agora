@@ -184,6 +184,37 @@
     "MEDIA_URL": "URL de Multimedia",
     "MEDIA_URL_PLACEHOLDER": "Ingresa URL de multimedia",
     "MEDIA_CAPTION": "Descripción de Multimedia",
-    "MEDIA_CAPTION_PLACEHOLDER": "Ingresa descripción de multimedia"
+    "MEDIA_CAPTION_PLACEHOLDER": "Ingresa descripción de multimedia",
+    "REPLACE_MEDIA": "Reemplazar Multimedia"
+  },
+  "PROJECT": {
+    "LOADING": "Cargando proyecto...",
+    "MEMBERS": "Miembros del Proyecto",
+    "PENDING_COLLABORATORS": "Colaboradores Pendientes",
+    "INFORMATION": "Información del Proyecto",
+    "TITLE_LABEL": "Título:",
+    "SCOPE_LABEL": "Alcance:",
+    "DESCRIPTION_LABEL": "Descripción:",
+    "NEEDS_LABEL": "Qué Necesitamos:",
+    "TITLE_PLACEHOLDER": "Título del proyecto",
+    "DESCRIPTION_PLACEHOLDER": "Descripción del proyecto",
+    "NEED_PLACEHOLDER": "Necesidad o requisito",
+    "ADD_NEED": "Agregar Necesidad",
+    "SAVE_CHANGES": "Guardar Cambios",
+    "PROJECT_NOT_FOUND": "Proyecto No Encontrado",
+    "PROJECT_NOT_FOUND_MESSAGE": "El proyecto que buscas no existe o no tienes acceso a él.",
+    "NEW_PROJECT": "Nuevo Proyecto",
+    "PROJECT_DESCRIPTION_PLACEHOLDER": "La descripción del proyecto va aquí.",
+    "OWNER": "Propietario",
+    "COLLABORATOR": "Colaborador",
+    "ACCEPT": "Aceptar",
+    "REJECT": "Rechazar"
+  },
+  "PUBLIC": {
+    "PUBLIC_PROJECT": "Proyecto Público",
+    "PUBLIC_INNER_PROJECT_PAGE": "Página de Proyecto Público Interno",
+    "PROJECT_ID": "ID del Proyecto:",
+    "VIEWERS_MESSAGE": "Esta página es para los espectadores del proyecto.",
+    "NEXT_ITERATION": "El contenido se agregará en la próxima iteración."
   }
 }

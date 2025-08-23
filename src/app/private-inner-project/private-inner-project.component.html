@@ -18,14 +18,14 @@
   @if (isLoading()) {
     <div class="loading-container">
       <ion-spinner name="crescent"></ion-spinner>
-      <p>Loading project...</p>
+      <p>{{ 'PROJECT.LOADING' | translate }}</p>
     </div>
   } @else if (project()) {
     <div class="container">
       <!-- Project Members Section -->
       <ion-card class="members-section">
         <ion-card-header>
-          <ion-card-title>Project Members</ion-card-title>
+          <ion-card-title>{{ 'PROJECT.MEMBERS' | translate }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <!-- Owner -->
@@ -39,7 +39,7 @@
             </ion-avatar>
             <div class="member-info">
               <h4>{{ project()?.creator?.displayName || 'Anonymous' }}</h4>
-              <ion-chip color="primary">Owner</ion-chip>
+              <ion-chip color="primary">{{ 'PROJECT.OWNER' | translate }}</ion-chip>
             </div>
           </div>
 
@@ -55,7 +55,7 @@
               </ion-avatar>
               <div class="member-info">
                 <h4>{{ collaborator.displayName || 'Anonymous' }}</h4>
-                <ion-chip color="success">Collaborator</ion-chip>
+                <ion-chip color="success">{{ 'PROJECT.COLLABORATOR' | translate }}</ion-chip>
               </div>
             </div>
           }
@@ -66,7 +66,7 @@
       @if (isOwner() && (pendingCollaborators() || []).length > 0) {
         <ion-card class="pending-section">
           <ion-card-header>
-            <ion-card-title>Pending Collaborators</ion-card-title>
+            <ion-card-title>{{ 'PROJECT.PENDING_COLLABORATORS' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
             @for (request of pendingCollaborators(); track request.uid) {
@@ -90,11 +90,11 @@
                 <div class="request-actions">
                   <ion-button size="small" color="success" (click)="acceptCollaborator(request)">
                     <ion-icon name="checkmark" slot="start"></ion-icon>
-                    Accept
+                    {{ 'PROJECT.ACCEPT' | translate }}
                   </ion-button>
                   <ion-button size="small" color="danger" fill="outline" (click)="rejectCollaborator(request)">
                     <ion-icon name="close" slot="start"></ion-icon>
-                    Reject
+                    {{ 'PROJECT.REJECT' | translate }}
                   </ion-button>
                 </div>
               </div>
@@ -106,14 +106,14 @@
       <!-- Project Information Section -->
       <ion-card class="project-info">
         <ion-card-header>
-          <ion-card-title>Project Information</ion-card-title>
+          <ion-card-title>{{ 'PROJECT.INFORMATION' | translate }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <div class="info-row">
-            <label>Title:</label>
+            <label>{{ 'PROJECT.TITLE_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isEditingProject()) {
-                <ion-input [(ngModel)]="editingProject().title" placeholder="Project title"></ion-input>
+                <ion-input [(ngModel)]="editingProject().title" placeholder="{{ 'PROJECT.TITLE_PLACEHOLDER' | translate }}"></ion-input>
               } @else {
                 <span>{{ project()?.title }}</span>
               }
@@ -121,7 +121,7 @@
           </div>
 
           <div class="info-row">
-            <label>Scope:</label>
+            <label>{{ 'PROJECT.SCOPE_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isEditingProject()) {
                 <ion-select [(ngModel)]="editingProject().scope" placeholder="Select scope">
@@ -138,10 +138,10 @@
           </div>
 
           <div class="info-row">
-            <label>Description:</label>
+            <label>{{ 'PROJECT.DESCRIPTION_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isEditingProject()) {
-                <ion-textarea [(ngModel)]="editingProject().description" placeholder="Project description" rows="3"></ion-textarea>
+                <ion-textarea [(ngModel)]="editingProject().description" placeholder="{{ 'PROJECT.DESCRIPTION_PLACEHOLDER' | translate }}" rows="3"></ion-textarea>
               } @else {
                 <span>{{ project()?.description }}</span>
               }
@@ -149,13 +149,13 @@
           </div>
 
           <div class="info-row">
-            <label>What We Need:</label>
+            <label>{{ 'PROJECT.NEEDS_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isEditingProject()) {
                 <div class="needs-editor">
                   @for (need of editingProject().needs || []; track $index) {
                     <div class="need-item">
-                      <ion-input [(ngModel)]="editingProject().needs![$index]" placeholder="Need or requirement"></ion-input>
+                      <ion-input [(ngModel)]="editingProject().needs![$index]" placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"></ion-input>
                       <ion-button fill="clear" color="danger" size="small" (click)="removeNeed($index)">
                         <ion-icon name="trash-outline"></ion-icon>
                       </ion-button>
@@ -163,7 +163,7 @@
                   }
                   <ion-button fill="outline" size="small" (click)="addNeed()">
                     <ion-icon name="add" slot="start"></ion-icon>
-                    Add Need
+                    {{ 'PROJECT.ADD_NEED' | translate }}
                   </ion-button>
                 </div>
               } @else {
@@ -180,11 +180,11 @@
             <div class="edit-actions">
               <ion-button color="success" (click)="saveProject()">
                 <ion-icon name="checkmark" slot="start"></ion-icon>
-                Save Changes
+                {{ 'PROJECT.SAVE_CHANGES' | translate }}
               </ion-button>
               <ion-button color="medium" fill="outline" (click)="cancelEdit()">
                 <ion-icon name="close" slot="start"></ion-icon>
-                Cancel
+                {{ 'COMMON.CANCEL' | translate }}
               </ion-button>
             </div>
           }
@@ -203,29 +203,24 @@
         </ion-card-header>
         <ion-card-content>
                   @for (chapter of project()?.chapters || []; track chapter.id; let i = $index) {
-              <div class="chapter-item">
+              <div class="chapter-item" [class.clickable]="!isEditingChapter(chapter.id)" (click)="!isEditingChapter(chapter.id) ? editChapter(chapter) : null">
                 <div class="chapter-header">
                   <div class="chapter-actions">
                     @if (isEditingChapter(chapter.id)) {
-                      <ion-button fill="clear" size="small" color="success" (click)="saveChapter()">
+                      <ion-button fill="clear" size="small" color="success" (click)="saveChapter(); $event.stopPropagation()">
                         <ion-icon name="checkmark"></ion-icon>
+                        Done
                       </ion-button>
-                      <ion-button fill="clear" size="small" color="medium" (click)="cancelChapterEdit()">
-                        <ion-icon name="close"></ion-icon>
-                      </ion-button>
-                    } @else {
-                      <ion-button fill="clear" size="small" (click)="editChapter(chapter)">
-                        <ion-icon name="create-outline"></ion-icon>
-                      </ion-button>
-                      <ion-button fill="clear" size="small" color="danger" (click)="deleteSection(chapter)">
+                      <ion-button fill="clear" size="small" color="danger" (click)="showDeleteConfirmation(chapter); $event.stopPropagation()">
                         <ion-icon name="trash-outline"></ion-icon>
+                        Delete
                       </ion-button>
                     }
                   </div>
                 </div>
                 
                 @if (isEditingChapter(chapter.id)) {
-                  <div class="chapter-editor">
+                  <div class="chapter-editor" (click)="$event.stopPropagation()">
                     <ion-item>
                       <ion-label position="stacked">{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}</ion-label>
                       <ion-input [(ngModel)]="editingChapter().title" placeholder="{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}"></ion-input>
@@ -246,11 +241,11 @@
 
                 <!-- Section Media -->
                 <div class="chapter-media">
-                  @if (isEditingChapter(chapter.id)) {
-                    <div class="media-actions">
+                  @if (isEditingChapter(chapter.id) && (!chapter.media || chapter.media.length === 0)) {
+                    <div class="media-actions" (click)="$event.stopPropagation()">
                       <ion-button fill="outline" size="small" (click)="showAddMediaModal(chapter)">
                         <ion-icon name="add" slot="start"></ion-icon>
-                        {{ (chapter.media || []).length > 0 ? 'Replace Media' : 'Add Media' }}
+                        {{ 'CHAPTERS.ADD_MEDIA' | translate }}
                       </ion-button>
                     </div>
                   }
@@ -259,7 +254,7 @@
                     <div class="media-grid">
                       @for (media of chapter.media || []; track media.id) {
                         <div class="media-item">
-                          <div class="media-preview" (click)="replaceMedia(chapter)">
+                          <div class="media-preview" [class.clickable]="isEditingChapter(chapter.id)" (click)="isEditingChapter(chapter.id) ? replaceMedia(chapter) : null">
                             @if (media.type === 'image') {
                               <img [src]="media.url" [alt]="media.caption" class="media-image">
                             } @else if (media.type === 'video') {
@@ -270,13 +265,13 @@
                                 </div>
                               </div>
                             }
-                            <ion-button fill="clear" size="small" color="danger" class="delete-media-btn" (click)="deleteMedia(chapter, media)">
-                              <ion-icon name="close-circle"></ion-icon>
-                            </ion-button>
                           </div>
                           <div class="media-info">
-                            <p class="media-caption">{{ media.caption }}</p>
-                            <p class="media-type">{{ media.type === 'image' ? ('CHAPTERS.IMAGE' | translate) : ('CHAPTERS.VIDEO' | translate) }}</p>
+                            @if (isEditingChapter(chapter.id)) {
+                              <ion-button fill="clear" size="small" color="danger" class="delete-media-btn" (click)="deleteMedia(chapter, media)">
+                                <ion-icon name="trash-outline"></ion-icon>
+                              </ion-button>
+                            }
                           </div>
                         </div>
                       }
@@ -291,8 +286,8 @@
   } @else {
     <div class="error-container">
       <ion-icon name="alert-circle-outline" size="large" color="danger"></ion-icon>
-      <h2>Project Not Found</h2>
-      <p>The project you're looking for doesn't exist or you don't have access to it.</p>
+      <h2>{{ 'PROJECT.PROJECT_NOT_FOUND' | translate }}</h2>
+      <p>{{ 'PROJECT.PROJECT_NOT_FOUND_MESSAGE' | translate }}</p>
     </div>
   }
 </ion-content>

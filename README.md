@@ -396,6 +396,17 @@ ion-item {
 - **Keep implementations minimal and focused on exactly what was asked for**
 - **If you think something might be useful, ask the user first before implementing**
 
+### Centralized Features Integration
+- **ALWAYS use centralized translation system** for all user-facing text
+  - Use `{{ 'KEY.NAME' | translate }}` syntax for static text
+  - Add new translation keys to `TranslationService.loadTranslations()` with both English and Spanish
+  - Never hardcode text strings in components
+- **ALWAYS support centralized light/dark mode theming**
+  - Use CSS custom properties from `ThemeService` for all colors and backgrounds
+  - Reference `--app-background`, `--app-text`, `--app-card-background`, etc.
+  - Never use hardcoded colors that don't adapt to theme changes
+  - Test both light and dark themes for all new components
+
 ### Component Structure
 - **Separate HTML files** for templates
 - **SCSS files** for component-specific styles

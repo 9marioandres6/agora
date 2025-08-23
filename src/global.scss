@@ -48,6 +48,8 @@
   --app-toolbar-background: #ffffff;
   --app-toolbar-text: #000000;
   --app-toolbar-border: #e0e0e0;
+  --app-media-background: #f8f9fa;
+  --app-text-secondary: #6c757d;
 }
 
 .dark {
@@ -63,6 +65,8 @@
   --app-toolbar-border: #404040;
   --app-button-hover: #404040;
   --app-button-active: #555555;
+  --app-media-background: #404040;
+  --app-text-secondary: #adb5bd;
 }
 
 .light-theme {
@@ -78,6 +82,8 @@
   --app-toolbar-border: #e0e0e0;
   --app-button-hover: #f8f9fa;
   --app-button-active: #e9ecef;
+  --app-media-background: #f8f9fa;
+  --app-text-secondary: #6c757d;
 }
 
 /* Apply theme variables to body */
@@ -91,7 +97,20 @@ body {
 ion-toolbar,
 ion-header,
 ion-card,
-ion-item {
+ion-item,
+.media-item,
+.chapter-item,
+.project-footer,
+.media-preview,
+.media-info,
+.chapter-content,
+.chapter-editor,
+.member-item,
+.pending-item,
+.info-row,
+.needs-editor,
+.empty-sections,
+.empty-media {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 

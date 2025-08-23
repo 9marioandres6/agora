@@ -190,12 +190,12 @@ app-language-selector ion-item {
 
 /* Ensure proper spacing in light theme */
 .light-theme app-language-selector ion-item {
-  border-top-color: #e0e0e0;
+  border-top-color: var(--app-divider);
 }
 
 /* Ensure proper spacing in dark theme */
 .dark app-language-selector ion-item {
-  border-top-color: #404040;
+  border-top-color: var(--app-divider);
 }
 
 /* Responsive */

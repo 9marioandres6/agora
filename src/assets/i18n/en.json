@@ -184,6 +184,37 @@
     "MEDIA_URL": "Media URL",
     "MEDIA_URL_PLACEHOLDER": "Enter media URL",
     "MEDIA_CAPTION": "Media Caption",
-    "MEDIA_CAPTION_PLACEHOLDER": "Enter media caption"
+    "MEDIA_CAPTION_PLACEHOLDER": "Enter media caption",
+    "REPLACE_MEDIA": "Replace Media"
+  },
+  "PROJECT": {
+    "LOADING": "Loading project...",
+    "MEMBERS": "Project Members",
+    "PENDING_COLLABORATORS": "Pending Collaborators",
+    "INFORMATION": "Project Information",
+    "TITLE_LABEL": "Title:",
+    "SCOPE_LABEL": "Scope:",
+    "DESCRIPTION_LABEL": "Description:",
+    "NEEDS_LABEL": "What We Need:",
+    "TITLE_PLACEHOLDER": "Project title",
+    "DESCRIPTION_PLACEHOLDER": "Project description",
+    "NEED_PLACEHOLDER": "Need or requirement",
+    "ADD_NEED": "Add Need",
+    "SAVE_CHANGES": "Save Changes",
+    "PROJECT_NOT_FOUND": "Project Not Found",
+    "PROJECT_NOT_FOUND_MESSAGE": "The project you're looking for doesn't exist or you don't have access to it.",
+    "NEW_PROJECT": "New Project",
+    "PROJECT_DESCRIPTION_PLACEHOLDER": "Project description goes here.",
+    "OWNER": "Owner",
+    "COLLABORATOR": "Collaborator",
+    "ACCEPT": "Accept",
+    "REJECT": "Reject"
+  },
+  "PUBLIC": {
+    "PUBLIC_PROJECT": "Public Project",
+    "PUBLIC_INNER_PROJECT_PAGE": "Public Inner Project Page",
+    "PROJECT_ID": "Project ID:",
+    "VIEWERS_MESSAGE": "This page is for project viewers.",
+    "NEXT_ITERATION": "Content will be added in the next iteration."
   }
 }

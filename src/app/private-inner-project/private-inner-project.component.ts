@@ -1,7 +1,7 @@
 import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, ToastController } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
+import { IonicModule, ModalController, ToastController, AlertController } from '@ionic/angular';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -30,8 +30,13 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   private modalCtrl = inject(ModalController);
   private toastCtrl = inject(ToastController);
   private supabaseService = inject(SupabaseService);
+  private translateService = inject(TranslateService);
+  private alertCtrl = inject(AlertController);
   
   projectId = this.route.snapshot.paramMap.get('id');
+  
+  // Auto-save timer
+  private autoSaveTimer: any;
   
   // Signals
   readonly project = signal<Project | null>(null);
@@ -70,8 +75,8 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         if (currentUser) {
           const project: Project = {
             id: this.projectId,
-            title: 'New Project',
-            description: 'Project description goes here.',
+            title: this.translateService.instant('PROJECT.NEW_PROJECT'),
+            description: this.translateService.instant('PROJECT.PROJECT_DESCRIPTION_PLACEHOLDER'),
             needs: [],
             scope: 'local',
             createdBy: currentUser.uid,
@@ -283,6 +288,9 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       title: chapter.title,
       description: chapter.description
     });
+    
+    // Start auto-save timer
+    this.startAutoSave();
   }
   
   async saveChapter() {
@@ -309,6 +317,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     
     // Clear editing state immediately for better UX
     this.editingChapter.set({});
+    this.stopAutoSave();
     
     // Save to database in background without blocking UI
     try {
@@ -321,6 +330,77 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   
   cancelChapterEdit() {
     this.editingChapter.set({});
+    this.stopAutoSave();
+  }
+  
+  private startAutoSave() {
+    // Clear any existing timer
+    this.stopAutoSave();
+    
+    // Set up auto-save every 1 second
+    this.autoSaveTimer = setInterval(() => {
+      this.autoSaveChapter();
+    }, 1000);
+  }
+  
+  private stopAutoSave() {
+    if (this.autoSaveTimer) {
+      clearInterval(this.autoSaveTimer);
+      this.autoSaveTimer = null;
+    }
+  }
+  
+  private async autoSaveChapter() {
+    const editing = this.editingChapter();
+    if (!editing.id) return;
+    
+    const currentChapters = this.project()?.chapters || [];
+    const updatedChapters = currentChapters.map(chapter => 
+      chapter.id === editing.id 
+        ? { ...chapter, title: editing.title || '', description: editing.description || '' }
+        : chapter
+    );
+    
+    // Update local state immediately
+    this.project.update(project => {
+      if (project) {
+        return {
+          ...project,
+          chapters: updatedChapters
+        };
+      }
+      return project;
+    });
+    
+    // Save to database in background
+    try {
+      await this.saveProjectChanges();
+    } catch (error) {
+      console.error('Auto-save error:', error);
+    }
+  }
+  
+  async showDeleteConfirmation(chapter: Chapter) {
+    const alert = await this.alertCtrl.create({
+      header: 'Confirm Delete',
+      message: `Are you sure you want to delete the section "${chapter.title || 'Untitled'}"? This action cannot be undone.`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () => {
+            this.deleteSection(chapter);
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
   }
   
   canEditChapter(chapter: Chapter): boolean {
@@ -532,6 +612,9 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
+    // Stop auto-save timer
+    this.stopAutoSave();
+    
     // Clean up all object URLs to prevent memory leaks
     const project = this.project();
     if (project?.chapters) {
