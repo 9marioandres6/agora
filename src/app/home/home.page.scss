@@ -12,6 +12,7 @@ ion-content { --background: var(--app-background); }
   border-radius: 0;
   box-shadow: none;
   border: none;
+  border-bottom: 1px solid var(--app-divider) !important;
   background: transparent;
 
   ion-card-header.project-header {
