@@ -153,6 +153,15 @@ ion-item {
   --ion-toolbar-border-color: #e0e0e0;
 }
 
+/* Global Avatar Icon Centering */
+ion-avatar ion-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 90% !important;
+}
+
 /* Force light theme button colors */
 .light-theme ion-toolbar ion-button[fill="clear"] {
   --color: #000000 !important;
