@@ -119,9 +119,29 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
   
   async loadPendingCollaborators() {
-    // This would load pending collaboration requests from the database
-    // For now, start with empty array - only show section when there are actual requests
-    this.pendingCollaborators.set([]);
+    try {
+      const currentProject = this.project();
+      if (currentProject && currentProject.collaborationRequests) {
+        // Filter only pending requests
+        const pendingRequests = currentProject.collaborationRequests
+          .filter(request => request.status === 'pending')
+          .map(request => ({
+            uid: request.uid,
+            displayName: request.displayName || 'Anonymous',
+            email: request.email || '',
+            photoURL: request.photoURL || '',
+            message: request.message || '',
+            requestedAt: request.requestedAt || new Date().toISOString()
+          }));
+        
+        this.pendingCollaborators.set(pendingRequests);
+      } else {
+        this.pendingCollaborators.set([]);
+      }
+    } catch (error) {
+      console.error('Error loading pending collaborators:', error);
+      this.pendingCollaborators.set([]);
+    }
   }
   
   editProject() {
@@ -194,11 +214,76 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
   
   async acceptCollaborator(collaborator: PendingCollaborator) {
-    // Implementation for accepting collaborator
+    try {
+      if (!this.projectId) return;
+      
+      await this.projectsService.acceptCollaboration(this.projectId, collaborator.uid);
+      
+      // Remove from pending list
+      this.pendingCollaborators.update(pending => 
+        pending.filter(p => p.uid !== collaborator.uid)
+      );
+      
+      // Reload project to get updated collaborators list
+      await this.loadProject();
+      
+      await this.showToast(
+        this.translateService.instant('PROJECT.COLLABORATOR_ACCEPTED', { name: collaborator.displayName }),
+        'success'
+      );
+    } catch (error) {
+      console.error('Error accepting collaborator:', error);
+      await this.showToast(
+        this.translateService.instant('PROJECT.ERROR_ACCEPTING_COLLABORATOR'),
+        'danger'
+      );
+    }
   }
   
   async rejectCollaborator(collaborator: PendingCollaborator) {
-    // Implementation for rejecting collaborator
+    try {
+      if (!this.projectId) return;
+      
+      await this.projectsService.rejectCollaboration(this.projectId, collaborator.uid);
+      
+      // Remove from pending list
+      this.pendingCollaborators.update(pending => 
+        pending.filter(p => p.uid !== collaborator.uid)
+      );
+      
+      await this.showToast(
+        this.translateService.instant('PROJECT.COLLABORATOR_REJECTED', { name: collaborator.displayName }),
+        'success'
+      );
+    } catch (error) {
+      console.error('Error rejecting collaborator:', error);
+      await this.showToast(
+        this.translateService.instant('PROJECT.ERROR_REJECTING_COLLABORATOR'),
+        'danger'
+      );
+    }
+  }
+
+  async removeCollaborator(collaboratorUid: string) {
+    try {
+      if (!this.projectId) return;
+      
+      await this.projectsService.removeCollaborator(this.projectId, collaboratorUid);
+      
+      // Reload project to get updated collaborators list
+      await this.loadProject();
+      
+      await this.showToast(
+        this.translateService.instant('PROJECT.COLLABORATOR_REMOVED'),
+        'success'
+      );
+    } catch (error) {
+      console.error('Error removing collaborator:', error);
+      await this.showToast(
+        this.translateService.instant('PROJECT.ERROR_REMOVING_COLLABORATOR'),
+        'danger'
+      );
+    }
   }
   
   async showAddChapterModal() {

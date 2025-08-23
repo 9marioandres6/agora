@@ -249,32 +249,7 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  async acceptCollaboration(projectId: string, requestUid: string) {
-    try {
-      await this.projectsService.acceptCollaboration(projectId, requestUid);
-      await this.loadProjects();
-    } catch (error) {
-      console.error('Error accepting collaboration:', error);
-    }
-  }
 
-  async rejectCollaboration(projectId: string, requestUid: string) {
-    try {
-      await this.projectsService.rejectCollaboration(projectId, requestUid);
-      await this.loadProjects();
-    } catch (error) {
-      console.error('Error rejecting collaboration:', error);
-    }
-  }
-
-  async removeCollaborator(projectId: string, collaboratorUid: string) {
-    try {
-      await this.projectsService.removeCollaborator(projectId, collaboratorUid);
-      await this.loadProjects();
-    } catch (error) {
-      console.error('Error removing collaborator:', error);
-    }
-  }
 
   private updateProjectVoting(projectId: string, field: 'supports' | 'opposes', action: 'added' | 'removed', userId: string) {
     this.projects.update(projects => 

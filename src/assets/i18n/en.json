@@ -214,7 +214,13 @@
     "OWNER": "Owner",
     "COLLABORATOR": "Collaborator",
     "ACCEPT": "Accept",
-    "REJECT": "Reject"
+    "REJECT": "Reject",
+    "COLLABORATOR_ACCEPTED": "{{name}} has been accepted as a collaborator",
+    "COLLABORATOR_REJECTED": "{{name}}'s collaboration request has been rejected",
+    "COLLABORATOR_REMOVED": "Collaborator has been removed",
+    "ERROR_ACCEPTING_COLLABORATOR": "Error accepting collaborator",
+    "ERROR_REJECTING_COLLABORATOR": "Error rejecting collaborator",
+    "ERROR_REMOVING_COLLABORATOR": "Error removing collaborator"
   },
   "PUBLIC": {
     "PUBLIC_PROJECT": "Public Project",

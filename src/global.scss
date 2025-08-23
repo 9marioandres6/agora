@@ -50,6 +50,7 @@
   --app-toolbar-border: #e0e0e0;
   --app-media-background: #f8f9fa;
   --app-text-secondary: #6c757d;
+  --app-card-hover-background: rgba(0,0,0,0.05);
 }
 
 .dark {
@@ -67,6 +68,7 @@
   --app-button-active: #555555;
   --app-media-background: #404040;
   --app-text-secondary: #adb5bd;
+  --app-card-hover-background: rgba(255,255,255,0.05);
 }
 
 .light-theme {
@@ -84,6 +86,7 @@
   --app-button-active: #e9ecef;
   --app-media-background: #f8f9fa;
   --app-text-secondary: #6c757d;
+  --app-card-hover-background: rgba(0,0,0,0.05);
 }
 
 /* Apply theme variables to body */
@@ -353,113 +356,4 @@ ion-toolbar app-theme-toggle ion-button {
 /* You can add global styles to this file, and also import other style files */
 @import "theme/variables.scss";
 
-// Global collaboration styles
-.collaborators-container,
-.comments-container {
-  padding: 16px;
-  border-top: 1px solid var(--ion-color-light);
-  background: var(--ion-color-light-tint);
 
-  .collaborators-list,
-  .requests-list,
-  .comments-list {
-    margin-bottom: 20px;
-
-    h4 {
-      margin: 0 0 12px 0;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ion-color-medium);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .collaborator-item,
-    .request-item,
-    .comment-item {
-      padding: 12px;
-      margin-bottom: 12px;
-      background: var(--ion-color-light);
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .collaborator-info,
-      .request-info,
-      .comment-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-
-        .collaborator-avatar,
-        .request-avatar {
-          width: 40px;
-          height: 40px;
-          border: 2px solid var(--ion-color-light-shade);
-
-          ion-icon {
-            font-size: 20px;
-            color: var(--ion-color-medium);
-          }
-        }
-
-        .collaborator-details,
-        .request-details {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-
-          strong { font-size: 14px; color: var(--ion-color-dark); }
-          small { font-size: 12px; color: var(--ion-color-medium); }
-
-          .joined-date,
-          .request-date {
-            font-size: 11px;
-            color: var(--ion-color-medium);
-            font-style: italic;
-          }
-
-          .request-message {
-            margin: 8px 0 0 0;
-            font-size: 13px;
-            color: var(--ion-color-dark);
-            font-style: italic;
-            background: rgba(var(--ion-color-primary-rgb), 0.1);
-            padding: 8px;
-            border-radius: 4px;
-            border-left: 3px solid var(--ion-color-primary);
-          }
-        }
-      }
-
-      .request-actions { display: flex; gap: 8px; }
-    }
-
-    .no-data {
-      text-align: center;
-      color: var(--ion-color-medium);
-      font-style: italic;
-      margin: 20px 0;
-    }
-  }
-
-  .add-comment-section,
-  .request-collaboration-section {
-    .comment-textarea,
-    .collaboration-textarea {
-      --background: var(--ion-color-light);
-      --border-radius: 8px;
-      --padding-start: 12px;
-      --padding-end: 12px;
-      margin-bottom: 8px;
-    }
-
-    .request-collaboration-button {
-      font-size: 12px;
-      height: 32px;
-      --padding-start: 12px;
-      --padding-end: 12px;
-    }
-  }
-}

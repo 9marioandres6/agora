@@ -193,74 +193,12 @@
                             <span class="joined-date">{{ 'HOME.JOINED' | translate }}: {{ collaborator.joinedAt | date:'short' }}</span>
                           </div>
                         </div>
-                        @if (isProjectCreator(project)) {
-                          <ion-button 
-                            fill="clear" 
-                            size="small" 
-                            color="danger"
-                            (click)="removeCollaborator(project.id!, collaborator.uid)"
-                            class="remove-button">
-                            {{ 'HOME.REMOVE' | translate }}
-                          </ion-button>
-                        }
                       </div>
                     }
                   } @else {
                     <p class="no-data">{{ 'HOME.NO_COLLABORATORS' | translate }}</p>
                   }
                 </div>
-
-                <!-- Collaboration Requests (for project creator) -->
-                @if (isProjectCreator(project)) {
-                  <div class="requests-list">
-                    <h4>{{ 'HOME.COLLABORATION_REQUESTS' | translate }}</h4>
-                    @if (project.collaborationRequests && project.collaborationRequests.length > 0) {
-                      @for (request of project.collaborationRequests; track request.uid) {
-                        @if (request.status === 'pending') {
-                          <div class="request-item">
-                            <div class="request-info">
-                              <ion-avatar class="request-avatar">
-                                @if (request.photoURL) {
-                                  <img [src]="request.photoURL" [alt]="request.displayName">
-                                } @else {
-                                  <ion-icon name="person" size="large"></ion-icon>
-                                }
-                              </ion-avatar>
-                              <div class="request-details">
-                                <strong>{{ request.displayName }}</strong>
-                                <small>{{ request.email }}</small>
-                                <span class="request-date">{{ 'HOME.PENDING' | translate }}: {{ request.requestedAt | date:'short' }}</span>
-                                @if (request.message) {
-                                  <p class="request-message">{{ request.message }}</p>
-                                }
-                              </div>
-                            </div>
-                            <div class="request-actions">
-                              <ion-button 
-                                fill="clear" 
-                                size="small" 
-                                color="success"
-                                (click)="acceptCollaboration(project.id!, request.uid)"
-                                class="accept-button">
-                                {{ 'HOME.ACCEPT' | translate }}
-                              </ion-button>
-                              <ion-button 
-                                fill="clear" 
-                                size="small" 
-                                color="danger"
-                                (click)="rejectCollaboration(project.id!, request.uid)"
-                                class="reject-button">
-                                {{ 'HOME.REJECT' | translate }}
-                              </ion-button>
-                            </div>
-                          </div>
-                        }
-                      }
-                    } @else {
-                      <p class="no-data">{{ 'HOME.NO_REQUESTS' | translate }}</p>
-                    }
-                  </div>
-                }
 
                 <!-- Request Collaboration Button (for non-creators) -->
                 @if (!isProjectCreator(project) && !hasCollaborationRequest(project)) {
