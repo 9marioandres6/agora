@@ -163,6 +163,11 @@ Dynamic theme management (light/dark mode):
 - **My Profile Component**: User profile management
 - **New Item Component**: Project creation interface
 - **Private Inner Project Component**: Project detail page for creators and editors
+  - Project members management (owner + collaborators)
+  - Pending collaborators approval (owner only)
+  - Project information editing (owner only)
+  - Chapter management (owners + collaborators)
+  - Media support for chapters (images/videos)
 - **Public Inner Project Component**: Project detail page for viewers
 
 #### UI Components

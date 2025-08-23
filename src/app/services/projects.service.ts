@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, DocumentData, arrayUnion, arrayRemove } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, getDoc, DocumentData, arrayUnion, arrayRemove } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 
 export interface Project {
@@ -20,12 +20,27 @@ export interface Project {
   comments: Comment[];
   collaborators: Collaborator[];
   collaborationRequests: CollaborationRequest[];
+  chapters?: Chapter[];
   creator?: {
     uid: string;
     displayName?: string;
     email?: string;
     photoURL?: string;
   };
+}
+
+export interface Chapter {
+  id: string;
+  title?: string;
+  description: string;
+  media: Media[];
+}
+
+export interface Media {
+  id: string;
+  type: 'image' | 'video';
+  url: string;
+  caption: string;
 }
 
 export interface Collaborator {
@@ -152,6 +167,26 @@ export class ProjectsService {
       });
     } catch (error) {
       console.error('Error getting projects:', error);
+      throw error;
+    }
+  }
+
+  async getProject(projectId: string): Promise<Project> {
+    try {
+      const projectDoc = doc(this.firestore, 'projects', projectId);
+      const projectSnapshot = await getDoc(projectDoc);
+      
+      if (!projectSnapshot.exists()) {
+        throw new Error('Project not found');
+      }
+      
+      const data = projectSnapshot.data() as Project;
+      return {
+        ...data,
+        id: projectId
+      };
+    } catch (error) {
+      console.error('Error getting project:', error);
       throw error;
     }
   }

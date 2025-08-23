@@ -3,15 +3,307 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Private Project</ion-title>
+    <ion-title>{{ project()?.title || 'Project' }}</ion-title>
+    <ion-buttons slot="end">
+      @if (isOwner()) {
+        <ion-button fill="clear" (click)="editProject()">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+      }
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="container">
-    <h1>Private Inner Project Page</h1>
-    <p>Project ID: {{ projectId }}</p>
-    <p>This page is for project creators and editors.</p>
-    <p>Content will be added in the next iteration.</p>
-  </div>
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading project...</p>
+    </div>
+  } @else if (project()) {
+    <div class="container">
+      <!-- Project Members Section -->
+      <ion-card class="members-section">
+        <ion-card-header>
+          <ion-card-title>Project Members</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Owner -->
+          <div class="member-item owner">
+            <ion-avatar>
+              @if (project()?.creator?.photoURL) {
+                <img [src]="project()?.creator?.photoURL" [alt]="project()?.creator?.displayName">
+              } @else {
+                <ion-icon name="person"></ion-icon>
+              }
+            </ion-avatar>
+            <div class="member-info">
+              <h4>{{ project()?.creator?.displayName || 'Anonymous' }}</h4>
+              <ion-chip color="primary">Owner</ion-chip>
+            </div>
+          </div>
+
+          <!-- Accepted Collaborators -->
+          @for (collaborator of project()?.collaborators || []; track collaborator.uid) {
+            <div class="member-item collaborator">
+              <ion-avatar>
+                @if (collaborator.photoURL) {
+                  <img [src]="collaborator.photoURL" [alt]="collaborator.displayName">
+                } @else {
+                  <ion-icon name="person"></ion-icon>
+                }
+              </ion-avatar>
+              <div class="member-info">
+                <h4>{{ collaborator.displayName || 'Anonymous' }}</h4>
+                <ion-chip color="success">Collaborator</ion-chip>
+              </div>
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Pending Collaborators Section (Owner Only) -->
+      @if (isOwner() && (pendingCollaborators() || []).length > 0) {
+        <ion-card class="pending-section">
+          <ion-card-header>
+            <ion-card-title>Pending Collaborators</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            @for (request of pendingCollaborators(); track request.uid) {
+              <div class="pending-item">
+                <div class="request-info">
+                  <ion-avatar>
+                    @if (request.photoURL) {
+                      <img [src]="request.photoURL" [alt]="request.displayName">
+                    } @else {
+                      <ion-icon name="person"></ion-icon>
+                    }
+                  </ion-avatar>
+                  <div class="request-details">
+                    <h4>{{ request.displayName || 'Anonymous' }}</h4>
+                    <p>{{ request.email }}</p>
+                    @if (request.message) {
+                      <p class="request-message">{{ request.message }}</p>
+                    }
+                  </div>
+                </div>
+                <div class="request-actions">
+                  <ion-button size="small" color="success" (click)="acceptCollaborator(request)">
+                    <ion-icon name="checkmark" slot="start"></ion-icon>
+                    Accept
+                  </ion-button>
+                  <ion-button size="small" color="danger" fill="outline" (click)="rejectCollaborator(request)">
+                    <ion-icon name="close" slot="start"></ion-icon>
+                    Reject
+                  </ion-button>
+                </div>
+              </div>
+            }
+          </ion-card-content>
+        </ion-card>
+      }
+
+      <!-- Project Information Section -->
+      <ion-card class="project-info">
+        <ion-card-header>
+          <ion-card-title>Project Information</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-row">
+            <label>Title:</label>
+            <div class="info-content">
+              @if (isEditingProject()) {
+                <ion-input [(ngModel)]="editingProject().title" placeholder="Project title"></ion-input>
+              } @else {
+                <span>{{ project()?.title }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="info-row">
+            <label>Scope:</label>
+            <div class="info-content">
+              @if (isEditingProject()) {
+                <ion-select [(ngModel)]="editingProject().scope" placeholder="Select scope">
+                  <ion-select-option value="grupal">Grupal - Small Group Collaboration</ion-select-option>
+                  <ion-select-option value="local">Local - Neighbourhood/Community</ion-select-option>
+                  <ion-select-option value="state">State - State/Province level</ion-select-option>
+                  <ion-select-option value="national">National - Country level</ion-select-option>
+                  <ion-select-option value="global">Global - International level</ion-select-option>
+                </ion-select>
+              } @else {
+                <ion-chip color="primary">{{ getScopeLabel(project()?.scope || '') }}</ion-chip>
+              }
+            </div>
+          </div>
+
+          <div class="info-row">
+            <label>Description:</label>
+            <div class="info-content">
+              @if (isEditingProject()) {
+                <ion-textarea [(ngModel)]="editingProject().description" placeholder="Project description" rows="3"></ion-textarea>
+              } @else {
+                <span>{{ project()?.description }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="info-row">
+            <label>What We Need:</label>
+            <div class="info-content">
+              @if (isEditingProject()) {
+                <div class="needs-editor">
+                  @for (need of editingProject().needs || []; track $index) {
+                    <div class="need-item">
+                      <ion-input [(ngModel)]="editingProject().needs![$index]" placeholder="Need or requirement"></ion-input>
+                      <ion-button fill="clear" color="danger" size="small" (click)="removeNeed($index)">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </ion-button>
+                    </div>
+                  }
+                  <ion-button fill="outline" size="small" (click)="addNeed()">
+                    <ion-icon name="add" slot="start"></ion-icon>
+                    Add Need
+                  </ion-button>
+                </div>
+              } @else {
+                <div class="needs-display">
+                  @for (need of project()?.needs || []; track need) {
+                    <ion-chip color="primary" outline>{{ need }}</ion-chip>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          @if (isEditingProject()) {
+            <div class="edit-actions">
+              <ion-button color="success" (click)="saveProject()">
+                <ion-icon name="checkmark" slot="start"></ion-icon>
+                Save Changes
+              </ion-button>
+              <ion-button color="medium" fill="outline" (click)="cancelEdit()">
+                <ion-icon name="close" slot="start"></ion-icon>
+                Cancel
+              </ion-button>
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Project Sections Section -->
+      <ion-card class="chapters-section">
+        <ion-card-header>
+          <div class="section-header">
+            <ion-card-title>{{ 'CHAPTERS.TITLE' | translate }}</ion-card-title>
+            <ion-button fill="clear" size="small" (click)="showAddChapterModal()" class="add-section-btn">
+              <ion-icon name="add" size="large"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          @if ((project()?.chapters || []).length === 0) {
+            <div class="empty-sections">
+              <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
+              <h3>{{ 'CHAPTERS.NO_CHAPTERS' | translate }}</h3>
+              <p>{{ 'CHAPTERS.NO_CHAPTERS_DESC' | translate }}</p>
+            </div>
+          } @else {
+            @for (chapter of project()?.chapters || []; track chapter.id; let i = $index) {
+              <div class="chapter-item">
+                <div class="chapter-header">
+                  <div class="chapter-actions">
+                    <ion-button fill="clear" size="small" (click)="editChapter(chapter)">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </ion-button>
+                    <ion-button fill="clear" size="small" color="danger" (click)="deleteSection(chapter)">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+                
+                @if (isEditingChapter(chapter.id)) {
+                  <div class="chapter-editor">
+                    <ion-item>
+                      <ion-label position="stacked">{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}</ion-label>
+                      <ion-input [(ngModel)]="editingChapter().title" placeholder="{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                      <ion-label position="stacked">{{ 'CHAPTERS.DESCRIPTION' | translate }}</ion-label>
+                      <ion-textarea [(ngModel)]="editingChapter().description" placeholder="{{ 'CHAPTERS.DESCRIPTION' | translate }}" rows="4"></ion-textarea>
+                    </ion-item>
+                    <div class="chapter-edit-actions">
+                      <ion-button size="small" color="success" (click)="saveChapter()">
+                        <ion-icon name="checkmark" slot="start"></ion-icon>
+                        {{ 'COMMON.SAVE' | translate }}
+                      </ion-button>
+                      <ion-button size="small" color="medium" fill="outline" (click)="cancelChapterEdit()">
+                        <ion-icon name="close" slot="start"></ion-icon>
+                        {{ 'COMMON.CANCEL' | translate }}
+                      </ion-button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="chapter-content">
+                    @if (chapter.title) {
+                      <h4 class="chapter-title-display">{{ chapter.title }}</h4>
+                    }
+                    <p class="chapter-description">{{ chapter.description }}</p>
+                  </div>
+                }
+
+                <!-- Section Media -->
+                <div class="chapter-media">
+                  @if (isEditingChapter(chapter.id)) {
+                    <div class="media-actions">
+                      <ion-button fill="outline" size="small" (click)="showAddMediaModal(chapter)">
+                        <ion-icon name="add" slot="start"></ion-icon>
+                        {{ 'CHAPTERS.ADD_MEDIA' | translate }}
+                      </ion-button>
+                    </div>
+                  }
+                  
+                  @if ((chapter.media || []).length > 0) {
+                    <div class="media-grid">
+                      @for (media of chapter.media || []; track media.id) {
+                        <div class="media-item">
+                          <div class="media-preview">
+                            @if (media.type === 'image') {
+                              <img [src]="media.url" [alt]="media.caption" class="media-image" (click)="previewMedia(media)">
+                            } @else if (media.type === 'video') {
+                              <div class="video-thumbnail" (click)="previewMedia(media)">
+                                <video [src]="media.url" class="media-video"></video>
+                                <div class="play-overlay">
+                                  <ion-icon name="play-circle" size="large"></ion-icon>
+                                </div>
+                              </div>
+                            }
+                            @if (isEditingChapter(chapter.id)) {
+                              <ion-button fill="clear" size="small" color="danger" class="delete-media-btn" (click)="deleteMedia(chapter, media)">
+                                <ion-icon name="close-circle"></ion-icon>
+                              </ion-button>
+                            }
+                          </div>
+                          <div class="media-info">
+                            <p class="media-caption">{{ media.caption }}</p>
+                            <p class="media-type">{{ media.type === 'image' ? ('CHAPTERS.IMAGE' | translate) : ('CHAPTERS.VIDEO' | translate) }}</p>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </ion-card-content>
+      </ion-card>
+    </div>
+  } @else {
+    <div class="error-container">
+      <ion-icon name="alert-circle-outline" size="large" color="danger"></ion-icon>
+      <h2>Project Not Found</h2>
+      <p>The project you're looking for doesn't exist or you don't have access to it.</p>
+    </div>
+  }
 </ion-content>

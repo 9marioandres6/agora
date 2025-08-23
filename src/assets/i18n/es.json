@@ -160,5 +160,30 @@
     "OFFLINE": "Desconectado",
     "UNKNOWN": "Desconocido",
     "LAST_CHECK": "Última Verificación"
+  },
+  "CHAPTERS": {
+    "TITLE": "Secciones del Proyecto",
+    "ADD_CHAPTER": "Agregar Sección",
+    "NO_CHAPTERS": "Aún no hay secciones",
+    "NO_CHAPTERS_DESC": "Comienza a construir tu proyecto agregando la primera sección",
+    "CHAPTER": "Sección",
+    "OPTIONAL_TITLE": "Título de Sección (Opcional)",
+    "DESCRIPTION": "Descripción",
+    "MEDIA": "Multimedia",
+    "ADD_MEDIA": "Agregar Multimedia",
+    "NO_MEDIA": "Aún no hay multimedia",
+    "DELETE_CHAPTER": "Eliminar Sección",
+    "DELETE_MEDIA": "Eliminar Multimedia",
+    "SAVE": "Guardar",
+    "CANCEL": "Cancelar",
+    "EDIT": "Editar",
+    "IMAGE": "Imagen",
+    "VIDEO": "Video",
+    "TYPE": "Tipo",
+    "CAPTION": "Descripción",
+    "MEDIA_URL": "URL de Multimedia",
+    "MEDIA_URL_PLACEHOLDER": "Ingresa URL de multimedia",
+    "MEDIA_CAPTION": "Descripción de Multimedia",
+    "MEDIA_CAPTION_PLACEHOLDER": "Ingresa descripción de multimedia"
   }
 }

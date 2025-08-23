@@ -1,0 +1,157 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ 'CHAPTERS.ADD_CHAPTER' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form>
+    <!-- Section Title -->
+    <ion-item>
+      <ion-label position="stacked">{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}</ion-label>
+      <ion-input 
+        [(ngModel)]="section.title" 
+        name="title"
+        placeholder="{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}"
+        maxlength="100">
+      </ion-input>
+    </ion-item>
+
+    <!-- Section Description -->
+    <ion-item>
+      <ion-label position="stacked">{{ 'CHAPTERS.DESCRIPTION' | translate }} *</ion-label>
+      <ion-textarea 
+        [(ngModel)]="section.description" 
+        name="description"
+        placeholder="{{ 'CHAPTERS.DESCRIPTION' | translate }}"
+        rows="4"
+        required>
+      </ion-textarea>
+    </ion-item>
+
+    <!-- Media Section -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ 'CHAPTERS.MEDIA' | translate }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Existing Media -->
+        @if ((section.media || []).length > 0) {
+          <div class="media-list">
+            @for (media of section.media; track media.id) {
+              <div class="media-item">
+                <div class="media-preview">
+                  @if (media.type === 'image') {
+                    <img [src]="media.url" [alt]="media.caption" class="media-thumbnail">
+                  } @else {
+                    <div class="video-thumbnail">
+                      <ion-icon name="videocam" size="large"></ion-icon>
+                    </div>
+                  }
+                </div>
+                <div class="media-info">
+                  <p class="media-caption">{{ media.caption }}</p>
+                  <p class="media-type">{{ media.type === 'image' ? ('CHAPTERS.IMAGE' | translate) : ('CHAPTERS.VIDEO' | translate) }}</p>
+                </div>
+                <ion-button 
+                  fill="clear" 
+                  color="danger" 
+                  size="small" 
+                  (click)="removeMedia(media.id)">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Add New Media Button -->
+        @if (!isAddingMedia) {
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            (click)="isAddingMedia = true"
+            class="add-media-btn">
+            <ion-icon name="add" slot="start"></ion-icon>
+            {{ 'CHAPTERS.ADD_MEDIA' | translate }}
+          </ion-button>
+        }
+
+        <!-- Add Media Form -->
+        @if (isAddingMedia) {
+          <div class="add-media-form">
+            <ion-item>
+              <ion-label position="stacked">{{ 'CHAPTERS.MEDIA' | translate }} {{ 'CHAPTERS.TYPE' | translate }}</ion-label>
+              <ion-select [(ngModel)]="newMedia.type" name="mediaType">
+                <ion-select-option value="image">{{ 'CHAPTERS.IMAGE' | translate }}</ion-select-option>
+                <ion-select-option value="video">{{ 'CHAPTERS.VIDEO' | translate }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">{{ 'CHAPTERS.MEDIA_URL' | translate }}</ion-label>
+              <ion-input 
+                [(ngModel)]="newMedia.url" 
+                name="mediaUrl"
+                placeholder="{{ 'CHAPTERS.MEDIA_URL_PLACEHOLDER' | translate }}"
+                type="url">
+              </ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">{{ 'CHAPTERS.MEDIA_CAPTION' | translate }}</ion-label>
+              <ion-input 
+                [(ngModel)]="newMedia.caption" 
+                name="mediaCaption"
+                placeholder="{{ 'CHAPTERS.MEDIA_CAPTION_PLACEHOLDER' | translate }}"
+                maxlength="200">
+              </ion-input>
+            </ion-item>
+
+            <div class="media-form-actions">
+              <ion-button 
+                size="small" 
+                color="success" 
+                (click)="addMedia()"
+                [disabled]="!newMedia.url || !newMedia.caption">
+                <ion-icon name="add" slot="start"></ion-icon>
+                {{ 'CHAPTERS.ADD_MEDIA' | translate }}
+              </ion-button>
+              <ion-button 
+                size="small" 
+                color="medium" 
+                fill="outline" 
+                (click)="isAddingMedia = false">
+                <ion-icon name="close" slot="start"></ion-icon>
+                {{ 'COMMON.CANCEL' | translate }}
+              </ion-button>
+            </div>
+          </div>
+        }
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" fill="outline">
+        {{ 'COMMON.CANCEL' | translate }}
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button 
+        (click)="confirm()" 
+        color="primary"
+        [disabled]="!section.description?.trim()">
+        {{ 'COMMON.SAVE' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

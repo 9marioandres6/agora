@@ -111,7 +111,6 @@ export class NewItemComponent {
       };
 
       const projectId = await this.projectsService.createProject(projectData);
-      console.log('Project created successfully with ID:', projectId);
 
       this.navCtrl.back();
     } catch (error) {

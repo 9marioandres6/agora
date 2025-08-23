@@ -160,5 +160,30 @@
     "OFFLINE": "Offline",
     "UNKNOWN": "Unknown",
     "LAST_CHECK": "Last Check"
+  },
+  "CHAPTERS": {
+    "TITLE": "Project Sections",
+    "ADD_CHAPTER": "Add Section",
+    "NO_CHAPTERS": "No sections yet",
+    "NO_CHAPTERS_DESC": "Start building your project by adding the first section",
+    "CHAPTER": "Section",
+    "OPTIONAL_TITLE": "Section Title (Optional)",
+    "DESCRIPTION": "Description",
+    "MEDIA": "Media",
+    "ADD_MEDIA": "Add Media",
+    "NO_MEDIA": "No media added yet",
+    "DELETE_CHAPTER": "Delete Section",
+    "DELETE_MEDIA": "Delete Media",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "EDIT": "Edit",
+    "IMAGE": "Image",
+    "VIDEO": "Video",
+    "TYPE": "Type",
+    "CAPTION": "Caption",
+    "MEDIA_URL": "Media URL",
+    "MEDIA_URL_PLACEHOLDER": "Enter media URL",
+    "MEDIA_CAPTION": "Media Caption",
+    "MEDIA_CAPTION_PLACEHOLDER": "Enter media caption"
   }
 }
