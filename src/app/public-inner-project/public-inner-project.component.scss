@@ -35,18 +35,19 @@ ion-header {
 }
 
 .project-card {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 8px;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  background: transparent;
 
   ion-card-header.project-header {
-    padding: 16px !important;
+    padding: 8px !important;
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
-    border-bottom: 1px solid var(--app-divider) !important;
+    border-bottom: none !important;
     background: transparent !important;
 
     .creator-info {
@@ -120,7 +121,7 @@ ion-header {
   }
 
   ion-card-content {
-    padding: 16px;
+    padding: 8px;
     position: relative;
 
     .state-chip-container {
@@ -183,14 +184,16 @@ ion-header {
 }
 
 .chapters-section {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 8px;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  background: transparent;
 
   ion-card-header {
-    padding: 16px !important;
-    border-bottom: 1px solid var(--app-divider) !important;
-    background: var(--app-card-background) !important;
+    padding: 8px !important;
+    border-bottom: none !important;
+    background: transparent !important;
 
     ion-card-title {
       font-size: 18px;
@@ -201,14 +204,14 @@ ion-header {
   }
 
   ion-card-content {
-    padding: 16px;
+    padding: 8px;
 
     .chapter-item {
-      margin-bottom: 24px;
-      padding: 16px;
-      border: 1px solid var(--app-divider);
-      border-radius: 8px;
-      background: var(--app-card-background);
+      margin-bottom: 16px;
+      padding: 8px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
 
       &:last-child {
         margin-bottom: 0;
@@ -239,10 +242,10 @@ ion-header {
           gap: 1rem;
 
           .media-item {
-            border: 1px solid var(--app-divider);
-            border-radius: 8px;
+            border: none;
+            border-radius: 0;
             overflow: hidden;
-            background: var(--app-card-background);
+            background: transparent;
 
             .media-preview {
               position: relative;
