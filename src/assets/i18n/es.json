@@ -23,7 +23,8 @@
     "ERROR": "Error",
     "SUCCESS": "Éxito",
     "WARNING": "Advertencia",
-    "INFO": "Información"
+    "INFO": "Información",
+    "PROJECT_NOT_FOUND": "Proyecto no encontrado"
   },
   "AUTH": {
     "LOGIN_TITLE": "Bienvenido de Vuelta",
