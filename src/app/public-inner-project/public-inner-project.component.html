@@ -70,13 +70,13 @@
         </ion-card-content>
       </ion-card>
 
-      <!-- Sections Section -->
-      <ion-card class="chapters-section">
-        <ion-card-header>
-          <ion-card-title>{{ 'CHAPTERS.TITLE' | translate }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          @if (project()?.chapters && (project()?.chapters?.length || 0) > 0) {
+      <!-- Sections Section - Only show when there are chapters -->
+      @if (project()?.chapters && (project()?.chapters?.length || 0) > 0) {
+        <ion-card class="chapters-section">
+          <ion-card-header>
+            <ion-card-title>{{ 'CHAPTERS.TITLE' | translate }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
             @for (chapter of project()?.chapters || []; track chapter.id) {
               <div class="chapter-item">
                 <div class="chapter-content">
@@ -111,15 +111,9 @@
                 }
               </div>
             }
-          } @else {
-            <div class="no-chapters">
-              <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
-              <h4>{{ 'CHAPTERS.NO_CHAPTERS' | translate }}</h4>
-              <p>{{ 'CHAPTERS.NO_CHAPTERS_DESC' | translate }}</p>
-            </div>
-          }
-        </ion-card-content>
-      </ion-card>
+          </ion-card-content>
+        </ion-card>
+      }
     </div>
   } @else {
     <div class="error-container">
