@@ -133,7 +133,10 @@ export class HomePage implements OnInit, ViewWillEnter {
     return stateLabels[state] || 'HOME.STATE_BUILDING';
   }
 
-  async supportProject(projectId: string) {
+  async supportProject(projectId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
     try {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
@@ -150,7 +153,10 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  async opposeProject(projectId: string) {
+  async opposeProject(projectId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
     try {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
@@ -167,7 +173,10 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  toggleComments(projectId: string) {
+  toggleComments(projectId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
     if (this.expandedComments() === projectId) {
       this.expandedComments.set(null);
     } else {
@@ -207,7 +216,10 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  toggleCollaborators(projectId: string) {
+  toggleCollaborators(projectId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
     if (this.expandedCollaborators() === projectId) {
       this.expandedCollaborators.set(null);
     } else {

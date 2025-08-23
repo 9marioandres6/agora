@@ -43,7 +43,7 @@
     } @else {
       <div class="projects-feed">
         @for (project of projects(); track project.id) {
-          <ion-card class="project-card" (click)="navigateToProject(project)">
+          <ion-card class="project-card">
             <ion-card-header class="project-header">
               <div class="creator-info">
                 <ion-avatar class="creator-avatar">
@@ -63,7 +63,7 @@
               </div>
             </ion-card-header>
 
-            <ion-card-content class="project-body">
+            <ion-card-content class="project-body" (click)="navigateToProject(project)">
               <div class="state-chip-container">
                 <ion-chip [color]="getStateColor(project.state || 'building')" class="state-chip">
                   {{ getStateLabel(project.state || 'building') | translate }}
@@ -93,7 +93,7 @@
                   [fill]="isUserSupported(project) ? 'solid' : 'clear'"
                   size="small" 
                   color="success"
-                  (click)="supportProject(project.id!)"
+                  (click)="supportProject(project.id!, $event)"
                   class="vote-button">
                   {{ 'HOME.SUPPORT' | translate }}
                   @if ((project.supports || []).length > 0) {
@@ -105,7 +105,7 @@
                   [fill]="isUserOpposed(project) ? 'solid' : 'clear'"
                   size="small" 
                   color="danger"
-                  (click)="opposeProject(project.id!)"
+                  (click)="opposeProject(project.id!, $event)"
                   class="vote-button">
                   {{ 'HOME.OPPOSE' | translate }}
                   @if ((project.opposes || []).length > 0) {
@@ -117,7 +117,7 @@
                   fill="clear" 
                   size="small" 
                   color="medium"
-                  (click)="toggleComments(project.id!)"
+                  (click)="toggleComments(project.id!, $event)"
                   class="comments-button">
                   <ion-icon name="chatbubble-outline"></ion-icon>
                   @if ((project.comments || []).length > 0) {
@@ -129,7 +129,7 @@
                   fill="clear" 
                   size="small" 
                   color="primary"
-                  (click)="toggleCollaborators(project.id!)"
+                  (click)="toggleCollaborators(project.id!, $event)"
                   class="collaborators-button">
                   <ion-icon name="people-outline"></ion-icon>
                   @if ((project.collaborators || []).length > 0) {
