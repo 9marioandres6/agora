@@ -1,17 +1,4 @@
-.container {
-  padding: 20px;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.google-auth-section {
-  margin-bottom: 20px;
-  
-  ion-button {
-    margin-bottom: 10px;
-  }
-}
-
+/* Custom styles that cannot be replaced with Ionic utilities */
 .divider {
   text-align: center;
   margin: 20px 0;
@@ -31,41 +18,6 @@
     background: var(--ion-background-color);
     padding: 0 10px;
     color: var(--ion-color-medium);
-  }
-}
-
-ion-item {
-  margin-bottom: 15px;
-}
-
-.button-container {
-  margin-top: 20px;
-  
-  ion-button {
-    margin-bottom: 10px;
-  }
-}
-
-ion-text[color="danger"] {
-  margin-top: 15px;
-  text-align: center;
-  
-  p {
-    margin-bottom: 10px;
-  }
-}
-
-ion-text[color="success"] {
-  margin-top: 15px;
-  text-align: center;
-}
-
-.login-link {
-  margin-top: 20px;
-  text-align: center;
-  
-  ion-text {
-    margin-top: 0;
   }
 }
 

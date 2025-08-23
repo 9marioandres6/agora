@@ -5,24 +5,24 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="container">
+  <div class="ion-padding ion-text-center" style="max-width: 400px; margin: 0 auto;">
     <ion-card>
       <ion-card-header>
         <ion-card-title>{{ 'AUTH.LOGIN_TITLE' | translate }}</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-        <ion-item>
+        <ion-item class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'COMMON.EMAIL' | translate }}</ion-label>
           <ion-input type="email" [(ngModel)]="email" [placeholder]="'COMMON.EMAIL' | translate"></ion-input>
         </ion-item>
 
-        <ion-item>
+        <ion-item class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'COMMON.PASSWORD' | translate }}</ion-label>
           <ion-input type="password" [(ngModel)]="password" [placeholder]="'COMMON.PASSWORD' | translate"></ion-input>
         </ion-item>
 
-        <div class="button-container">
+        <div class="ion-margin-top ion-margin-bottom">
           <ion-button expand="block" (click)="signIn()" [disabled]="loading()">
             @if (loading()) {
               <ion-spinner></ion-spinner>
@@ -35,7 +35,7 @@
           <span>{{ 'FORMS.OR' | translate }}</span>
         </div>
 
-        <div class="google-auth-section">
+        <div class="ion-margin-bottom">
           <ion-button expand="block" fill="outline" (click)="signInWithGoogle()" [disabled]="loading()">
             <ion-icon name="logo-google" slot="start"></ion-icon>
             @if (loading()) {
@@ -46,7 +46,7 @@
         </div>
 
         @if (error()) {
-          <ion-text color="danger">
+          <ion-text color="danger" class="ion-margin-top">
             <p>{{ error() }}</p>
             <ion-button fill="clear" size="small" (click)="clearError()">{{ 'COMMON.CLOSE' | translate }}</ion-button>
           </ion-text>
@@ -54,13 +54,13 @@
 
         @if (user()) {
           <div>
-            <ion-text color="success">
+            <ion-text color="success" class="ion-margin-top">
               <p>{{ 'AUTH.LOGIN_SUCCESS' | translate }}, {{ user()?.displayName || user()?.email }}!</p>
             </ion-text>
           </div>
         }
 
-        <div class="register-link">
+        <div class="ion-margin-top ion-text-center">
           <ion-text color="medium">
             <p>{{ 'AUTH.DONT_HAVE_ACCOUNT' | translate }} <ion-button fill="clear" size="small" routerLink="/register">{{ 'COMMON.REGISTER' | translate }}</ion-button></p>
           </ion-text>
