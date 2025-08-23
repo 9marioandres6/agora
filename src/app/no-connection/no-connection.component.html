@@ -18,6 +18,49 @@
       </ion-item>
     </div>
     
+    <!-- Auto-reconnection Status -->
+    <div class="auto-reconnect-status">
+      <ion-card>
+        <ion-card-content>
+          <div class="status-header">
+            <ion-icon 
+              [name]="isAutoReconnecting() ? 'refresh' : 'refresh-outline'" 
+              [color]="isAutoReconnecting() ? 'primary' : 'medium'">
+            </ion-icon>
+            <h3>{{ 'NO_CONNECTION.AUTO_RECONNECT_STATUS' | translate }}</h3>
+          </div>
+          
+          @if (isAutoReconnecting()) {
+            <div class="countdown-display">
+              <p class="countdown-text">
+                {{ 'NO_CONNECTION.NEXT_ATTEMPT_IN' | translate }}: 
+                <span class="countdown-number">{{ countdownSeconds() }}</span>s
+              </p>
+              <ion-progress-bar 
+                [value]="countdownSeconds() / 10" 
+                color="primary">
+              </ion-progress-bar>
+            </div>
+          } @else {
+            <p class="status-text">{{ 'NO_CONNECTION.AUTO_RECONNECT_DISABLED' | translate }}</p>
+          }
+          
+          <ion-button 
+            fill="outline" 
+            size="small" 
+            (click)="toggleAutoReconnection()"
+            [color]="isAutoReconnecting() ? 'danger' : 'primary'"
+            class="toggle-button">
+            <ion-icon 
+              [name]="isAutoReconnecting() ? 'stop' : 'play'" 
+              slot="start">
+            </ion-icon>
+            {{ isAutoReconnecting() ? ('NO_CONNECTION.STOP_AUTO_RECONNECT' | translate) : ('NO_CONNECTION.START_AUTO_RECONNECT' | translate) }}
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+    
     <div class="actions">
       <ion-button 
         expand="block" 
@@ -30,15 +73,6 @@
           <ion-spinner name="crescent"></ion-spinner>
         }
         {{ isChecking() ? ('NO_CONNECTION.CHECKING' | translate) : ('NO_CONNECTION.RETRY' | translate) }}
-      </ion-button>
-      
-      <ion-button 
-        expand="block" 
-        fill="outline"
-        (click)="goToHome()"
-        class="home-button">
-        <ion-icon name="home-outline" slot="start"></ion-icon>
-        {{ 'NO_CONNECTION.GO_HOME' | translate }}
       </ion-button>
     </div>
     

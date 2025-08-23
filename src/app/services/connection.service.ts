@@ -75,6 +75,19 @@ export class ConnectionService {
       }
     });
 
+    // Effect to automatically redirect from no-connection page when connection is restored
+    effect(() => {
+      const isOnline = this.isOnline();
+      if (isOnline && this.router.url === '/no-connection') {
+        // Wait a bit to ensure connection is stable before redirecting
+        setTimeout(() => {
+          if (this.isOnline() && this.router.url === '/no-connection') {
+            this.router.navigate(['/home']);
+          }
+        }, 1500);
+      }
+    });
+
     // Cleanup on destroy
     this.destroyRef.onDestroy(() => {
       this.cleanup();
@@ -178,6 +191,15 @@ export class ConnectionService {
     
     // Test connection quality after coming back online
     setTimeout(() => this.testConnection(), 1000);
+    
+    // If we're on the no-connection page and connection is restored, redirect to home
+    if (this.router.url === '/no-connection') {
+      setTimeout(() => {
+        if (this.isOnline()) {
+          this.router.navigate(['/home']);
+        }
+      }, 2000); // Wait a bit to ensure connection is stable
+    }
   }
 
   private handleOfflineEvent() {
@@ -219,6 +241,16 @@ export class ConnectionService {
   // Public method to manually test connection
   async testConnectionManually() {
     await this.testConnection();
+    
+    // If connection is restored and we're on no-connection page, redirect
+    if (this.isOnline() && this.router.url === '/no-connection') {
+      this.router.navigate(['/home']);
+    }
+  }
+
+  // Method to check if we should redirect from no-connection page
+  shouldRedirectFromNoConnection(): boolean {
+    return this.isOnline() && this.router.url === '/no-connection';
   }
 
   // Public method to get current connection status
