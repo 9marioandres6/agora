@@ -4,13 +4,6 @@
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ project()?.title || 'Project' }}</ion-title>
-    <ion-buttons slot="end">
-      @if (isOwner()) {
-        <ion-button fill="clear" (click)="editProject()">
-          <ion-icon name="create-outline"></ion-icon>
-        </ion-button>
-      }
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -112,8 +105,12 @@
           <div class="info-row">
             <label>{{ 'PROJECT.TITLE_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isEditingProject()) {
-                <ion-input [(ngModel)]="editingProject().title" placeholder="{{ 'PROJECT.TITLE_PLACEHOLDER' | translate }}"></ion-input>
+              @if (isOwner()) {
+                <ion-input 
+                  [ngModel]="editingProject().title || project()?.title || ''" 
+                  (ngModelChange)="updateProjectField('title', $event)"
+                  placeholder="{{ 'PROJECT.TITLE_PLACEHOLDER' | translate }}">
+                </ion-input>
               } @else {
                 <span>{{ project()?.title }}</span>
               }
@@ -123,8 +120,11 @@
           <div class="info-row">
             <label>{{ 'PROJECT.SCOPE_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isEditingProject()) {
-                <ion-select [(ngModel)]="editingProject().scope" placeholder="Select scope">
+              @if (isOwner()) {
+                <ion-select 
+                  [ngModel]="editingProject().scope || project()?.scope || ''" 
+                  (ngModelChange)="updateProjectField('scope', $event)"
+                  placeholder="Select scope">
                   <ion-select-option value="grupal">Grupal - Small Group Collaboration</ion-select-option>
                   <ion-select-option value="local">Local - Neighbourhood/Community</ion-select-option>
                   <ion-select-option value="state">State - State/Province level</ion-select-option>
@@ -140,8 +140,13 @@
           <div class="info-row">
             <label>{{ 'PROJECT.DESCRIPTION_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isEditingProject()) {
-                <ion-textarea [(ngModel)]="editingProject().description" placeholder="{{ 'PROJECT.DESCRIPTION_PLACEHOLDER' | translate }}" rows="3"></ion-textarea>
+              @if (isOwner()) {
+                <ion-textarea 
+                  [ngModel]="editingProject().description || project()?.description || ''" 
+                  (ngModelChange)="updateProjectField('description', $event)"
+                  placeholder="{{ 'PROJECT.DESCRIPTION_PLACEHOLDER' | translate }}" 
+                  rows="3">
+                </ion-textarea>
               } @else {
                 <span>{{ project()?.description }}</span>
               }
@@ -151,17 +156,23 @@
           <div class="info-row">
             <label>{{ 'PROJECT.NEEDS_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isEditingProject()) {
+              @if (isOwner()) {
                 <div class="needs-editor">
-                  @for (need of editingProject().needs || []; track $index) {
+                  @for (need of editingProject().needs || project()?.needs || []; track $index) {
                     <div class="need-item">
-                      <ion-input [(ngModel)]="editingProject().needs![$index]" placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"></ion-input>
-                      <ion-button fill="clear" color="danger" size="small" (click)="removeNeed($index)">
+                                        <ion-input 
+                    [ngModel]="need"
+                    (ngModelChange)="updateProjectNeed($index, $event)"
+                    placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"
+                    (ionBlur)="saveProjectField('needs')"
+                    (keyup.enter)="saveProjectField('needs')">
+                  </ion-input>
+                      <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
                         <ion-icon name="trash-outline"></ion-icon>
                       </ion-button>
                     </div>
                   }
-                  <ion-button fill="outline" size="small" (click)="addNeed()">
+                  <ion-button fill="outline" size="small" (click)="addProjectNeed()">
                     <ion-icon name="add" slot="start"></ion-icon>
                     {{ 'PROJECT.ADD_NEED' | translate }}
                   </ion-button>
@@ -175,19 +186,6 @@
               }
             </div>
           </div>
-
-          @if (isEditingProject()) {
-            <div class="edit-actions">
-              <ion-button color="success" (click)="saveProject()">
-                <ion-icon name="checkmark" slot="start"></ion-icon>
-                {{ 'PROJECT.SAVE_CHANGES' | translate }}
-              </ion-button>
-              <ion-button color="medium" fill="outline" (click)="cancelEdit()">
-                <ion-icon name="close" slot="start"></ion-icon>
-                {{ 'COMMON.CANCEL' | translate }}
-              </ion-button>
-            </div>
-          }
         </ion-card-content>
       </ion-card>
 

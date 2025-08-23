@@ -39,13 +39,15 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   readonly editingChapter = signal<Partial<Chapter>>({});
   readonly pendingCollaborators = signal<PendingCollaborator[]>([]);
   
+  // Auto-save timer for project fields
+  private projectAutoSaveTimer: any;
+  
   // Computed properties
   readonly currentUser = computed(() => this.authService.user());
   readonly isOwner = computed(() => {
     const user = this.currentUser();
     const proj = this.project();
-    // TEMPORARY: Always return true for testing so you can see the buttons
-    return true;
+    return user && proj && user.uid === proj.createdBy;
   });
   
   constructor() {
@@ -325,24 +327,204 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     this.editingChapter.set({});
     this.stopAutoSave();
   }
-  
+
+  // Project field editing methods
+  startEditingProjectField(field: 'title' | 'description' | 'scope' | 'needs') {
+    const proj = this.project();
+    if (!proj) return;
+
+    switch (field) {
+      case 'title':
+        this.editingProject.update(project => ({ ...project, title: proj.title || '' }));
+        break;
+      case 'description':
+        this.editingProject.update(project => ({ ...project, description: proj.description || '' }));
+        break;
+      case 'scope':
+        this.editingProject.update(project => ({ ...project, scope: proj.scope || '' }));
+        break;
+      case 'needs':
+        this.editingProject.update(project => ({ ...project, needs: [...(proj.needs || [])] }));
+        break;
+    }
+  }
+
+  async saveProjectField(field: 'title' | 'description' | 'scope' | 'needs') {
+    if (!this.projectId) return;
+
+    const proj = this.project();
+    if (!proj) return;
+
+    let updates: Partial<Project> = {};
+
+          switch (field) {
+        case 'title':
+          const newTitle = this.editingProject().title?.trim();
+          if (newTitle && newTitle !== proj.title) {
+            updates.title = newTitle;
+          }
+          break;
+        case 'description':
+          const newDescription = this.editingProject().description?.trim();
+          if (newDescription !== proj.description) {
+            updates.description = newDescription;
+          }
+          break;
+        case 'scope':
+          const newScope = this.editingProject().scope;
+          if (newScope && newScope !== proj.scope) {
+            updates.scope = newScope;
+          }
+          break;
+        case 'needs':
+          const newNeeds = this.editingProject().needs?.filter(need => need.trim()) || [];
+          if (JSON.stringify(newNeeds) !== JSON.stringify(proj.needs)) {
+            updates.needs = newNeeds;
+          }
+          break;
+      }
+
+    if (Object.keys(updates).length > 0) {
+      try {
+        await this.projectsService.updateProject(this.projectId, updates);
+        
+        // Update local state
+        this.project.update(project => {
+          if (project) {
+            return { ...project, ...updates };
+          }
+          return project;
+        });
+
+        // Clear editing state
+        this.startEditingProjectField(field);
+      } catch (error) {
+        console.error(`Error saving project ${field}:`, error);
+        await this.showToast(`Error saving ${field}`, 'danger');
+      }
+    } else {
+      this.startEditingProjectField(field);
+    }
+  }
+
+  cancelProjectFieldEdit(field: 'title' | 'description' | 'scope' | 'needs') {
+    this.startEditingProjectField(field);
+  }
+
+  // Auto-save for project fields
+  private startProjectFieldAutoSave(field: 'title' | 'description' | 'scope' | 'needs') {
+    this.stopProjectFieldAutoSave();
+    
+    this.projectAutoSaveTimer = setInterval(() => {
+      this.autoSaveProjectField(field);
+    }, 1000);
+  }
+
+  private stopProjectFieldAutoSave() {
+    if (this.projectAutoSaveTimer) {
+      clearInterval(this.projectAutoSaveTimer);
+      this.projectAutoSaveTimer = null;
+    }
+  }
+
+  private async autoSaveProjectField(field: 'title' | 'description' | 'scope' | 'needs') {
+    const proj = this.project();
+    if (!proj) return;
+
+    let updates: Partial<Project> = {};
+    let hasChanges = false;
+
+          switch (field) {
+        case 'title':
+          const newTitle = this.editingProject().title?.trim();
+          if (newTitle && newTitle !== proj.title) {
+            updates.title = newTitle;
+            hasChanges = true;
+          }
+          break;
+        case 'description':
+          const newDescription = this.editingProject().description?.trim();
+          if (newDescription !== proj.description) {
+            updates.description = newDescription;
+            hasChanges = true;
+          }
+          break;
+        case 'scope':
+          const newScope = this.editingProject().scope;
+          if (newScope && newScope !== proj.scope) {
+            updates.scope = newScope;
+            hasChanges = true;
+          }
+          break;
+        case 'needs':
+          const newNeeds = this.editingProject().needs?.filter(need => need.trim()) || [];
+          if (JSON.stringify(newNeeds) !== JSON.stringify(proj.needs)) {
+            updates.needs = newNeeds;
+            hasChanges = true;
+          }
+          break;
+      }
+
+    if (hasChanges) {
+      try {
+        await this.projectsService.updateProject(this.projectId!, updates);
+        
+        // Update local state
+        this.project.update(project => {
+          if (project) {
+            return { ...project, ...updates };
+          }
+          return project;
+        });
+      } catch (error) {
+        console.error(`Auto-save error for ${field}:`, error);
+      }
+    }
+  }
+
+  // Needs management methods
+  addProjectNeed() {
+    const currentNeeds = this.editingProject().needs || [];
+    this.editingProject.update(project => ({ ...project, needs: [...currentNeeds, ''] }));
+    this.startProjectFieldAutoSave('needs');
+  }
+
+  removeProjectNeed(index: number) {
+    const currentNeeds = this.editingProject().needs || [];
+    const newNeeds = currentNeeds.filter((_, i) => i !== index);
+    this.editingProject.update(project => ({ ...project, needs: newNeeds }));
+    this.startProjectFieldAutoSave('needs');
+  }
+
+  updateProjectNeed(index: number, value: string) {
+    const currentNeeds = this.editingProject().needs || [];
+    const newNeeds = [...currentNeeds];
+    newNeeds[index] = value;
+    this.editingProject.update(project => ({ ...project, needs: newNeeds }));
+    this.startProjectFieldAutoSave('needs');
+  }
+
+  updateProjectField(field: 'title' | 'description' | 'scope', value: string) {
+    this.editingProject.update(project => ({ ...project, [field]: value }));
+    this.startProjectFieldAutoSave(field);
+  }
+
+  // Chapter auto-save methods
   private startAutoSave() {
-    // Clear any existing timer
     this.stopAutoSave();
     
-    // Set up auto-save every 1 second
     this.autoSaveTimer = setInterval(() => {
       this.autoSaveChapter();
     }, 1000);
   }
-  
+
   private stopAutoSave() {
     if (this.autoSaveTimer) {
       clearInterval(this.autoSaveTimer);
       this.autoSaveTimer = null;
     }
   }
-  
+
   private async autoSaveChapter() {
     const editing = this.editingChapter();
     if (!editing.id) return;
@@ -399,8 +581,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   canEditChapter(chapter: Chapter): boolean {
     const user = this.currentUser();
     const proj = this.project();
-    // TEMPORARY: Always return true for testing so you can see the buttons
-    return true;
+    return !!(user && proj && (user.uid === proj.createdBy || proj.collaborators?.some(c => c.uid === user.uid)));
   }
   
   isEditingChapter(chapterId: string): boolean {
@@ -605,8 +786,9 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    // Stop auto-save timer
+    // Stop auto-save timers
     this.stopAutoSave();
+    this.stopProjectFieldAutoSave();
     
     // Clean up all object URLs to prevent memory leaks
     const project = this.project();
