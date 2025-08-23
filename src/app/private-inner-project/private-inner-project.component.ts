@@ -264,27 +264,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     }
   }
 
-  async removeCollaborator(collaboratorUid: string) {
-    try {
-      if (!this.projectId) return;
-      
-      await this.projectsService.removeCollaborator(this.projectId, collaboratorUid);
-      
-      // Reload project to get updated collaborators list
-      await this.loadProject();
-      
-      await this.showToast(
-        this.translateService.instant('PROJECT.COLLABORATOR_REMOVED'),
-        'success'
-      );
-    } catch (error) {
-      console.error('Error removing collaborator:', error);
-      await this.showToast(
-        this.translateService.instant('PROJECT.ERROR_REMOVING_COLLABORATOR'),
-        'danger'
-      );
-    }
-  }
+
   
   async showAddChapterModal() {
     await this.addSection();

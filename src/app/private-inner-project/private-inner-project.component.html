@@ -50,16 +50,6 @@
                 <h4>{{ collaborator.displayName || 'Anonymous' }}</h4>
                 <ion-chip color="success">{{ 'PROJECT.COLLABORATOR' | translate }}</ion-chip>
               </div>
-              @if (isOwner()) {
-                <ion-button 
-                  fill="clear" 
-                  size="small" 
-                  color="danger"
-                  (click)="removeCollaborator(collaborator.uid)"
-                  class="remove-button">
-                  <ion-icon name="trash-outline"></ion-icon>
-                </ion-button>
-              }
             </div>
           }
         </ion-card-content>
