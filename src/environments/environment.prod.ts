@@ -7,5 +7,9 @@ export const environment = {
     storageBucket: "agora-2600f.firebasestorage.app",
     messagingSenderId: "970922201836",
     appId: "1:970922201836:web:30fb7b8e800a67ac904bc9"
+  },
+  supabase: {
+    url: 'https://ghvjvnumdfnfdqxtdkyx.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdodmp2bnVtZGZuZmRxeHRka3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyNTc5MDAsImV4cCI6MjA2NTgzMzkwMH0.ebPBh2ZnOEP02-6nPw_mHQkvvoZRucKtE9znsxqSSxw'
   }
 };

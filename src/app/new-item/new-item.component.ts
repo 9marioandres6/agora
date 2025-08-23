@@ -7,12 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { ProjectsService } from '../services/projects.service';
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
-
-interface ScopeOption {
-  value: string;
-  label: string;
-  icon: string;
-}
+import { ScopeOption } from './models/new-item.models';
 
 @Component({
   selector: 'app-new-item',

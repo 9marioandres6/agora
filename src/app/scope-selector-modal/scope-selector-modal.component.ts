@@ -2,12 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
-
-interface ScopeOption {
-  value: string;
-  label: string;
-  icon: string;
-}
+import { ScopeOption } from './models/scope.models';
 
 @Component({
   selector: 'app-scope-selector-modal',

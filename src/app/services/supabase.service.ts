@@ -1,15 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
-
-export interface StorageFile {
-  id: string;
-  name: string;
-  url: string;
-  size: number;
-  type: string;
-  created_at: string;
-}
+import { StorageFile } from './models/supabase.models';
 
 @Injectable({
   providedIn: 'root'

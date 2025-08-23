@@ -5,17 +5,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { ProjectsService, Project, Chapter, Media } from '../services/projects.service';
+import { ProjectsService } from '../services/projects.service';
+import { Project, Chapter, Media } from '../services/models/project.models';
 import { SupabaseService } from '../services/supabase.service';
-
-
-interface PendingCollaborator {
-  uid: string;
-  displayName: string;
-  email: string;
-  photoURL?: string;
-  message?: string;
-}
+import { PendingCollaborator } from './models/private-inner-project.models';
 
 @Component({
   selector: 'app-private-inner-project',

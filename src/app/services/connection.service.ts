@@ -2,14 +2,7 @@ import { Injectable, computed, effect, inject, signal, DestroyRef } from '@angul
 import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
-export interface ConnectionState {
-  isOnline: boolean;
-  connectionQuality: 'excellent' | 'good' | 'fair' | 'poor' | 'offline';
-  lastCheck: Date | null;
-  isChecking: boolean;
-  connectionSpeed: number | null;
-}
+import { ConnectionState } from './models/connection.models';
 
 @Injectable({
   providedIn: 'root'

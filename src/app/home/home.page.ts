@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { SettingsModalComponent } from '../components/settings-modal/settings-modal.component';
-import { ProjectsService, Project } from '../services/projects.service';
+import { ProjectsService } from '../services/projects.service';
+import { Project } from '../services/models/project.models';
 import { ViewWillEnter } from '@ionic/angular';
 
 @Component({

@@ -1,12 +1,7 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
 import { Auth, User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-
-export interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-}
+import { AuthState } from './models/auth.models';
 
 @Injectable({
   providedIn: 'root'
