@@ -58,6 +58,11 @@
       color: var(--app-text);
     }
   }
+
+  ion-avatar {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 /* Pending Collaborators */
@@ -83,16 +88,8 @@
     flex: 1;
 
     ion-avatar {
-      ion-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        font-size: 24px;
-        color: var(--app-text);
-        opacity: 0.6;
-      }
+      width: 40px;
+      height: 40px;
     }
 
     .request-details {

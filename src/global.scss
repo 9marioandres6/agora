@@ -160,6 +160,9 @@ ion-avatar ion-icon {
   justify-content: center !important;
   width: 100% !important;
   height: 90% !important;
+  font-size: 20px !important;
+  color: var(--app-text) !important;
+  opacity: 0.6 !important;
 }
 
 /* Force light theme button colors */

@@ -14,14 +14,14 @@
     position: relative;
     
     .profile-avatar {
-      width: 100px;
-      height: 100px;
+      width: 40px;
+      height: 40px;
       margin-bottom: 16px;
       border: 3px solid var(--ion-color-primary);
       box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3);
       
       ion-icon {
-        font-size: 48px;
+        font-size: 20px;
         color: var(--ion-color-medium);
         display: flex;
         align-items: center;
