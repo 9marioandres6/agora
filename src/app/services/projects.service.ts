@@ -41,6 +41,9 @@ export interface Media {
   type: 'image' | 'video';
   url: string;
   caption: string;
+  storagePath?: string; // Path in Supabase storage
+  fileName?: string; // Original filename
+  fileSize?: number; // File size in bytes
 }
 
 export interface Collaborator {

@@ -389,6 +389,13 @@ ion-item {
 - **Signals**: Prefer signals over traditional observables for state
 - **Type safety**: Use TypeScript interfaces and types
 
+### IMPORTANT: Feature Development Rules
+- **ONLY implement features that are explicitly requested by the user**
+- **DO NOT add extra features, UI elements, or functionality unless specifically asked**
+- **DO NOT create components, modals, or interfaces that weren't requested**
+- **Keep implementations minimal and focused on exactly what was asked for**
+- **If you think something might be useful, ask the user first before implementing**
+
 ### Component Structure
 - **Separate HTML files** for templates
 - **SCSS files** for component-specific styles

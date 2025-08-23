@@ -1,12 +1,12 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, ToastController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ProjectsService, Project, Chapter, Media } from '../services/projects.service';
-import { AddSectionModalComponent } from '../components/add-section-modal/add-section-modal.component';
+import { SupabaseService } from '../services/supabase.service';
 
 
 interface PendingCollaborator {
@@ -23,11 +23,13 @@ interface PendingCollaborator {
   styleUrls: ['./private-inner-project.component.scss'],
   imports: [CommonModule, IonicModule, TranslateModule, FormsModule]
 })
-export class PrivateInnerProjectComponent {
+export class PrivateInnerProjectComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private projectsService = inject(ProjectsService);
   private modalCtrl = inject(ModalController);
+  private toastCtrl = inject(ToastController);
+  private supabaseService = inject(SupabaseService);
   
   projectId = this.route.snapshot.paramMap.get('id');
   
@@ -197,17 +199,7 @@ export class PrivateInnerProjectComponent {
   }
   
   async showAddChapterModal() {
-    const modal = await this.modalCtrl.create({
-      component: AddSectionModalComponent,
-      componentProps: {}
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    if (data) {
-      await this.addSection(data);
-    }
+    await this.addSection();
   }
 
   async addSection(newSection?: Chapter) {
@@ -248,6 +240,19 @@ export class PrivateInnerProjectComponent {
   }
 
   async deleteSection(chapter: Chapter) {
+    // Delete all media files from Supabase storage for this section
+    if (chapter.media && chapter.media.length > 0) {
+      try {
+        const deleted = await this.supabaseService.deleteSectionFiles(chapter.id);
+        if (!deleted) {
+          await this.showToast(`Warning: Could not delete some media files from storage`, 'warning');
+        }
+      } catch (error) {
+        console.error('Error deleting section files from storage:', error);
+        await this.showToast(`Warning: Could not delete media files from storage`, 'warning');
+      }
+    }
+    
     const currentChapters = this.project()?.chapters || [];
     const updatedChapters = currentChapters.filter(c => c.id !== chapter.id);
     
@@ -265,9 +270,10 @@ export class PrivateInnerProjectComponent {
     // Save to database in background without blocking UI
     try {
       await this.saveProjectChanges();
+      await this.showToast(`Successfully deleted section`, 'success');
     } catch (error) {
       console.error('Error deleting section:', error);
-      // Optionally show error toast/notification here
+      await this.showToast(`Error deleting section from database`, 'danger');
     }
   }
   
@@ -330,52 +336,157 @@ export class PrivateInnerProjectComponent {
   }
   
   showAddMediaModal(chapter: Chapter) {
-    // For now, we'll add mock media
-    // Later this can be enhanced with file upload functionality
-    this.addMockMedia(chapter);
-  }
-
-  async addMockMedia(chapter: Chapter) {
-    // For testing purposes, add a placeholder media item
-    // In a real app, this would open a file picker
-    const mediaType = Math.random() > 0.5 ? 'image' : 'video';
-    const newMedia: Media = {
-      id: Date.now().toString(),
-      type: mediaType,
-      url: mediaType === 'image' 
-        ? 'https://via.placeholder.com/400x300/007acc/ffffff?text=Sample+Image'
-        : 'https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4',
-      caption: `Sample ${mediaType} - Click to replace with real content`
-    };
-    
-    const currentChapters = this.project()?.chapters || [];
-    const updatedChapters = currentChapters.map(c => 
-      c.id === chapter.id 
-        ? { ...c, media: [...(c.media || []), newMedia] }
-        : c
-    );
-    
-    // Update local state immediately using signals for instant UI update
-    this.project.update(project => {
-      if (project) {
-        return {
-          ...project,
-          chapters: updatedChapters
-        };
-      }
-      return project;
-    });
-    
-    // Save to database in background without blocking UI
-    try {
-      await this.saveProjectChanges();
-    } catch (error) {
-      console.error('Error adding media:', error);
-      // Optionally show error toast/notification here
+    // If section already has media, replace it instead of adding
+    if (chapter.media && chapter.media.length > 0) {
+      this.replaceMedia(chapter);
+    } else {
+      // Create a hidden file input for file selection
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*,video/*';
+      fileInput.multiple = false; // Only one file at a time
+      
+      fileInput.onchange = (event) => {
+        const files = (event.target as HTMLInputElement).files;
+        if (files && files.length > 0) {
+          this.handleFileUpload(chapter, Array.from(files));
+        }
+      };
+      
+      fileInput.click();
     }
   }
 
+  replaceMedia(chapter: Chapter) {
+    // Create a hidden file input for file selection
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*,video/*';
+    fileInput.multiple = false; // Only one file at a time
+    
+    fileInput.onchange = async (event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        // Delete existing media first
+        if (chapter.media && chapter.media.length > 0) {
+          for (const media of chapter.media) {
+            await this.deleteMedia(chapter, media);
+          }
+        }
+        // Upload new media
+        this.handleFileUpload(chapter, Array.from(files));
+      }
+    };
+    
+    fileInput.click();
+  }
+
+  async handleFileUpload(chapter: Chapter, files: File[]) {
+    const maxFileSize = 10 * 1024 * 1024; // 10MB limit
+    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+    
+    for (const file of files) {
+      try {
+        // Validate file size
+        if (file.size > maxFileSize) {
+          await this.showToast(`File ${file.name} is too large. Maximum size is 10MB.`, 'warning');
+          continue;
+        }
+        
+        // Validate file type
+        const isValidImage = allowedImageTypes.includes(file.type);
+        const isValidVideo = allowedVideoTypes.includes(file.type);
+        
+        if (!isValidImage && !isValidVideo) {
+          await this.showToast(`File ${file.name} has an unsupported type.`, 'warning');
+          continue;
+        }
+        
+        // Show upload progress
+        await this.showToast(`Uploading ${file.name}...`, 'success');
+        
+        // Upload file to Supabase storage in sections folder with section ID subfolder
+        const uploadResult = await this.supabaseService.uploadFile(
+          file, 
+          'agora-project', 
+          `sections/${chapter.id}`
+        );
+        
+        if (!uploadResult) {
+          await this.showToast(`Failed to upload ${file.name}`, 'danger');
+          continue;
+        }
+        
+        // Determine media type
+        const mediaType = isValidImage ? 'image' : 'video';
+        
+        // Create media object with Supabase URL
+        const newMedia: Media = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          type: mediaType,
+          url: uploadResult.url,
+          caption: file.name || `Uploaded ${mediaType}`,
+          storagePath: uploadResult.path,
+          fileName: file.name,
+          fileSize: file.size
+        };
+        
+        // Update local state immediately using signals
+        const currentChapters = this.project()?.chapters || [];
+        const updatedChapters = currentChapters.map(c => 
+          c.id === chapter.id 
+            ? { ...c, media: [...(c.media || []), newMedia] }
+            : c
+        );
+        
+        this.project.update(project => {
+          if (project) {
+            return {
+              ...project,
+              chapters: updatedChapters
+            };
+          }
+          return project;
+        });
+        
+        // Save to database in background
+        try {
+          await this.saveProjectChanges();
+          await this.showToast(`Successfully uploaded ${file.name}`, 'success');
+        } catch (error) {
+          console.error('Error saving media to database:', error);
+          await this.showToast(`Error saving ${file.name} to database`, 'danger');
+        }
+        
+      } catch (error) {
+        console.error('Error processing file:', file.name, error);
+        await this.showToast(`Error processing ${file.name}`, 'danger');
+      }
+    }
+  }
+
+
+
   async deleteMedia(chapter: Chapter, media: Media) {
+    // Clean up object URL to prevent memory leaks (for local files)
+    if (media.url.startsWith('blob:')) {
+      URL.revokeObjectURL(media.url);
+    }
+    
+    // Delete file from Supabase storage if it exists there
+    if (media.storagePath) {
+      try {
+        const deleted = await this.supabaseService.deleteFile(media.storagePath);
+        if (!deleted) {
+          await this.showToast(`Warning: Could not delete file from storage`, 'warning');
+        }
+      } catch (error) {
+        console.error('Error deleting file from storage:', error);
+        await this.showToast(`Warning: Could not delete file from storage`, 'warning');
+      }
+    }
+    
     const currentChapters = this.project()?.chapters || [];
     const updatedChapters = currentChapters.map(c => 
       c.id === chapter.id 
@@ -397,9 +508,10 @@ export class PrivateInnerProjectComponent {
     // Save to database in background without blocking UI
     try {
       await this.saveProjectChanges();
+      await this.showToast(`Successfully deleted ${media.caption}`, 'success');
     } catch (error) {
       console.error('Error deleting media:', error);
-      // Optionally show error toast/notification here
+      await this.showToast(`Error deleting media from database`, 'danger');
     }
   }
 
@@ -417,5 +529,34 @@ export class PrivateInnerProjectComponent {
       'global': 'Global - International level'
     };
     return scopeLabels[scope] || scope;
+  }
+
+  ngOnDestroy() {
+    // Clean up all object URLs to prevent memory leaks
+    const project = this.project();
+    if (project?.chapters) {
+      project.chapters.forEach(chapter => {
+        chapter.media?.forEach(media => {
+          if (media.url.startsWith('blob:')) {
+            URL.revokeObjectURL(media.url);
+          }
+        });
+      });
+    }
+  }
+
+  // Helper method to check if media is from Supabase storage
+  isSupabaseMedia(media: Media): boolean {
+    return media.url.includes('supabase.co') || !!media.storagePath;
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }

@@ -202,23 +202,25 @@
           </div>
         </ion-card-header>
         <ion-card-content>
-          @if ((project()?.chapters || []).length === 0) {
-            <div class="empty-sections">
-              <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
-              <h3>{{ 'CHAPTERS.NO_CHAPTERS' | translate }}</h3>
-              <p>{{ 'CHAPTERS.NO_CHAPTERS_DESC' | translate }}</p>
-            </div>
-          } @else {
-            @for (chapter of project()?.chapters || []; track chapter.id; let i = $index) {
+                  @for (chapter of project()?.chapters || []; track chapter.id; let i = $index) {
               <div class="chapter-item">
                 <div class="chapter-header">
                   <div class="chapter-actions">
-                    <ion-button fill="clear" size="small" (click)="editChapter(chapter)">
-                      <ion-icon name="create-outline"></ion-icon>
-                    </ion-button>
-                    <ion-button fill="clear" size="small" color="danger" (click)="deleteSection(chapter)">
-                      <ion-icon name="trash-outline"></ion-icon>
-                    </ion-button>
+                    @if (isEditingChapter(chapter.id)) {
+                      <ion-button fill="clear" size="small" color="success" (click)="saveChapter()">
+                        <ion-icon name="checkmark"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" size="small" color="medium" (click)="cancelChapterEdit()">
+                        <ion-icon name="close"></ion-icon>
+                      </ion-button>
+                    } @else {
+                      <ion-button fill="clear" size="small" (click)="editChapter(chapter)">
+                        <ion-icon name="create-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" size="small" color="danger" (click)="deleteSection(chapter)">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </ion-button>
+                    }
                   </div>
                 </div>
                 
@@ -232,16 +234,6 @@
                       <ion-label position="stacked">{{ 'CHAPTERS.DESCRIPTION' | translate }}</ion-label>
                       <ion-textarea [(ngModel)]="editingChapter().description" placeholder="{{ 'CHAPTERS.DESCRIPTION' | translate }}" rows="4"></ion-textarea>
                     </ion-item>
-                    <div class="chapter-edit-actions">
-                      <ion-button size="small" color="success" (click)="saveChapter()">
-                        <ion-icon name="checkmark" slot="start"></ion-icon>
-                        {{ 'COMMON.SAVE' | translate }}
-                      </ion-button>
-                      <ion-button size="small" color="medium" fill="outline" (click)="cancelChapterEdit()">
-                        <ion-icon name="close" slot="start"></ion-icon>
-                        {{ 'COMMON.CANCEL' | translate }}
-                      </ion-button>
-                    </div>
                   </div>
                 } @else {
                   <div class="chapter-content">
@@ -258,7 +250,7 @@
                     <div class="media-actions">
                       <ion-button fill="outline" size="small" (click)="showAddMediaModal(chapter)">
                         <ion-icon name="add" slot="start"></ion-icon>
-                        {{ 'CHAPTERS.ADD_MEDIA' | translate }}
+                        {{ (chapter.media || []).length > 0 ? 'Replace Media' : 'Add Media' }}
                       </ion-button>
                     </div>
                   }
@@ -267,22 +259,20 @@
                     <div class="media-grid">
                       @for (media of chapter.media || []; track media.id) {
                         <div class="media-item">
-                          <div class="media-preview">
+                          <div class="media-preview" (click)="replaceMedia(chapter)">
                             @if (media.type === 'image') {
-                              <img [src]="media.url" [alt]="media.caption" class="media-image" (click)="previewMedia(media)">
+                              <img [src]="media.url" [alt]="media.caption" class="media-image">
                             } @else if (media.type === 'video') {
-                              <div class="video-thumbnail" (click)="previewMedia(media)">
+                              <div class="video-thumbnail">
                                 <video [src]="media.url" class="media-video"></video>
                                 <div class="play-overlay">
                                   <ion-icon name="play-circle" size="large"></ion-icon>
                                 </div>
                               </div>
                             }
-                            @if (isEditingChapter(chapter.id)) {
-                              <ion-button fill="clear" size="small" color="danger" class="delete-media-btn" (click)="deleteMedia(chapter, media)">
-                                <ion-icon name="close-circle"></ion-icon>
-                              </ion-button>
-                            }
+                            <ion-button fill="clear" size="small" color="danger" class="delete-media-btn" (click)="deleteMedia(chapter, media)">
+                              <ion-icon name="close-circle"></ion-icon>
+                            </ion-button>
                           </div>
                           <div class="media-info">
                             <p class="media-caption">{{ media.caption }}</p>
@@ -295,7 +285,6 @@
                 </div>
               </div>
             }
-          }
         </ion-card-content>
       </ion-card>
     </div>
