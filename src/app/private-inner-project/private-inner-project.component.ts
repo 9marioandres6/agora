@@ -1,6 +1,6 @@
-import { Component, computed, inject, signal, OnDestroy } from '@angular/core';
+import { Component, computed, inject, signal, OnDestroy, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController, ToastController, AlertController } from '@ionic/angular';
+import { IonicModule, ModalController, ToastController, AlertController, IonInput } from '@ionic/angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -17,6 +17,8 @@ import { PendingCollaborator } from './models/private-inner-project.models';
   imports: [CommonModule, IonicModule, TranslateModule, FormsModule]
 })
 export class PrivateInnerProjectComponent implements OnDestroy {
+  @ViewChildren('chapterTitleInput') chapterTitleInputs!: QueryList<IonInput>;
+
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private projectsService = inject(ProjectsService);
@@ -25,6 +27,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   private supabaseService = inject(SupabaseService);
   private translateService = inject(TranslateService);
   private alertCtrl = inject(AlertController);
+  private cdr = inject(ChangeDetectorRef);
   
   projectId = this.route.snapshot.paramMap.get('id');
   
@@ -286,6 +289,17 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     
     // Start auto-save timer
     this.startAutoSave();
+
+    // Focus on the title input field after the view updates
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      // Get the last (most recently added) title input, which should be the one being edited
+      const titleInputs = this.chapterTitleInputs.toArray();
+      if (titleInputs.length > 0) {
+        const lastInput = titleInputs[titleInputs.length - 1];
+        lastInput.setFocus();
+      }
+    }, 100);
   }
   
   async saveChapter() {

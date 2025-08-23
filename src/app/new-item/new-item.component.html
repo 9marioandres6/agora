@@ -17,6 +17,7 @@
           <ion-item class="form-item">
             <ion-label position="stacked">{{ 'NEW_ITEM.TITLE' | translate }}</ion-label>
             <ion-input 
+              #titleInput
               [(ngModel)]="title" 
               name="title"
               type="text"

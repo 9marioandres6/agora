@@ -221,7 +221,7 @@
                   <div class="chapter-editor" (click)="$event.stopPropagation()">
                     <ion-item>
                       <ion-label position="stacked">{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}</ion-label>
-                      <ion-input [(ngModel)]="editingChapter().title" placeholder="{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}"></ion-input>
+                      <ion-input #chapterTitleInput [(ngModel)]="editingChapter().title" placeholder="{{ 'CHAPTERS.OPTIONAL_TITLE' | translate }}"></ion-input>
                     </ion-item>
                     <ion-item>
                       <ion-label position="stacked">{{ 'CHAPTERS.DESCRIPTION' | translate }}</ion-label>

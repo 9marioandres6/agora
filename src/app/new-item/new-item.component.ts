@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, ModalController } from '@ionic/angular';
+import { IonicModule, NavController, ModalController, IonInput } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
@@ -16,7 +16,9 @@ import { ScopeOption } from './models/new-item.models';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, TranslateModule]
 })
-export class NewItemComponent {
+export class NewItemComponent implements AfterViewInit {
+  @ViewChild('titleInput', { static: false }) titleInput!: IonInput;
+
   private authService = inject(AuthService);
   private navCtrl = inject(NavController);
   private themeService = inject(ThemeService);
@@ -117,5 +119,14 @@ export class NewItemComponent {
 
   goBack(): void {
     this.navCtrl.back();
+  }
+
+  ngAfterViewInit() {
+    // Set focus on the title input field when the component loads
+    setTimeout(() => {
+      if (this.titleInput) {
+        this.titleInput.setFocus();
+      }
+    }, 300);
   }
 }
