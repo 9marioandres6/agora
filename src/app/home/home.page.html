@@ -89,7 +89,8 @@
 
             <div class="project-footer">
               <div class="footer-actions">
-                <ion-button 
+                <div>
+                  <ion-button 
                   [fill]="isUserSupported(project) ? 'solid' : 'clear'"
                   size="small" 
                   color="success"
@@ -112,8 +113,9 @@
                     {{ (project.opposes || []).length }}
                   }
                 </ion-button>
-                
-                <ion-button 
+                </div>
+                <div>
+                  <ion-button 
                   fill="clear" 
                   size="small" 
                   color="medium"
@@ -136,6 +138,7 @@
                     {{ (project.collaborators || []).length }}
                   }
                 </ion-button>
+                </div>
               </div>
             </div>
 
