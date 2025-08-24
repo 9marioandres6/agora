@@ -12,6 +12,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-public-inner-project',
   templateUrl: './public-inner-project.component.html',
   styleUrls: ['./public-inner-project.component.scss'],
+  standalone: true,
   imports: [CommonModule, IonicModule, TranslateModule, FormsModule]
 })
 export class PublicInnerProjectComponent implements OnInit, OnDestroy {
@@ -94,6 +95,16 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
       'done': 'HOME.STATE_DONE'
     };
     return stateLabels[state] || 'HOME.STATE_BUILDING';
+  }
+
+  getNeedIcon(need: string): string {
+    const state = this.project()?.needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'checkmark-circle' : 'time';
+  }
+
+  getNeedIconColor(need: string): string {
+    const state = this.project()?.needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'success' : 'warning';
   }
 
   async showCollaborationModal() {

@@ -64,6 +64,16 @@ export class ProjectCardComponent {
     return stateLabels[state] || 'HOME.STATE_BUILDING';
   }
 
+  getNeedIcon(need: string): string {
+    const state = this.project().needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'checkmark-circle' : 'time';
+  }
+
+  getNeedIconColor(need: string): string {
+    const state = this.project().needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'success' : 'warning';
+  }
+
   isProjectCreator(project: Project): boolean {
     const currentUser = this.user;
     if (!currentUser?.uid) return false;

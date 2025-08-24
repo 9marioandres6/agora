@@ -23,6 +23,7 @@ export interface Project {
     email?: string;
     photoURL?: string;
   };
+  needStates?: { [needText: string]: 'pending' | 'obtained' };
 }
 
 export interface Chapter {

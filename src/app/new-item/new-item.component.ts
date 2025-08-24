@@ -104,7 +104,11 @@ export class NewItemComponent implements AfterViewInit {
         scope: this.scope,
         createdBy: currentUser.uid,
         collaborators: [],
-        collaborationRequests: []
+        collaborationRequests: [],
+        needStates: this.needs.reduce((states, need) => {
+          states[need] = 'pending';
+          return states;
+        }, {} as { [key: string]: 'pending' | 'obtained' })
       };
 
       const projectId = await this.projectsService.createProject(projectData);

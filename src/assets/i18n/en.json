@@ -60,6 +60,8 @@
     "NO_PROJECTS_MESSAGE": "Be the first to create a project and start collaborating with others!",
     "CREATE_FIRST_PROJECT": "Create First Project",
     "WHAT_WE_NEED": "What We Need",
+    "NEED_PENDING": "Pending",
+    "NEED_OBTAINED": "Obtained",
     "PARTICIPANTS": "participants",
     "STATE_BUILDING": "Building",
     "STATE_IMPLEMENTING": "Implementing",

@@ -57,7 +57,14 @@
             <div class="project-needs">
               <ul class="needs-list">
                 @for (need of project()?.needs || []; track need) {
-                  <li>{{ need }}</li>
+                  <li>
+                    <ion-icon 
+                      [name]="getNeedIcon(need)" 
+                      [color]="getNeedIconColor(need)"
+                      class="need-icon">
+                    </ion-icon>
+                    {{ need }}
+                  </li>
                 }
               </ul>
             </div>
