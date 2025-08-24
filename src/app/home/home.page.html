@@ -118,24 +118,23 @@
                   <ion-button 
                   fill="clear" 
                   size="small" 
-                  color="medium"
-                  (click)="toggleComments(project.id!, $event)"
-                  class="comments-button">
-                  <ion-icon name="chatbubble-outline"></ion-icon>
-                  @if ((project.comments || []).length > 0) {
-                    {{ (project.comments || []).length }}
-                  }
-                </ion-button>
-                
-                <ion-button 
-                  fill="clear" 
-                  size="small" 
                   color="primary"
                   (click)="toggleCollaborators(project.id!, $event)"
                   class="collaborators-button">
                   <ion-icon name="people-outline"></ion-icon>
                   @if ((project.collaborators || []).length > 0) {
                     {{ (project.collaborators || []).length }}
+                  }
+                </ion-button>
+                  <ion-button 
+                  fill="clear" 
+                  size="small" 
+                  color="medium"
+                  (click)="toggleComments(project.id!, $event)"
+                  class="comments-button">
+                  <ion-icon name="chatbubble-outline"></ion-icon>
+                  @if ((project.comments || []).length > 0) {
+                    {{ (project.comments || []).length }}
                   }
                 </ion-button>
                 </div>
@@ -147,9 +146,6 @@
               <div class="comments-container">
                 <div class="comments-header">
                   <h4>{{ 'HOME.COMMENTS' | translate }}</h4>
-                  @if (project.comments && project.comments.length > 0) {
-                    <span class="comments-count">{{ project.comments.length }} {{ project.comments.length === 1 ? 'comment' : 'comments' }}</span>
-                  }
                 </div>
                 @if (project.comments && project.comments.length > 0) {
                   <div class="comments-list">
