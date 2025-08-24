@@ -57,14 +57,11 @@
           
           @if (project()?.needs && (project()?.needs?.length || 0) > 0) {
             <div class="project-needs">
-              <h4>{{ 'HOME.WHAT_WE_NEED' | translate }}</h4>
-              <div class="needs-chips">
+              <ul class="needs-list">
                 @for (need of project()?.needs || []; track need) {
-                  <ion-chip color="primary" outline>
-                    {{ need }}
-                  </ion-chip>
+                  <li>{{ need }}</li>
                 }
-              </div>
+              </ul>
             </div>
           }
         </ion-card-content>

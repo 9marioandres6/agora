@@ -97,9 +97,11 @@
                 </div>
               } @else {
                 <div class="needs-display">
-                  @for (need of project()?.needs || []; track need) {
-                    <ion-chip color="primary" outline>{{ need }}</ion-chip>
-                  }
+                  <ul class="needs-list">
+                    @for (need of project()?.needs || []; track need) {
+                      <li>{{ need }}</li>
+                    }
+                  </ul>
                 </div>
               }
             </div>
