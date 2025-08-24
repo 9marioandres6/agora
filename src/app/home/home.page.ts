@@ -8,6 +8,7 @@ import { SettingsModalComponent } from '../components/settings-modal/settings-mo
 import { ProjectsService } from '../services/projects.service';
 import { Project } from '../services/models/project.models';
 import { ViewWillEnter } from '@ionic/angular';
+import { ProjectCardComponent } from '../components/project-card/project-card.component';
 
 @Component({
   selector: 'app-home',
@@ -30,8 +31,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   isLoading = signal(false);
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
-  newCommentText = '';
-  collaborationMessage = '';
+
 
   async presentSettingsModal() {
     const modal = await this.modalCtrl.create({
@@ -93,45 +93,7 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  getScopeIcon(scope: string): string {
-    const scopeIcons: { [key: string]: string } = {
-      'grupal': 'people',
-      'local': 'home',
-      'state': 'business',
-      'national': 'flag',
-      'global': 'globe'
-    };
-    return scopeIcons[scope] || 'help-circle';
-  }
 
-  getScopeLabel(scope: string): string {
-    const scopeLabels: { [key: string]: string } = {
-      'grupal': 'Grupal - Small Group Collaboration',
-      'local': 'Local - Neighbourhood/Community',
-      'state': 'State - State/Province level',
-      'national': 'National - Country level',
-      'global': 'Global - International level'
-    };
-    return scopeLabels[scope] || scope;
-  }
-
-  getStateColor(state: string): string {
-    const stateColors: { [key: string]: string } = {
-      'building': 'warning',
-      'implementing': 'primary',
-      'done': 'success'
-    };
-    return stateColors[state] || 'medium';
-  }
-
-  getStateLabel(state: string): string {
-    const stateLabels: { [key: string]: string } = {
-      'building': 'HOME.STATE_BUILDING',
-      'implementing': 'HOME.STATE_IMPLEMENTING',
-      'done': 'HOME.STATE_DONE'
-    };
-    return stateLabels[state] || 'HOME.STATE_BUILDING';
-  }
 
   async supportProject(projectId: string, event?: Event) {
     if (event) {
@@ -141,13 +103,8 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      const result = await this.projectsService.toggleSupport(projectId, currentUser.uid);
-      this.updateProjectVoting(projectId, 'supports', result.action, currentUser.uid);
-      
-      // If support was added, also remove from opposes array in UI
-      if (result.action === 'added') {
-        this.removeUserFromOpposes(projectId, currentUser.uid);
-      }
+      await this.projectsService.toggleSupport(projectId, currentUser.uid);
+      await this.loadProjects();
     } catch (error) {
       console.error('Error supporting project:', error);
     }
@@ -161,13 +118,8 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      const result = await this.projectsService.toggleOppose(projectId, currentUser.uid);
-      this.updateProjectVoting(projectId, 'opposes', result.action, currentUser.uid);
-      
-      // If oppose was added, also remove from supports array in UI
-      if (result.action === 'added') {
-        this.removeUserFromSupports(projectId, currentUser.uid);
-      }
+      await this.projectsService.toggleOppose(projectId, currentUser.uid);
+      await this.loadProjects();
     } catch (error) {
       console.error('Error opposing project:', error);
     }
@@ -184,37 +136,19 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  async addComment(projectId: string) {
-    if (!this.newCommentText.trim()) return;
-    
+  async addComment(projectId: string, commentText: string) {
     try {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      const newComment = {
-        id: this.generateCommentId(),
-        text: this.newCommentText.trim(),
-        createdBy: currentUser.uid,
-        creatorName: currentUser.displayName || 'Anonymous',
-        createdAt: new Date().toISOString()
-      };
-
-      await this.projectsService.addComment(projectId, this.newCommentText.trim());
-      
-      this.addCommentToProject(projectId, newComment);
-      this.newCommentText = '';
+      await this.projectsService.addComment(projectId, commentText);
+      await this.loadProjects();
     } catch (error) {
       console.error('Error adding comment:', error);
     }
   }
 
-  onCommentKeydown(event: Event, projectId: string) {
-    const keyboardEvent = event as KeyboardEvent;
-    if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
-      keyboardEvent.preventDefault();
-      this.addComment(projectId);
-    }
-  }
+
 
   toggleCollaborators(projectId: string, event?: Event) {
     if (event) {
@@ -227,22 +161,11 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  isProjectCreator(project: Project): boolean {
-    const currentUser = this.user();
-    if (!currentUser?.uid) return false;
-    return project.createdBy === currentUser.uid;
-  }
 
-  hasCollaborationRequest(project: Project): boolean {
-    const currentUser = this.user();
-    if (!currentUser?.uid) return false;
-    return project.collaborationRequests?.some(req => req.uid === currentUser.uid) || false;
-  }
 
-  async requestCollaboration(projectId: string) {
+  async requestCollaboration(projectId: string, message: string) {
     try {
-      await this.projectsService.requestCollaboration(projectId, this.collaborationMessage.trim());
-      this.collaborationMessage = '';
+      await this.projectsService.requestCollaboration(projectId, message);
       await this.loadProjects();
     } catch (error) {
       console.error('Error requesting collaboration:', error);
@@ -251,68 +174,13 @@ export class HomePage implements OnInit, ViewWillEnter {
 
 
 
-  private updateProjectVoting(projectId: string, field: 'supports' | 'opposes', action: 'added' | 'removed', userId: string) {
-    this.projects.update(projects => 
-      projects.map(project => {
-        if (project.id !== projectId) return project;
-        
-        const currentArray = project[field] || [];
-        let newArray: string[];
-        
-        if (action === 'added') {
-          newArray = [...currentArray, userId];
-        } else {
-          newArray = currentArray.filter(id => id !== userId);
-        }
-        
-        return { ...project, [field]: newArray };
-      })
-    );
-  }
 
-  private addCommentToProject(projectId: string, newComment: any) {
-    this.projects.update(projects => 
-      projects.map(project => 
-        project.id === projectId 
-          ? { ...project, comments: [...(project.comments || []), newComment] }
-          : project
-      )
-    );
-  }
 
-  private generateCommentId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-  }
 
-  isUserSupported(project: Project): boolean {
-    const currentUser = this.user();
-    if (!currentUser?.uid) return false;
-    return project.supports?.includes(currentUser.uid) || false;
-  }
 
-  isUserOpposed(project: Project): boolean {
-    const currentUser = this.user();
-    if (!currentUser?.uid) return false;
-    return project.opposes?.includes(currentUser.uid) || false;
-  }
 
-  private removeUserFromSupports(projectId: string, userId: string) {
-    this.projects.update(projects => 
-      projects.map(project => {
-        if (project.id !== projectId) return project;
-        const newSupports = (project.supports || []).filter(id => id !== userId);
-        return { ...project, supports: newSupports };
-      })
-    );
-  }
 
-  private removeUserFromOpposes(projectId: string, userId: string) {
-    this.projects.update(projects => 
-      projects.map(project => {
-        if (project.id !== projectId) return project;
-        const newOpposes = (project.opposes || []).filter(id => id !== userId);
-        return { ...project, opposes: newOpposes };
-      })
-    );
-  }
+
+
+
 }

@@ -7,6 +7,7 @@ import { HomePage } from './home.page';
 import { ThemeToggleComponent } from '../components/theme-toggle/theme-toggle.component';
 import { SettingsModalComponent } from '../components/settings-modal/settings-modal.component';
 import { SettingsButtonComponent } from '../components/settings-button/settings-button.component';
+import { ProjectCardComponent } from '../components/project-card/project-card.component';
 import { HomePageRoutingModule } from './home-routing.module';
 
 
@@ -19,7 +20,8 @@ import { HomePageRoutingModule } from './home-routing.module';
     TranslateModule,
     ThemeToggleComponent,
     SettingsModalComponent,
-    SettingsButtonComponent
+    SettingsButtonComponent,
+    ProjectCardComponent
   ],
   declarations: [HomePage]
 })

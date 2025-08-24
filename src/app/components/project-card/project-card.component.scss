@@ -1,0 +1,246 @@
+.project-card {
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: var(--app-card-background);
+  border: 1px solid var(--app-border-color);
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding: 16px;
+
+    .creator-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+
+      .creator-avatar {
+        width: 48px;
+        height: 48px;
+        border: 2px solid var(--app-primary-color);
+      }
+
+      .creator-details {
+        .creator-name {
+          margin: 0 0 4px;
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--app-text);
+        }
+
+        .creator-email {
+          margin: 0;
+          font-size: 14px;
+          color: var(--app-text-secondary);
+        }
+      }
+    }
+
+    .scope-icon-container {
+      .scope-icon {
+        font-size: 24px;
+        color: var(--app-primary-color);
+      }
+    }
+  }
+
+  .project-body {
+    padding: 16px;
+    cursor: pointer;
+
+    .state-chip-container {
+      margin-bottom: 16px;
+
+      .state-chip {
+        font-size: 12px;
+        font-weight: 500;
+      }
+    }
+
+    .project-title {
+      margin: 0 0 12px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--app-text);
+      line-height: 1.3;
+    }
+
+    .project-description {
+      margin: 0 0 16px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--app-text-secondary);
+    }
+
+    .project-needs {
+      h4 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--app-text);
+      }
+
+      .needs-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        ion-chip {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+
+  .project-footer {
+    padding: 0 16px 16px;
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      > div {
+        display: flex;
+        gap: 8px;
+      }
+
+      .vote-button {
+        font-size: 12px;
+        --padding-start: 12px;
+        --padding-end: 12px;
+      }
+
+      .collaborators-button,
+      .comments-button {
+        font-size: 12px;
+        --padding-start: 8px;
+        --padding-end: 8px;
+      }
+    }
+  }
+
+  .comments-container,
+  .collaborators-container {
+    padding: 16px;
+    border-top: 1px solid var(--app-border-color);
+    background: var(--app-background-secondary);
+
+    .comments-header,
+    .collaborators-list h4 {
+      margin: 0 0 16px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--app-text);
+    }
+
+    .comments-list {
+      margin-bottom: 16px;
+
+      .comment-item {
+        padding: 12px;
+        margin-bottom: 12px;
+        background: var(--app-card-background);
+        border-radius: 8px;
+        border: 1px solid var(--app-border-color);
+
+        .comment-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+
+          .comment-author {
+            font-weight: 600;
+            color: var(--app-text);
+          }
+
+          .comment-date {
+            color: var(--app-text-secondary);
+            font-size: 12px;
+          }
+        }
+
+        .comment-text {
+          margin: 0;
+          color: var(--app-text-secondary);
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .add-comment-section {
+      --background: transparent;
+      --border-color: var(--app-border-color);
+
+      .comment-textarea {
+        --placeholder-color: var(--app-text-secondary);
+        color: var(--app-text);
+      }
+    }
+
+    .collaborators-list {
+      margin-bottom: 16px;
+
+      .collaborator-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        background: var(--app-card-background);
+        border-radius: 8px;
+        border: 1px solid var(--app-border-color);
+
+        .collaborator-avatar {
+          width: 40px;
+          height: 40px;
+        }
+
+        .collaborator-details {
+          flex: 1;
+
+          strong {
+            display: block;
+            color: var(--app-text);
+            margin-bottom: 4px;
+          }
+
+          small {
+            display: block;
+            color: var(--app-text-secondary);
+            margin-bottom: 4px;
+          }
+
+          .joined-date {
+            font-size: 12px;
+            color: var(--app-text-secondary);
+          }
+        }
+      }
+
+      .no-data {
+        text-align: center;
+        color: var(--app-text-secondary);
+        font-style: italic;
+        margin: 20px 0;
+      }
+    }
+
+    .request-collaboration-section {
+      .collaboration-textarea {
+        --placeholder-color: var(--app-text-secondary);
+        color: var(--app-text);
+      }
+
+      .request-collaboration-button {
+        margin-top: 12px;
+        font-size: 14px;
+      }
+    }
+  }
+}
