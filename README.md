@@ -9,6 +9,7 @@ A modern Ionic Angular 20 application with Firebase integration, internationaliz
 - **Internationalization**: English/Spanish support
 - **Dynamic Theming**: Light/dark mode with CSS custom properties
 - **Connection Monitoring**: Real-time connectivity with offline handling
+- **Reactivity**: Real-time interaction with other users
 
 ## Tech Stack
 - Angular 20.0.0 + Ionic 8.0.0 + TypeScript 5.8.0
@@ -73,9 +74,10 @@ npm start
 ### Core Rules
 - **No comments**: Code should be self-documenting
 - **No console.log**: Use proper logging services
-- **Simple implementation**: Avoid unnecessary complexity. Don´t do anything else than the asked. This is extremely important.
+- **Simple implementation**: Avoid unnecessary complexity.
 - **Standalone components**: Use standalone components (default in Angular 20)
 - **Signals**: Prefer signals over traditional observables for state
+- **Native features first**: Prefer ionic components over scss code
 
 ### CRITICAL: Feature Development
 - **ONLY implement explicitly requested features**

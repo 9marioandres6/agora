@@ -1,88 +1,39 @@
-<ion-content class="ion-padding">
-  <div class="no-connection-container">
-    <div class="icon-container">
-      <ion-icon name="cloud-offline-outline" class="offline-icon"></ion-icon>
-    </div>
-    
-    <h1 class="title">{{ 'NO_CONNECTION.TITLE' | translate }}</h1>
-    
-    <p class="message">{{ 'NO_CONNECTION.MESSAGE' | translate }}</p>
-    
-    <div class="status-info">
-      <ion-item lines="none">
-        <ion-icon name="information-circle-outline" slot="start"></ion-icon>
-        <ion-label>
-          <h3>{{ 'NO_CONNECTION.STATUS' | translate }}</h3>
-          <p>{{ 'NO_CONNECTION.LAST_CHECK' | translate }}: {{ lastCheckTime() }}</p>
-        </ion-label>
-      </ion-item>
-    </div>
-    
-    <!-- Auto-reconnection Status -->
-    <div class="auto-reconnect-status">
-      <ion-card>
-        <ion-card-content>
-          <div class="status-header">
-            <ion-icon 
-              [name]="isAutoReconnecting() ? 'refresh' : 'refresh-outline'" 
-              [color]="isAutoReconnecting() ? 'primary' : 'medium'">
-            </ion-icon>
-            <h3>{{ 'NO_CONNECTION.AUTO_RECONNECT_STATUS' | translate }}</h3>
-          </div>
-          
-          @if (isAutoReconnecting()) {
-            <div class="countdown-display">
-              <p class="countdown-text">
-                {{ 'NO_CONNECTION.NEXT_ATTEMPT_IN' | translate }}: 
-                <span class="countdown-number">{{ countdownSeconds() }}</span>s
-              </p>
-              <ion-progress-bar 
-                [value]="countdownSeconds() / 10" 
-                color="primary">
-              </ion-progress-bar>
-            </div>
-          } @else {
-            <p class="status-text">{{ 'NO_CONNECTION.AUTO_RECONNECT_DISABLED' | translate }}</p>
-          }
-          
-          <ion-button 
-            fill="outline" 
-            size="small" 
-            (click)="toggleAutoReconnection()"
-            [color]="isAutoReconnecting() ? 'danger' : 'primary'"
-            class="toggle-button">
-            <ion-icon 
-              [name]="isAutoReconnecting() ? 'stop' : 'play'" 
-              slot="start">
-            </ion-icon>
-            {{ isAutoReconnecting() ? ('NO_CONNECTION.STOP_AUTO_RECONNECT' | translate) : ('NO_CONNECTION.START_AUTO_RECONNECT' | translate) }}
-          </ion-button>
-        </ion-card-content>
-      </ion-card>
-    </div>
-    
-    <div class="actions">
-      <ion-button 
-        expand="block" 
-        (click)="retryConnection()"
-        [disabled]="isChecking()"
-        class="retry-button">
-        @if (!isChecking()) {
-          <ion-icon name="refresh" slot="start"></ion-icon>
-        } @else {
-          <ion-spinner name="crescent"></ion-spinner>
-        }
-        {{ isChecking() ? ('NO_CONNECTION.CHECKING' | translate) : ('NO_CONNECTION.RETRY' | translate) }}
-      </ion-button>
-    </div>
-    
-    <div class="tips">
-      <h3>{{ 'NO_CONNECTION.TIPS_TITLE' | translate }}</h3>
-      <ul>
-        <li>{{ 'NO_CONNECTION.TIP_1' | translate }}</li>
-        <li>{{ 'NO_CONNECTION.TIP_2' | translate }}</li>
-        <li>{{ 'NO_CONNECTION.TIP_3' | translate }}</li>
-      </ul>
+<div class="no-connection-container">
+  <div class="icon-container">
+    <div class="offline-icon">📡</div>
+  </div>
+  
+  <h1 class="title">{{ 'NO_CONNECTION.TITLE' | translate }}</h1>
+  
+  <p class="message">{{ 'NO_CONNECTION.MESSAGE' | translate }}</p>
+  
+  <div class="status-info">
+    <div class="status-item">
+      <div class="status-icon">ℹ️</div>
+      <div class="status-content">
+        <h3>{{ 'NO_CONNECTION.STATUS' | translate }}</h3>
+        <p>{{ 'NO_CONNECTION.LAST_CHECK' | translate }}: {{ lastCheckTime() }}</p>
+      </div>
     </div>
   </div>
-</ion-content>
+  
+  <div class="actions">
+    <button 
+      class="retry-button"
+      (click)="retryConnection()"
+      [disabled]="isChecking()">
+      <span *ngIf="!isChecking()">🔄</span>
+      <span *ngIf="isChecking()">⏳</span>
+      {{ isChecking() ? ('NO_CONNECTION.CHECKING' | translate) : ('NO_CONNECTION.RETRY' | translate) }}
+    </button>
+  </div>
+  
+  <div class="tips">
+    <h3>{{ 'NO_CONNECTION.TIPS_TITLE' | translate }}</h3>
+    <ul>
+      <li>{{ 'NO_CONNECTION.TIP_1' | translate }}</li>
+      <li>{{ 'NO_CONNECTION.TIP_2' | translate }}</li>
+      <li>{{ 'NO_CONNECTION.TIP_3' | translate }}</li>
+    </ul>
+  </div>
+</div>

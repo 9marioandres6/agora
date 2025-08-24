@@ -1,7 +1,5 @@
 import { Injectable, computed, effect, inject, signal, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastController } from '@ionic/angular';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ConnectionState } from './models/connection.models';
 
 @Injectable({
@@ -9,7 +7,6 @@ import { ConnectionState } from './models/connection.models';
 })
 export class ConnectionService {
   private router = inject(Router);
-  private toastController = inject(ToastController);
   private destroyRef = inject(DestroyRef);
 
   // Core connection state signal
@@ -218,24 +215,8 @@ export class ConnectionService {
   }
 
   private async showWeakConnectionToast(quality: 'poor' | 'fair') {
-    const message = quality === 'poor' 
-      ? 'Weak internet connection detected. Please check your connection.'
-      : 'Internet connection is slow. Some features may be limited.';
-
-    const toast = await this.toastController.create({
-      message,
-      duration: 4000,
-      position: 'top',
-      color: quality === 'poor' ? 'warning' : 'medium',
-      buttons: [
-        {
-          text: 'Dismiss',
-          role: 'cancel'
-        }
-      ]
-    });
-
-    await toast.present();
+    // Toast functionality removed to prevent chunk loading issues when offline
+    console.log(`Connection quality: ${quality}`);
   }
 
   // Public method to manually test connection

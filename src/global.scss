@@ -51,6 +51,10 @@
   --app-media-background: #f8f9fa;
   --app-text-secondary: #6c757d;
   --app-card-hover-background: rgba(0,0,0,0.05);
+  --app-primary: #3880ff;
+  --app-primary-text: #ffffff;
+  --app-primary-hover: #3171e0;
+  --app-border: #e0e0e0;
 }
 
 .dark {
@@ -69,6 +73,10 @@
   --app-media-background: #404040;
   --app-text-secondary: #adb5bd;
   --app-card-hover-background: rgba(255,255,255,0.05);
+  --app-primary: #3880ff;
+  --app-primary-text: #ffffff;
+  --app-primary-hover: #3171e0;
+  --app-border: #404040;
 }
 
 .light-theme {
@@ -87,6 +95,10 @@
   --app-media-background: #f8f9fa;
   --app-text-secondary: #6c757d;
   --app-card-hover-background: rgba(0,0,0,0.05);
+  --app-primary: #3880ff;
+  --app-primary-text: #ffffff;
+  --app-primary-hover: #3171e0;
+  --app-border: #e0e0e0;
 }
 
 /* Apply theme variables to body */
