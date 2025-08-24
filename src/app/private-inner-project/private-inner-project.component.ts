@@ -34,6 +34,12 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   // Auto-save timer
   private autoSaveTimer: any;
   
+  // Auto-save timer for project fields
+  private projectAutoSaveTimer: any;
+  
+  // New need input
+  newNeedText = '';
+  
   // Signals
   readonly project = signal<Project | null>(null);
   readonly isLoading = signal(true);
@@ -42,9 +48,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   readonly editingChapter = signal<Partial<Chapter>>({});
   readonly pendingCollaborators = signal<PendingCollaborator[]>([]);
   readonly membersExpanded = signal(false);
-  
-  // Auto-save timer for project fields
-  private projectAutoSaveTimer: any;
   
   // Computed properties
   readonly currentUser = computed(() => this.authService.user());
@@ -195,6 +198,31 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       ...project,
       needs: [...currentNeeds, '']
     }));
+  }
+
+  addNewNeed() {
+    if (!this.newNeedText?.trim()) return;
+    
+    const currentNeeds = this.editingProject().needs || [];
+    const newNeed = this.newNeedText.trim();
+    
+    // Check if need already exists
+    if (currentNeeds.includes(newNeed)) {
+      // You could show a toast message here about duplicate needs
+      return;
+    }
+    
+    // Add the new need
+    this.editingProject.update(project => ({
+      ...project,
+      needs: [...currentNeeds, newNeed]
+    }));
+    
+    // Clear the input
+    this.newNeedText = '';
+    
+    // Save the changes
+    this.saveProjectField('needs');
   }
   
   removeNeed(index: number) {
@@ -875,6 +903,78 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       'global': 'Global - International level'
     };
     return scopeLabels[scope] || scope;
+  }
+
+  getNeedIcon(need: string): string {
+    const state = this.project()?.needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'checkmark-circle' : 'time';
+  }
+
+  getNeedIconColor(need: string): string {
+    const state = this.project()?.needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'success' : 'warning';
+  }
+
+  getNeedChipColor(need: string): string {
+    const state = this.project()?.needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'success' : 'warning';
+  }
+
+  getNeedStateText(need: string): string {
+    const state = this.project()?.needStates?.[need] || 'pending';
+    return state === 'obtained' ? 'HOME.NEED_OBTAINED' : 'HOME.NEED_PENDING';
+  }
+
+  async toggleNeedState(need: string) {
+    if (!this.isOwner() || !this.projectId) return;
+    
+    const currentProject = this.project();
+    if (!currentProject) return;
+    
+    const currentState = currentProject.needStates?.[need] || 'pending';
+    const newState = currentState === 'pending' ? 'obtained' : 'pending';
+    
+    try {
+      // Update local state immediately for instant UI feedback
+      this.project.update(project => {
+        if (project) {
+          return {
+            ...project,
+            needStates: {
+              ...project.needStates,
+              [need]: newState
+            }
+          };
+        }
+        return project;
+      });
+      
+      // Update in database
+      await this.projectsService.updateProject(this.projectId, {
+        needStates: {
+          ...currentProject.needStates,
+          [need]: newState
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error toggling need state:', error);
+      await this.showToast('Error updating need state', 'danger');
+      
+      // Revert local state on error
+      this.project.update(project => {
+        if (project) {
+          return {
+            ...project,
+            needStates: {
+              ...project.needStates,
+              [need]: currentState
+            }
+          };
+        }
+        return project;
+      });
+    }
   }
 
   getMembersSummary(): string {

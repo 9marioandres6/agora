@@ -76,32 +76,63 @@
             <div class="info-content">
               @if (isOwner()) {
                 <div class="needs-editor">
+                  <!-- Add new need input -->
+                  <div class="add-need-section">
+                    <ion-input 
+                      [(ngModel)]="newNeedText"
+                      placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"
+                      (keyup.enter)="addNewNeed()"
+                      class="new-need-input">
+                    </ion-input>
+                    <ion-button 
+                      fill="outline" 
+                      size="small" 
+                      (click)="addNewNeed()"
+                      [disabled]="!newNeedText?.trim()"
+                      class="add-need-btn">
+                      <ion-icon name="add" slot="start"></ion-icon>
+                      {{ 'PROJECT.ADD_NEED' | translate }}
+                    </ion-button>
+                  </div>
+                  
+                  <!-- Existing needs list -->
                   @for (need of editingProject().needs || project()?.needs || []; track $index) {
                     <div class="need-item">
-                      <ion-input 
-                        [ngModel]="need"
-                        (ngModelChange)="updateProjectNeed($index, $event)"
-                        placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"
-                        (ionBlur)="saveProjectField('needs')"
-                        (keyup.enter)="saveProjectField('needs')">
-                      </ion-input>
+                      <ion-chip 
+                        [color]="getNeedChipColor(need)"
+                        class="need-chip clickable"
+                        (click)="toggleNeedState(need)">
+                        <ion-icon 
+                          [name]="getNeedIcon(need)" 
+                          [color]="getNeedIconColor(need)">
+                        </ion-icon>
+                        <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
+                      </ion-chip>
+                      <span class="need-text">{{ need }}</span>
                       <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
                         <ion-icon name="trash-outline"></ion-icon>
                       </ion-button>
                     </div>
                   }
-                  <ion-button fill="outline" size="small" (click)="addProjectNeed()">
-                    <ion-icon name="add" slot="start"></ion-icon>
-                    {{ 'PROJECT.ADD_NEED' | translate }}
-                  </ion-button>
                 </div>
               } @else {
                 <div class="needs-display">
-                  <ul class="needs-list">
+                  <div class="needs-list-readonly">
                     @for (need of project()?.needs || []; track need) {
-                      <li>{{ need }}</li>
+                      <div class="need-item-readonly">
+                        <ion-chip 
+                          [color]="getNeedChipColor(need)"
+                          class="need-chip-readonly">
+                          <ion-icon 
+                            [name]="getNeedIcon(need)" 
+                            [color]="getNeedIconColor(need)">
+                          </ion-icon>
+                          <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
+                        </ion-chip>
+                        <span class="need-text-readonly">{{ need }}</span>
+                      </div>
                     }
-                  </ul>
+                  </div>
                 </div>
               }
             </div>
