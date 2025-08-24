@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, effect, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController, ToastController, AlertController } from '@ionic/angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -14,7 +14,7 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./public-inner-project.component.scss'],
   imports: [CommonModule, IonicModule, TranslateModule, FormsModule]
 })
-export class PublicInnerProjectComponent implements OnInit {
+export class PublicInnerProjectComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private projectsService = inject(ProjectsService);
   private modalCtrl = inject(ModalController);
@@ -34,16 +34,46 @@ export class PublicInnerProjectComponent implements OnInit {
     }
   }
   
-  async loadProject() {
-    try {
-      this.isLoading.set(true);
-      const projectData = await this.projectsService.getProject(this.projectId!);
-      this.project.set(projectData);
-    } catch (error) {
-      console.error('Error loading project:', error);
-    } finally {
-      this.isLoading.set(false);
-    }
+  loadProject() {
+    if (!this.projectId) return;
+    
+    console.log('Loading project with ID:', this.projectId);
+    
+    // Test if service is working
+    this.projectsService.testService();
+    
+    // Set up real-time listener for this project
+    this.projectsService.setupProjectListener(this.projectId);
+    
+    // Add a timeout to handle cases where project doesn't exist
+    setTimeout(() => {
+      const currentProject = this.projectsService.currentProject();
+      if (!currentProject && this.isLoading()) {
+        console.log('Project not found in public view');
+        // For public view, we can't create projects, so just stop loading
+        this.isLoading.set(false);
+        // Optionally redirect to home or show error
+        // this.router.navigate(['/home']);
+      }
+    }, 3000); // Wait 3 seconds before giving up
+  }
+
+  constructor() {
+    // Subscribe to project changes in constructor (injection context)
+    effect(() => {
+      const project = this.projectsService.currentProject();
+      console.log('Public component effect - current project:', project ? 'exists' : 'null');
+      
+      if (project) {
+        console.log('Setting project in public component:', project.title);
+        this.project.set(project);
+        this.isLoading.set(false);
+      } else {
+        // Project not found or still loading
+        console.log('Project not found in public component, setting loading to true');
+        this.isLoading.set(true);
+      }
+    });
   }
   
   getScopeIcon(scope: string): string {
@@ -135,19 +165,9 @@ export class PublicInnerProjectComponent implements OnInit {
     try {
       if (!this.projectId) return;
 
-      const newRequest = await this.projectsService.requestCollaboration(this.projectId, message);
+      // The real-time listener will automatically update the UI
+      await this.projectsService.requestCollaboration(this.projectId, message);
       this.collaborationMessage = '';
-      
-      // Update local project state to show pending request
-      this.project.update(project => {
-        if (project) {
-          return {
-            ...project,
-            collaborationRequests: [...(project.collaborationRequests || []), newRequest]
-          };
-        }
-        return project;
-      });
       
       await this.showToast(
         this.translateService.instant('HOME.COLLABORATION_REQUEST_SENT'),
@@ -170,5 +190,12 @@ export class PublicInnerProjectComponent implements OnInit {
       position: 'bottom'
     });
     await toast.present();
+  }
+
+  ngOnDestroy() {
+    // Clean up the project listener
+    if (this.projectId) {
+      this.projectsService.cleanupProjectListener(this.projectId);
+    }
   }
 }

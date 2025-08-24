@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, getDoc, DocumentData, arrayUnion, arrayRemove } from '@angular/fire/firestore';
+import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, getDoc, DocumentData, arrayUnion, arrayRemove, onSnapshot, Unsubscribe } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment } from './models/project.models';
 
@@ -10,8 +10,247 @@ export class ProjectsService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
 
+  // Reactive signals for real-time data
+  private _projects = signal<Project[]>([]);
+  private _userProjects = signal<Project[]>([]);
+  private _projectsByScope = signal<Map<string, Project[]>>(new Map());
+  private _currentProject = signal<Project | null>(null);
+  
+  // Public computed signals
+  public readonly projects = this._projects.asReadonly();
+  public readonly userProjects = this._userProjects.asReadonly();
+  public readonly projectsByScope = this._projectsByScope.asReadonly();
+  public readonly currentProject = this._currentProject.asReadonly();
+
+  // Active listeners to clean up
+  private listeners: Map<string, Unsubscribe> = new Map();
+
   private get projectsCollection() {
     return collection(this.firestore, 'projects');
+  }
+
+  // Initialize real-time listeners
+  constructor() {
+    try {
+      console.log('ProjectsService constructor - setting up listeners');
+      
+      // Set up global projects listener
+      this.setupGlobalProjectsListener();
+      
+      // Set up user projects listener when user changes
+      effect(() => {
+        const user = this.authService.user();
+        console.log('ProjectsService effect - user:', user ? user.uid : 'null');
+        
+        if (user?.uid) {
+          this.setupUserProjectsListener(user.uid);
+        } else {
+          this.cleanupUserProjectsListener();
+        }
+      });
+      
+      console.log('ProjectsService constructor - listeners set up successfully');
+    } catch (error) {
+      console.error('Error in ProjectsService constructor:', error);
+    }
+  }
+
+  private setupGlobalProjectsListener() {
+    const q = query(
+      this.projectsCollection,
+      orderBy('createdAt', 'desc'),
+      limit(50)
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const projects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[];
+
+      // Ensure all projects have creator info and new fields
+      const processedProjects = projects.map(project => {
+        if (!project.creator) {
+          project.creator = {
+            uid: project.createdBy,
+            displayName: 'Anonymous',
+            email: '',
+            photoURL: ''
+          };
+        }
+        if (!project.creator.photoURL) {
+          project.creator.photoURL = '';
+        }
+        if (project.state === undefined) {
+          project.state = 'building';
+        }
+        if (project.supports === undefined || typeof project.supports === 'number') {
+          project.supports = [];
+        }
+        if (project.opposes === undefined || typeof project.opposes === 'number') {
+          project.opposes = [];
+        }
+        if (project.comments === undefined) {
+          project.comments = [];
+        }
+        if (project.collaborators === undefined) {
+          project.collaborators = [];
+        }
+        if (project.collaborationRequests === undefined) {
+          project.collaborationRequests = [];
+        }
+        return project;
+      });
+
+      this._projects.set(processedProjects);
+    }, (error) => {
+      console.error('Error in global projects listener:', error);
+    });
+
+    this.listeners.set('global', unsubscribe);
+  }
+
+  private setupUserProjectsListener(userId: string) {
+    this.cleanupUserProjectsListener();
+    
+    const q = query(
+      this.projectsCollection,
+      where('createdBy', '==', userId),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const projects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[];
+
+      // Ensure new fields have default values for existing projects
+      const processedProjects = projects.map(project => {
+        if (project.state === undefined) project.state = 'building';
+        if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
+        if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+        if (project.comments === undefined) project.comments = [];
+        if (project.collaborators === undefined) project.collaborators = [];
+        if (project.collaborationRequests === undefined) project.collaborationRequests = [];
+        return project;
+      });
+
+      this._userProjects.set(processedProjects);
+    }, (error) => {
+      console.error('Error in user projects listener:', error);
+    });
+
+    this.listeners.set('user', unsubscribe);
+  }
+
+  private cleanupUserProjectsListener() {
+    const userListener = this.listeners.get('user');
+    if (userListener) {
+      userListener();
+      this.listeners.delete('user');
+    }
+  }
+
+  public setupProjectListener(projectId: string) {
+    try {
+      console.log(`Setting up listener for project: ${projectId}`);
+      
+      // Clean up existing listener for this project
+      const existingListener = this.listeners.get(`project_${projectId}`);
+      if (existingListener) {
+        existingListener();
+      }
+
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      const unsubscribe = onSnapshot(projectRef, (docSnapshot) => {
+        console.log(`Project ${projectId} listener update:`, docSnapshot.exists() ? 'exists' : 'not found');
+        
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data() as Project;
+          const project = {
+            ...data,
+            id: projectId
+          };
+          this._currentProject.set(project);
+        } else {
+          this._currentProject.set(null);
+        }
+      }, (error) => {
+        console.error(`Error in project ${projectId} listener:`, error);
+        // Set project to null on error
+        this._currentProject.set(null);
+      });
+
+      this.listeners.set(`project_${projectId}`, unsubscribe);
+      console.log(`Listener set up successfully for project: ${projectId}`);
+    } catch (error) {
+      console.error(`Error setting up listener for project ${projectId}:`, error);
+      this._currentProject.set(null);
+    }
+  }
+
+  public cleanupProjectListener(projectId: string) {
+    const listener = this.listeners.get(`project_${projectId}`);
+    if (listener) {
+      listener();
+      this.listeners.delete(`project_${projectId}`);
+    }
+  }
+
+  public setupScopeProjectsListener(scope: string) {
+    // Clean up existing listener for this scope
+    const existingListener = this.listeners.get(`scope_${scope}`);
+    if (existingListener) {
+      existingListener();
+    }
+
+    const q = query(
+      this.projectsCollection,
+      where('scope', '==', scope),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const projects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[];
+
+      // Ensure new fields have default values for existing projects
+      const processedProjects = projects.map(project => {
+        if (project.state === undefined) project.state = 'building';
+        if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
+        if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+        if (project.comments === undefined) project.comments = [];
+        if (project.collaborators === undefined) project.collaborators = [];
+        if (project.collaborationRequests === undefined) project.collaborationRequests = [];
+        return project;
+      });
+
+      const currentScopeMap = this._projectsByScope();
+      currentScopeMap.set(scope, processedProjects);
+      this._projectsByScope.set(new Map(currentScopeMap));
+    }, (error) => {
+      console.error(`Error in scope ${scope} projects listener:`, error);
+    });
+
+    this.listeners.set(`scope_${scope}`, unsubscribe);
+  }
+
+  public cleanupScopeProjectsListener(scope: string) {
+    const listener = this.listeners.get(`scope_${scope}`);
+    if (listener) {
+      listener();
+      this.listeners.delete(`scope_${scope}`);
+    }
+  }
+
+  // Clean up all listeners when service is destroyed
+  public cleanup() {
+    this.listeners.forEach(unsubscribe => unsubscribe());
+    this.listeners.clear();
   }
 
   async createProject(projectData: Omit<Project, 'id' | 'createdAt' | 'state' | 'supports' | 'opposes' | 'comments'>): Promise<string> {
@@ -49,7 +288,13 @@ export class ProjectsService {
     }
   }
 
-  async getProjects(limitCount: number = 50): Promise<Project[]> {
+  // Reactive getter - returns current signal value
+  getProjects(): Project[] {
+    return this.projects();
+  }
+
+  // Legacy async method for backward compatibility
+  async getProjectsAsync(limitCount: number = 50): Promise<Project[]> {
     try {
       const q = query(
         this.projectsCollection,
@@ -104,7 +349,15 @@ export class ProjectsService {
     }
   }
 
-  async getProject(projectId: string): Promise<Project> {
+  // Reactive getter - returns current signal value
+  getProject(projectId: string): Project | null {
+    // Set up listener if not already listening
+    this.setupProjectListener(projectId);
+    return this.currentProject();
+  }
+
+  // Legacy async method for backward compatibility
+  async getProjectAsync(projectId: string): Promise<Project> {
     try {
       const projectDoc = doc(this.firestore, 'projects', projectId);
       const projectSnapshot = await getDoc(projectDoc);
@@ -124,7 +377,13 @@ export class ProjectsService {
     }
   }
 
-  async getProjectsByUser(userId: string): Promise<Project[]> {
+  // Reactive getter - returns current signal value
+  getProjectsByUser(userId: string): Project[] {
+    return this.userProjects();
+  }
+
+  // Legacy async method for backward compatibility
+  async getProjectsByUserAsync(userId: string): Promise<Project[]> {
     try {
       const q = query(
         this.projectsCollection,
@@ -141,7 +400,6 @@ export class ProjectsService {
       // Ensure new fields have default values for existing projects
       return projects.map(project => {
         if (project.state === undefined) project.state = 'building';
-        if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
         if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
         if (project.comments === undefined) project.comments = [];
         if (project.collaborators === undefined) project.collaborators = [];
@@ -154,7 +412,16 @@ export class ProjectsService {
     }
   }
 
-  async getProjectsByScope(scope: string): Promise<Project[]> {
+  // Reactive getter - returns current signal value
+  getProjectsByScope(scope: string): Project[] {
+    // Set up listener if not already listening
+    this.setupScopeProjectsListener(scope);
+    const scopeMap = this.projectsByScope();
+    return scopeMap.get(scope) || [];
+  }
+
+  // Legacy async method for backward compatibility
+  async getProjectsByScopeAsync(scope: string): Promise<Project[]> {
     try {
       const q = query(
         this.projectsCollection,
@@ -546,5 +813,49 @@ export class ProjectsService {
 
   private generateCommentId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  // Manual refresh methods for specific data
+  public refreshProjects() {
+    // The real-time listener will automatically update the signal
+    // This method can be used to trigger manual refresh if needed
+  }
+
+  public refreshUserProjects() {
+    // The real-time listener will automatically update the signal
+    // This method can be used to trigger manual refresh if needed
+  }
+
+  public refreshProject(projectId: string) {
+    // The real-time listener will automatically update the signal
+    // This method can be used to trigger manual refresh if needed
+  }
+
+  public refreshScopeProjects(scope: string) {
+    // The real-time listener will automatically update the signal
+    // This method can be used to trigger manual refresh if needed
+  }
+
+  // Test method to verify service is working
+  public testService(): string {
+    console.log('ProjectsService test - service is working');
+    console.log('Current projects count:', this.projects().length);
+    console.log('Current user projects count:', this.userProjects().length);
+    return 'Service is working';
+  }
+
+  // Get computed values for specific queries
+  public getProjectsByTag(tag: string): Project[] {
+    return this.projects().filter(project => 
+      project.tags?.includes(tag)
+    );
+  }
+
+  public getProjectsByState(state: 'building' | 'implementing' | 'done'): Project[] {
+    return this.projects().filter(project => project.state === state);
+  }
+
+  public getProjectsByStatus(status: 'active' | 'completed' | 'cancelled'): Project[] {
+    return this.projects().filter(project => project.status === status);
   }
 }

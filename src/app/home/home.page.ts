@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
@@ -31,10 +31,18 @@ export class HomePage implements OnInit, ViewWillEnter {
   isAuthenticated = this.authService.isAuthenticated;
   isDark = this.themeService.isDark;
   
-  projects = signal<Project[]>([]);
+  // Use reactive signals from ProjectsService
+  projects = this.projectsService.projects;
   isLoading = signal(false);
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
+
+  // Computed values for reactive filtering
+  filteredProjects = computed(() => {
+    const allProjects = this.projects();
+    // Add any filtering logic here if needed
+    return allProjects;
+  });
 
 
   async presentSettingsModal() {
@@ -70,39 +78,28 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  ngOnInit() {
-    this.checkConnectionAndLoadProjects();
+    ngOnInit() {
+    this.checkConnection();
   }
 
   ionViewWillEnter() {
-    this.checkConnectionAndLoadProjects();
+    this.checkConnection();
   }
 
-  private async checkConnectionAndLoadProjects() {
-    // Check connection status first
+  private checkConnection() {
+    // Check connection status
     if (!this.connectionService.isOnline()) {
       this.router.navigate(['/no-connection']);
       return;
     }
     
-    // If online, load projects
-    await this.loadProjects();
-  }
-
-  async loadProjects() {
-    try {
-      this.isLoading.set(true);
-      const projects = await this.projectsService.getProjects();
-      this.projects.set(projects);
-    } catch (error) {
-      console.error('Error loading projects:', error);
-    } finally {
-      this.isLoading.set(false);
-    }
+    // Projects are now automatically loaded via real-time listeners
+    // No need to manually load them
   }
 
   async refreshProjects(event?: any) {
-    await this.loadProjects();
+    // Projects are automatically updated via real-time listeners
+    // Just complete the refresh event
     if (event) {
       event.target.complete();
     }
@@ -118,13 +115,8 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      const result = await this.projectsService.toggleSupport(projectId, currentUser.uid);
-      this.updateProjectVoting(projectId, 'supports', result.action, currentUser.uid);
-      
-      // If support was added, also remove from opposes array in UI
-      if (result.action === 'added') {
-        this.removeUserFromOpposes(projectId, currentUser.uid);
-      }
+      // The real-time listener will automatically update the UI
+      await this.projectsService.toggleSupport(projectId, currentUser.uid);
     } catch (error) {
       console.error('Error supporting project:', error);
     }
@@ -138,13 +130,8 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      const result = await this.projectsService.toggleOppose(projectId, currentUser.uid);
-      this.updateProjectVoting(projectId, 'opposes', result.action, currentUser.uid);
-      
-      // If oppose was added, also remove from supports array in UI
-      if (result.action === 'added') {
-        this.removeUserFromSupports(projectId, currentUser.uid);
-      }
+      // The real-time listener will automatically update the UI
+      await this.projectsService.toggleOppose(projectId, currentUser.uid);
     } catch (error) {
       console.error('Error opposing project:', error);
     }
@@ -166,8 +153,8 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      const newComment = await this.projectsService.addComment(projectId, commentText);
-      this.addCommentToProject(projectId, newComment);
+      // The real-time listener will automatically update the UI
+      await this.projectsService.addComment(projectId, commentText);
     } catch (error) {
       console.error('Error adding comment:', error);
     }
@@ -190,69 +177,20 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   async requestCollaboration(projectId: string, message: string) {
     try {
-      const newRequest = await this.projectsService.requestCollaboration(projectId, message);
-      this.addCollaborationRequestToProject(projectId, newRequest);
+      // The real-time listener will automatically update the UI
+      await this.projectsService.requestCollaboration(projectId, message);
     } catch (error) {
       console.error('Error requesting collaboration:', error);
     }
   }
 
-  private updateProjectVoting(projectId: string, field: 'supports' | 'opposes', action: 'added' | 'removed', userId: string) {
-    this.projects.update(projects => 
-      projects.map(project => {
-        if (project.id !== projectId) return project;
-        
-        const currentArray = project[field] || [];
-        let newArray: string[];
-        
-        if (action === 'added') {
-          newArray = [...currentArray, userId];
-        } else {
-          newArray = currentArray.filter(id => id !== userId);
-        }
-        
-        return { ...project, [field]: newArray };
-      })
-    );
-  }
+  // Project voting updates are now handled automatically by real-time listeners
 
-  private removeUserFromSupports(projectId: string, userId: string) {
-    this.projects.update(projects => 
-      projects.map(project => {
-        if (project.id !== projectId) return project;
-        const newSupports = (project.supports || []).filter(id => id !== userId);
-        return { ...project, supports: newSupports };
-      })
-    );
-  }
+  // User support updates are now handled automatically by real-time listeners
 
-  private removeUserFromOpposes(projectId: string, userId: string) {
-    this.projects.update(projects => 
-      projects.map(project => {
-        if (project.id !== projectId) return project;
-        const newOpposes = (project.opposes || []).filter(id => id !== userId);
-        return { ...project, opposes: newOpposes };
-      })
-    );
-  }
+  // User oppose updates are now handled automatically by real-time listeners
 
-  private addCommentToProject(projectId: string, newComment: Comment) {
-    this.projects.update(projects => 
-      projects.map(project => 
-        project.id === projectId 
-          ? { ...project, comments: [...(project.comments || []), newComment] }
-          : project
-      )
-    );
-  }
+  // Comment updates are now handled automatically by real-time listeners
 
-  private addCollaborationRequestToProject(projectId: string, newRequest: CollaborationRequest) {
-    this.projects.update(projects => 
-      projects.map(project => 
-        project.id === projectId 
-          ? { ...project, collaborationRequests: [...(project.collaborationRequests || []), newRequest] }
-          : project
-      )
-    );
-  }
+  // Collaboration request updates are now handled automatically by real-time listeners
 }

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnDestroy, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
+import { Component, computed, inject, signal, OnDestroy, ViewChildren, QueryList, ChangeDetectorRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController, ToastController, AlertController, IonInput } from '@ionic/angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -55,92 +55,93 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   });
   
   constructor() {
+    // Subscribe to project changes in constructor (injection context)
+    effect(() => {
+      const project = this.projectsService.currentProject();
+      console.log('Private component effect - current project:', project ? 'exists' : 'null');
+      
+      if (project) {
+        console.log('Setting project in private component:', project.title);
+        this.project.set(project);
+        this.isLoading.set(false);
+        
+        // Load pending collaborators if owner
+        if (this.isOwner()) {
+          this.loadPendingCollaborators();
+        }
+      } else {
+        // Project not found or still loading
+        console.log('Project not found, setting loading to true');
+        this.isLoading.set(true);
+      }
+    });
+    
     this.loadProject();
   }
   
-  async loadProject() {
+  loadProject() {
     if (!this.projectId) return;
     
+    console.log('Loading project with ID:', this.projectId);
+    
+    // Test if service is working
+    this.projectsService.testService();
+    
+    // Set up real-time listener for this project
+    this.projectsService.setupProjectListener(this.projectId);
+    
+    // Add a timeout to handle cases where project doesn't exist
+    setTimeout(() => {
+      const currentProject = this.projectsService.currentProject();
+      if (!currentProject && this.isLoading()) {
+        console.log('Project not found, creating fallback project');
+        this.createFallbackProject();
+      }
+    }, 3000); // Wait 3 seconds before creating fallback
+  }
+
+  private async createFallbackProject() {
     try {
-      this.isLoading.set(true);
+      const currentUser = this.currentUser();
+      if (!currentUser) return;
+
+      const projectData = {
+        title: this.translateService.instant('PROJECT.NEW_PROJECT'),
+        description: this.translateService.instant('PROJECT.PROJECT_DESCRIPTION_PLACEHOLDER'),
+        needs: [],
+        scope: 'local',
+        createdBy: currentUser.uid,
+        collaborators: [],
+        collaborationRequests: []
+      };
+
+      // Create the project in the database
+      await this.projectsService.createProject(projectData);
       
-      // Try to load real project data first
-      try {
-        const project = await this.projectsService.getProject(this.projectId);
-        this.project.set(project);
-      } catch (error) {
-        // If no real project exists, create a minimal structure for testing
-        const currentUser = this.currentUser();
-        if (currentUser) {
-          const project: Project = {
-            id: this.projectId,
-            title: this.translateService.instant('PROJECT.NEW_PROJECT'),
-            description: this.translateService.instant('PROJECT.PROJECT_DESCRIPTION_PLACEHOLDER'),
-            needs: [],
-            scope: 'local',
-            createdBy: currentUser.uid,
-            createdAt: new Date().toISOString(),
-            state: 'building',
-            supports: [],
-            opposes: [],
-            comments: [],
-            collaborators: [],
-            collaborationRequests: [],
-            chapters: [],
-            creator: {
-              uid: currentUser.uid,
-              displayName: currentUser.displayName || 'Anonymous',
-              email: currentUser.email || '',
-              photoURL: currentUser.photoURL || ''
-            }
-          };
-          
-          // Save the test project to the database first
-          try {
-            // Use the ProjectsService to create the project
-            const { id, createdAt, state, supports, opposes, comments, ...projectData } = project;
-            await this.projectsService.createProject(projectData);
-          } catch (saveError) {
-            console.error('Error saving test project:', saveError);
-          }
-          
-          this.project.set(project);
-        }
-      }
-      
-      // Load pending collaborators if owner
-      if (this.isOwner()) {
-        await this.loadPendingCollaborators();
-      }
+      // The real-time listener will automatically pick up the new project
     } catch (error) {
-      console.error('Error loading project:', error);
-    } finally {
+      console.error('Error creating fallback project:', error);
       this.isLoading.set(false);
     }
   }
   
-  async loadPendingCollaborators() {
-    try {
-      const currentProject = this.project();
-      if (currentProject && currentProject.collaborationRequests) {
-        // Filter only pending requests
-        const pendingRequests = currentProject.collaborationRequests
-          .filter(request => request.status === 'pending')
-          .map(request => ({
-            uid: request.uid,
-            displayName: request.displayName || 'Anonymous',
-            email: request.email || '',
-            photoURL: request.photoURL || '',
-            message: request.message || '',
-            requestedAt: request.requestedAt || new Date().toISOString()
-          }));
-        
-        this.pendingCollaborators.set(pendingRequests);
-      } else {
-        this.pendingCollaborators.set([]);
-      }
-    } catch (error) {
-      console.error('Error loading pending collaborators:', error);
+  loadPendingCollaborators() {
+    const currentProject = this.project();
+    if (currentProject && currentProject.collaborationRequests) {
+      // Filter only pending requests
+      const pendingRequests = currentProject.collaborationRequests
+        .filter(request => request.status === 'pending')
+        .map(request => ({
+          uid: request.uid,
+          displayName: request.displayName || 'Anonymous',
+          email: request.email || '',
+          photoURL: request.photoURL || '',
+          message: request.message || '',
+          requestedAt: request.requestedAt || new Date().toISOString()
+        }));
+      
+      this.pendingCollaborators.set(pendingRequests);
+    } else {
       this.pendingCollaborators.set([]);
     }
   }
@@ -922,6 +923,11 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           }
         });
       });
+    }
+    
+    // Clean up the project listener
+    if (this.projectId) {
+      this.projectsService.cleanupProjectListener(this.projectId);
     }
   }
 

@@ -73,7 +73,7 @@ npm start
 ### Core Rules
 - **No comments**: Code should be self-documenting
 - **No console.log**: Use proper logging services
-- **Simple implementation**: Avoid unnecessary complexity
+- **Simple implementation**: Avoid unnecessary complexity. Don´t do anything else than the asked. This is extremely important.
 - **Standalone components**: Use standalone components (default in Angular 20)
 - **Signals**: Prefer signals over traditional observables for state
 
