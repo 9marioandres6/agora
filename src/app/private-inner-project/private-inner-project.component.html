@@ -137,7 +137,7 @@
               </ion-avatar>
               <div class="member-info">
                 <h4>{{ project()?.creator?.displayName || 'Anonymous' }}</h4>
-                <ion-chip color="primary">{{ 'PROJECT.OWNER' | translate }}</ion-chip>
+                <p class="member-role">{{ 'PROJECT.OWNER' | translate }}</p>
               </div>
             </div>
 
@@ -153,7 +153,7 @@
                 </ion-avatar>
                 <div class="member-info">
                   <h4>{{ collaborator.displayName || 'Anonymous' }}</h4>
-                  <ion-chip color="success">{{ 'PROJECT.COLLABORATOR' | translate }}</ion-chip>
+                  <p class="member-role">{{ 'PROJECT.COLLABORATOR' | translate }}</p>
                 </div>
               </div>
             }
