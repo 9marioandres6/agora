@@ -32,15 +32,12 @@ export class ProjectsService {
   // Initialize real-time listeners
   constructor() {
     try {
-      console.log('ProjectsService constructor - setting up listeners');
-      
       // Set up global projects listener
       this.setupGlobalProjectsListener();
       
       // Set up user projects listener when user changes
       effect(() => {
         const user = this.authService.user();
-        console.log('ProjectsService effect - user:', user ? user.uid : 'null');
         
         if (user?.uid) {
           this.setupUserProjectsListener(user.uid);
@@ -48,10 +45,8 @@ export class ProjectsService {
           this.cleanupUserProjectsListener();
         }
       });
-      
-      console.log('ProjectsService constructor - listeners set up successfully');
     } catch (error) {
-      console.error('Error in ProjectsService constructor:', error);
+      // Handle initialization errors silently
     }
   }
 
@@ -154,8 +149,6 @@ export class ProjectsService {
 
   public setupProjectListener(projectId: string) {
     try {
-      console.log(`Setting up listener for project: ${projectId}`);
-      
       // Clean up existing listener for this project
       const existingListener = this.listeners.get(`project_${projectId}`);
       if (existingListener) {
@@ -165,8 +158,6 @@ export class ProjectsService {
       const projectRef = doc(this.firestore, 'projects', projectId);
       
       const unsubscribe = onSnapshot(projectRef, (docSnapshot) => {
-        console.log(`Project ${projectId} listener update:`, docSnapshot.exists() ? 'exists' : 'not found');
-        
         if (docSnapshot.exists()) {
           const data = docSnapshot.data() as Project;
           const project = {
@@ -178,15 +169,13 @@ export class ProjectsService {
           this._currentProject.set(null);
         }
       }, (error) => {
-        console.error(`Error in project ${projectId} listener:`, error);
-        // Set project to null on error
+        // Handle listener errors silently
         this._currentProject.set(null);
       });
 
       this.listeners.set(`project_${projectId}`, unsubscribe);
-      console.log(`Listener set up successfully for project: ${projectId}`);
     } catch (error) {
-      console.error(`Error setting up listener for project ${projectId}:`, error);
+      // Handle setup errors silently
       this._currentProject.set(null);
     }
   }
@@ -836,13 +825,7 @@ export class ProjectsService {
     // This method can be used to trigger manual refresh if needed
   }
 
-  // Test method to verify service is working
-  public testService(): string {
-    console.log('ProjectsService test - service is working');
-    console.log('Current projects count:', this.projects().length);
-    console.log('Current user projects count:', this.userProjects().length);
-    return 'Service is working';
-  }
+
 
   // Get computed values for specific queries
   public getProjectsByTag(tag: string): Project[] {

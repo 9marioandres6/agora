@@ -58,10 +58,8 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     // Subscribe to project changes in constructor (injection context)
     effect(() => {
       const project = this.projectsService.currentProject();
-      console.log('Private component effect - current project:', project ? 'exists' : 'null');
       
       if (project) {
-        console.log('Setting project in private component:', project.title);
         this.project.set(project);
         this.isLoading.set(false);
         
@@ -71,7 +69,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         }
       } else {
         // Project not found or still loading
-        console.log('Project not found, setting loading to true');
         this.isLoading.set(true);
       }
     });
@@ -82,11 +79,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   loadProject() {
     if (!this.projectId) return;
     
-    console.log('Loading project with ID:', this.projectId);
-    
-    // Test if service is working
-    this.projectsService.testService();
-    
     // Set up real-time listener for this project
     this.projectsService.setupProjectListener(this.projectId);
     
@@ -94,7 +86,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     setTimeout(() => {
       const currentProject = this.projectsService.currentProject();
       if (!currentProject && this.isLoading()) {
-        console.log('Project not found, creating fallback project');
         this.createFallbackProject();
       }
     }, 3000); // Wait 3 seconds before creating fallback

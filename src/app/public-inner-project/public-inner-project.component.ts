@@ -37,11 +37,6 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
   loadProject() {
     if (!this.projectId) return;
     
-    console.log('Loading project with ID:', this.projectId);
-    
-    // Test if service is working
-    this.projectsService.testService();
-    
     // Set up real-time listener for this project
     this.projectsService.setupProjectListener(this.projectId);
     
@@ -49,7 +44,6 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const currentProject = this.projectsService.currentProject();
       if (!currentProject && this.isLoading()) {
-        console.log('Project not found in public view');
         // For public view, we can't create projects, so just stop loading
         this.isLoading.set(false);
         // Optionally redirect to home or show error
@@ -62,15 +56,12 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     // Subscribe to project changes in constructor (injection context)
     effect(() => {
       const project = this.projectsService.currentProject();
-      console.log('Public component effect - current project:', project ? 'exists' : 'null');
       
       if (project) {
-        console.log('Setting project in public component:', project.title);
         this.project.set(project);
         this.isLoading.set(false);
       } else {
         // Project not found or still loading
-        console.log('Project not found in public component, setting loading to true');
         this.isLoading.set(true);
       }
     });
