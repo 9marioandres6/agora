@@ -26,8 +26,9 @@
           <ion-button expand="block" (click)="signIn()" [disabled]="loading()">
             @if (loading()) {
               <ion-spinner></ion-spinner>
+            } @else {
+              {{ 'COMMON.LOGIN' | translate }}
             }
-            {{ 'COMMON.LOGIN' | translate }}
           </ion-button>
         </div>
 
@@ -36,12 +37,13 @@
         </div>
 
         <div class="ion-margin-bottom">
-          <ion-button expand="block" fill="outline" (click)="signInWithGoogle()" [disabled]="loading()">
-            <ion-icon name="logo-google" slot="start"></ion-icon>
-            @if (loading()) {
+          <ion-button expand="block" fill="outline" (click)="signInWithGoogle()" [disabled]="googleLoading">
+            @if (googleLoading) {
               <ion-spinner></ion-spinner>
+            } @else {
+              <ion-icon name="logo-google" slot="start"></ion-icon>
+              {{ 'FORMS.CONTINUE_WITH_GOOGLE' | translate }}
             }
-            {{ 'FORMS.CONTINUE_WITH_GOOGLE' | translate }}
           </ion-button>
         </div>
 

@@ -25,7 +25,7 @@
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
-    @if (isLoading()) {
+    @if (computedIsLoading()) {
       <div class="loading-container">
         <ion-spinner name="crescent"></ion-spinner>
         <p>{{ 'COMMON.LOADING' | translate }}</p>

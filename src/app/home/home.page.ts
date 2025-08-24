@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
@@ -33,7 +33,6 @@ export class HomePage implements OnInit, ViewWillEnter {
   
   // Use reactive signals from ProjectsService
   projects = this.projectsService.projects;
-  isLoading = signal(false);
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
 
@@ -42,6 +41,13 @@ export class HomePage implements OnInit, ViewWillEnter {
     const allProjects = this.projects();
     // Add any filtering logic here if needed
     return allProjects;
+  });
+
+  // Computed loading state - true until projects are loaded
+  computedIsLoading = computed(() => {
+    const projectsData = this.projects();
+    // Show loading if no projects yet, but only if user is authenticated
+    return this.isAuthenticated() && projectsData.length === 0;
   });
 
 

@@ -26,6 +26,9 @@ export class RegisterComponent implements OnInit {
   user = this.authService.user;
   loading = this.authService.loading;
   error = this.authService.error;
+  
+  // Separate loading state for Google button to avoid showing spinner during popup
+  googleLoading = false;
 
   ngOnInit() {
     this.checkConnection();
@@ -47,9 +50,17 @@ export class RegisterComponent implements OnInit {
 
   async signInWithGoogle() {
     try {
+      // Set Google button loading to true briefly, then immediately to false
+      // since the popup will open and we don't want to show spinner during popup
+      this.googleLoading = true;
+      setTimeout(() => {
+        this.googleLoading = false;
+      }, 100);
+      
       await this.authService.signInWithGoogle();
     } catch (error) {
       console.error('Google sign in error:', error);
+      this.googleLoading = false;
     }
   }
 
