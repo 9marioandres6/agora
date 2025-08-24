@@ -1,24 +1,18 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      {{ 'COMMON.HOME' | translate }}
-    </ion-title>
-    <ion-buttons slot="end">
-      <app-messages-button></app-messages-button>
+    <ion-buttons slot="start">
       <ion-button (click)="createNew()" fill="clear" class="new-button">
         <ion-icon name="add" slot="icon-only"></ion-icon>
       </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <app-messages-button></app-messages-button>
       <app-settings-button (onSettingsClick)="presentSettingsModal()"></app-settings-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ 'COMMON.HOME' | translate }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <!-- Projects Feed -->
   @if (isAuthenticated()) {
