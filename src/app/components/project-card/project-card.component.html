@@ -127,15 +127,18 @@
         </div>
       }
       
-      <ion-item class="add-comment-section">
-        <ion-textarea
-          [(ngModel)]="newCommentText"
-          [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
-          rows="2"
-          class="comment-textarea"
-          (keydown.enter)="onCommentKeydown($event)">
-        </ion-textarea>
-      </ion-item>
+      <!-- Only show comment input for creators and collaborators -->
+      @if (canInteractWithProject(project())) {
+        <ion-item class="add-comment-section">
+          <ion-textarea
+            [(ngModel)]="newCommentText"
+            [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
+            rows="2"
+            class="comment-textarea"
+            (keydown.enter)="onCommentKeydown($event)">
+          </ion-textarea>
+        </ion-item>
+      }
     </div>
   }
 
@@ -169,8 +172,10 @@
         }
       </div>
 
-      <!-- Request Collaboration Button (for non-creators) -->
-      @if (!isProjectCreator(project()) && !hasCollaborationRequest(project())) {
+
+
+      <!-- Request Collaboration Button (for non-creators and non-collaborators) -->
+      @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) && !hasCollaborationRequest(project())) {
         <div class="request-collaboration-section">
           <ion-item>
             <ion-textarea
@@ -192,7 +197,7 @@
       }
 
       <!-- Show pending request status for users who have already requested -->
-      @if (!isProjectCreator(project()) && hasCollaborationRequest(project())) {
+      @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) && hasCollaborationRequest(project())) {
         <div class="pending-request-section">
           <div class="pending-request-message">
             <ion-icon name="time-outline" color="warning"></ion-icon>

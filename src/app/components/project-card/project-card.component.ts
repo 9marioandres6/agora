@@ -67,7 +67,10 @@ export class ProjectCardComponent {
   isProjectCreator(project: Project): boolean {
     const currentUser = this.user;
     if (!currentUser?.uid) return false;
-    return project.createdBy === currentUser.uid;
+    
+    // Check both createdBy field and creator.uid field
+    return project.createdBy === currentUser.uid || 
+           project.creator?.uid === currentUser.uid;
   }
 
   hasCollaborationRequest(project: Project): boolean {
@@ -75,6 +78,18 @@ export class ProjectCardComponent {
     if (!currentUser?.uid) return false;
     return project.collaborationRequests?.some(req => req.uid === currentUser.uid) || false;
   }
+
+  isProjectCollaborator(project: Project): boolean {
+    const currentUser = this.user;
+    if (!currentUser?.uid) return false;
+    return project.collaborators?.some(collaborator => collaborator.uid === currentUser.uid) || false;
+  }
+
+  canInteractWithProject(project: Project): boolean {
+    return this.isProjectCreator(project) || this.isProjectCollaborator(project);
+  }
+
+
 
   isUserSupported(project: Project): boolean {
     const currentUser = this.user;
