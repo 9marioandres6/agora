@@ -2,6 +2,7 @@ import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, getDoc, DocumentData, arrayUnion, arrayRemove, onSnapshot, Unsubscribe } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, Need } from './models/project.models';
+import { MessagesService } from './messages.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, N
 export class ProjectsService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
+  private messagesService = inject(MessagesService);
 
   // Reactive signals for real-time data
   private _projects = signal<Project[]>([]);
@@ -667,6 +669,11 @@ export class ProjectsService {
         throw new Error('User not authenticated');
       }
 
+      const project = await this.getProjectAsync(projectId);
+      if (!project) {
+        throw new Error('Project not found');
+      }
+
       const request: CollaborationRequest = {
         uid: currentUser.uid,
         displayName: currentUser.displayName || 'Anonymous',
@@ -681,6 +688,21 @@ export class ProjectsService {
       await updateDoc(projectRef, {
         collaborationRequests: arrayUnion(request)
       });
+
+      console.log('Sending collaboration request message to:', project.createdBy);
+      const messageId = await this.messagesService.sendMessage({
+        recipientUid: project.createdBy,
+        senderUid: currentUser.uid,
+        senderName: currentUser.displayName || 'Anonymous',
+        senderEmail: currentUser.email || '',
+        senderPhotoURL: currentUser.photoURL || '',
+        projectId: projectId,
+        projectTitle: project.title,
+        type: 'collaboration_request',
+        title: 'New Collaboration Request',
+        content: `${currentUser.displayName || 'Anonymous'} wants to collaborate in your project "${project.title}"`
+      });
+      console.log('Message sent successfully with ID:', messageId);
 
       return request;
     } catch (error) {
@@ -722,6 +744,21 @@ export class ProjectsService {
         collaborationRequests: arrayRemove(request)
       });
 
+      console.log('Sending collaboration accepted message to:', request.uid);
+      const messageId = await this.messagesService.sendMessage({
+        recipientUid: request.uid,
+        senderUid: project.createdBy,
+        senderName: project.creator?.displayName || 'Project Creator',
+        senderEmail: project.creator?.email || '',
+        senderPhotoURL: project.creator?.photoURL || '',
+        projectId: projectId,
+        projectTitle: project.title,
+        type: 'collaboration_accepted',
+        title: 'Collaboration Request Accepted',
+        content: `Your collaboration request for "${project.title}" has been accepted!`
+      });
+      console.log('Collaboration accepted message sent successfully with ID:', messageId);
+
       return { request, collaborator };
     } catch (error) {
       console.error('Error accepting collaboration:', error);
@@ -750,6 +787,21 @@ export class ProjectsService {
       await updateDoc(projectRef, {
         collaborationRequests: arrayRemove(request)
       });
+
+      console.log('Sending collaboration rejected message to:', request.uid);
+      const messageId = await this.messagesService.sendMessage({
+        recipientUid: request.uid,
+        senderUid: project.createdBy,
+        senderName: project.creator?.displayName || 'Project Creator',
+        senderEmail: project.creator?.email || '',
+        senderPhotoURL: project.creator?.photoURL || '',
+        projectId: projectId,
+        projectTitle: project.title,
+        type: 'collaboration_rejected',
+        title: 'Collaboration Request Rejected',
+        content: `Your collaboration request for "${project.title}" has been rejected.`
+      });
+      console.log('Collaboration rejected message sent successfully with ID:', messageId);
 
       return request;
     } catch (error) {

@@ -55,6 +55,7 @@
   --app-primary-text: #ffffff;
   --app-primary-hover: #3171e0;
   --app-border: #e0e0e0;
+  --app-primary-light: rgba(56, 128, 255, 0.1);
 }
 
 .dark {
@@ -77,6 +78,7 @@
   --app-primary-text: #ffffff;
   --app-primary-hover: #3171e0;
   --app-border: #404040;
+  --app-primary-light: rgba(56, 128, 255, 0.2);
 }
 
 .light-theme {
@@ -417,5 +419,35 @@ ion-card-content {
 
 /* You can add global styles to this file, and also import other style files */
 @import "theme/variables.scss";
+
+/* Messages modal styling */
+.messages-modal {
+  --background: var(--app-background);
+  --color: var(--app-text);
+  
+  ion-content {
+    --background: var(--app-background);
+  }
+  
+  ion-header {
+    --background: var(--app-toolbar-background);
+    --color: var(--app-toolbar-text);
+    --border-color: var(--app-toolbar-border);
+  }
+  
+  ion-toolbar {
+    --background: var(--app-toolbar-background);
+    --color: var(--app-toolbar-text);
+    --border-color: var(--app-toolbar-border);
+  }
+  
+  ion-title {
+    --color: var(--app-toolbar-text);
+  }
+  
+  ion-button {
+    --color: var(--app-toolbar-text);
+  }
+}
 
 

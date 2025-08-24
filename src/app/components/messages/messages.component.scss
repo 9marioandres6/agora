@@ -1,0 +1,159 @@
+.messages-container {
+  padding: 16px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--app-text-secondary);
+    margin: 0;
+  }
+}
+
+.no-messages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  
+  .no-messages-icon {
+    font-size: 64px;
+    color: var(--app-text-secondary);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    color: var(--app-text);
+    margin: 0 0 8px 0;
+    font-weight: 600;
+  }
+  
+  p {
+    color: var(--app-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.messages-list {
+  ion-list {
+    background: transparent;
+    padding: 0;
+  }
+  
+  ion-item {
+    --background: var(--app-card-background);
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 16px;
+    --padding-bottom: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--app-border);
+    
+    &.unread {
+      --background: var(--app-primary-light);
+      border-color: var(--app-primary);
+    }
+    
+    ion-avatar {
+      width: 48px;
+      height: 48px;
+      
+      ion-icon {
+        font-size: 24px;
+        color: var(--app-text-secondary);
+      }
+    }
+    
+    ion-label {
+      h2.message-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--app-text);
+        
+        .message-type {
+          color: var(--app-primary);
+        }
+        
+        .unread-indicator {
+          width: 8px;
+          height: 8px;
+          background: var(--app-primary);
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+      }
+      
+      h3.message-sender {
+        margin: 0 0 4px 0;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--app-text);
+      }
+      
+      p.message-content {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        line-height: 1.4;
+        color: var(--app-text);
+      }
+      
+      p.message-project {
+        margin: 0 0 4px 0;
+        font-size: 12px;
+        color: var(--app-text-secondary);
+      }
+      
+      p.message-date {
+        margin: 0;
+        font-size: 12px;
+        color: var(--app-text-secondary);
+      }
+    }
+    
+    ion-button {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      margin: 0;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .messages-container {
+    padding: 12px;
+  }
+  
+  .messages-list ion-item {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    
+    ion-avatar {
+      width: 40px;
+      height: 40px;
+      
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+}

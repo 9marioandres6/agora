@@ -1,0 +1,71 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="closeModal()" fill="clear">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'MESSAGES.TITLE' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        *ngIf="hasUnreadMessages()" 
+        (click)="markAllAsRead()"
+        fill="clear">
+        {{ 'MESSAGES.MARK_ALL_READ' | translate }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="messages-container">
+    <div *ngIf="isLoading()" class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
+    </div>
+
+    <div *ngIf="!isLoading() && !hasMessages()" class="no-messages">
+      <ion-icon name="mail-outline" class="no-messages-icon"></ion-icon>
+      <h3>{{ 'MESSAGES.NO_MESSAGES' | translate }}</h3>
+      <p>{{ 'MESSAGES.NO_MESSAGES_DESC' | translate }}</p>
+    </div>
+
+    <div *ngIf="!isLoading() && hasMessages()" class="messages-list">
+      <ion-list>
+        <ion-item 
+          *ngFor="let message of messages()" 
+          [class.unread]="!message.isRead"
+          (click)="markAsRead(message.id!)"
+          button>
+          
+          <ion-avatar slot="start" *ngIf="message.senderPhotoURL">
+            <img [src]="message.senderPhotoURL" [alt]="message.senderName">
+          </ion-avatar>
+          
+          <ion-avatar slot="start" *ngIf="!message.senderPhotoURL">
+            <ion-icon name="person"></ion-icon>
+          </ion-avatar>
+
+          <ion-label>
+            <h2 class="message-title">
+              <span class="message-type">{{ getMessageTypeLabel(message.type) | translate }}</span>
+              <span *ngIf="!message.isRead" class="unread-indicator"></span>
+            </h2>
+            <h3 class="message-sender">{{ message.senderName }}</h3>
+            <p class="message-content">{{ message.content }}</p>
+            <p class="message-project">{{ 'MESSAGES.PROJECT' | translate }}: {{ message.projectTitle }}</p>
+            <p class="message-date">{{ formatDate(message.createdAt) }}</p>
+          </ion-label>
+
+          <ion-button 
+            slot="end" 
+            fill="clear" 
+            color="danger"
+            (click)="deleteMessage(message.id!); $event.stopPropagation()">
+            <ion-icon name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+</ion-content>

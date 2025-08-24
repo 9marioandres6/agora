@@ -1,0 +1,12 @@
+<ion-button 
+  fill="clear" 
+  (click)="openMessages()"
+  class="messages-button">
+  <ion-icon name="mail-outline" slot="icon-only"></ion-icon>
+  <ion-badge 
+    *ngIf="hasUnreadMessages()" 
+    class="unread-badge"
+    color="danger">
+    {{ unreadCount() > 99 ? '99+' : unreadCount() }}
+  </ion-badge>
+</ion-button>

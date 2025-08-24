@@ -245,5 +245,23 @@
     "PROJECT_ID": "ID del Proyecto:",
     "VIEWERS_MESSAGE": "Esta página es para los espectadores del proyecto.",
     "NEXT_ITERATION": "El contenido se agregará en la próxima iteración."
+  },
+  "MESSAGES": {
+    "TITLE": "Mensajes",
+    "NO_MESSAGES": "Aún no hay mensajes",
+    "NO_MESSAGES_DESC": "Recibirás notificaciones sobre solicitudes de colaboración y respuestas aquí",
+    "MARK_ALL_READ": "Marcar Todos como Leídos",
+    "DELETE": "Eliminar",
+    "COLLABORATION_REQUEST": "Solicitud de Colaboración",
+    "COLLABORATION_ACCEPTED": "Colaboración Aceptada",
+    "COLLABORATION_REJECTED": "Colaboración Rechazada",
+    "NEW_COLLABORATION_REQUEST": "Nueva Solicitud de Colaboración",
+    "COLLABORATION_REQUEST_ACCEPTED": "Solicitud de Colaboración Aceptada",
+    "COLLABORATION_REQUEST_REJECTED": "Solicitud de Colaboración Rechazada",
+    "FROM": "De",
+    "PROJECT": "Proyecto",
+    "DATE": "Fecha",
+    "UNREAD": "No leído",
+    "READ": "Leído"
   }
 }

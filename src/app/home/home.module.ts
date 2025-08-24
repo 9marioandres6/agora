@@ -8,6 +8,7 @@ import { ThemeToggleComponent } from '../components/theme-toggle/theme-toggle.co
 import { SettingsModalComponent } from '../components/settings-modal/settings-modal.component';
 import { SettingsButtonComponent } from '../components/settings-button/settings-button.component';
 import { ProjectCardComponent } from '../components/project-card/project-card.component';
+import { MessagesButtonComponent } from '../components/messages-button/messages-button.component';
 import { HomePageRoutingModule } from './home-routing.module';
 
 
@@ -21,7 +22,8 @@ import { HomePageRoutingModule } from './home-routing.module';
     ThemeToggleComponent,
     SettingsModalComponent,
     SettingsButtonComponent,
-    ProjectCardComponent
+    ProjectCardComponent,
+    MessagesButtonComponent
   ],
   declarations: [HomePage]
 })

@@ -245,5 +245,23 @@
     "PROJECT_ID": "Project ID:",
     "VIEWERS_MESSAGE": "This page is for project viewers.",
     "NEXT_ITERATION": "Content will be added in the next iteration."
+  },
+  "MESSAGES": {
+    "TITLE": "Messages",
+    "NO_MESSAGES": "No messages yet",
+    "NO_MESSAGES_DESC": "You'll receive notifications about collaboration requests and responses here",
+    "MARK_ALL_READ": "Mark All as Read",
+    "DELETE": "Delete",
+    "COLLABORATION_REQUEST": "Collaboration Request",
+    "COLLABORATION_ACCEPTED": "Collaboration Accepted",
+    "COLLABORATION_REJECTED": "Collaboration Rejected",
+    "NEW_COLLABORATION_REQUEST": "New Collaboration Request",
+    "COLLABORATION_REQUEST_ACCEPTED": "Collaboration Request Accepted",
+    "COLLABORATION_REQUEST_REJECTED": "Collaboration Request Rejected",
+    "FROM": "From",
+    "PROJECT": "Project",
+    "DATE": "Date",
+    "UNREAD": "Unread",
+    "READ": "Read"
   }
 }
