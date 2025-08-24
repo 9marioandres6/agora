@@ -1,7 +1,7 @@
 <div class="settings-popover">
   @if (isAuthenticated()) {
     <div class="user-info">
-      <ion-avatar>
+      <ion-avatar class="avatar-large">
         @if (user()?.photoURL) {
           <img [src]="user()?.photoURL" [alt]="user()?.displayName || 'User'">
         } @else {

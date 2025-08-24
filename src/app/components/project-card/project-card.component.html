@@ -2,7 +2,7 @@
   <ion-card-header class="project-header">
           <div class="creator-info">
         @if (project().creator; as creator) {
-          <ion-avatar class="creator-avatar">
+          <ion-avatar class="creator-avatar avatar-small">
             @if (creator.photoURL) {
               <img [src]="creator.photoURL" [alt]="creator.displayName || 'Creator'">
             } @else {
@@ -14,7 +14,7 @@
             <p class="creator-email">{{ creator.email || '' }}</p>
           </div>
         } @else {
-          <ion-avatar class="creator-avatar">
+          <ion-avatar class="creator-avatar avatar-small">
             <ion-icon name="person" size="large"></ion-icon>
           </ion-avatar>
           <div class="creator-details">
@@ -149,7 +149,7 @@
           @for (collaborator of project().collaborators; track collaborator.uid) {
             <div class="collaborator-item">
               <div class="collaborator-info">
-                <ion-avatar class="collaborator-avatar">
+                <ion-avatar class="collaborator-avatar avatar-small">
                   @if (collaborator.photoURL) {
                     <img [src]="collaborator.photoURL" [alt]="collaborator.displayName">
                   } @else {

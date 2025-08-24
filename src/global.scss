@@ -168,6 +168,29 @@ ion-avatar ion-icon {
   opacity: 0.6 !important;
 }
 
+/* Centralized Avatar Sizes */
+:root {
+  --avatar-size-large: 200px;
+  --avatar-size-small: 34px;
+  --avatar-border-large: 3px;
+  --avatar-border-small: 2px;
+}
+
+/* Large Avatar Class - for Settings, My Profile, Settings Modal */
+.avatar-large {
+  width: var(--avatar-size-large) !important;
+  height: var(--avatar-size-large) !important;
+  border: var(--avatar-border-large) solid var(--ion-color-primary) !important;
+  box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.3) !important;
+}
+
+/* Small Avatar Class - for Project Cards, Inner Project Pages */
+.avatar-small {
+  width: var(--avatar-size-small) !important;
+  height: var(--avatar-size-small) !important;
+  border: var(--avatar-border-small) solid var(--app-primary-color) !important;
+}
+
 /* Force light theme button colors */
 .light-theme ion-toolbar ion-button[fill="clear"] {
   --color: #000000 !important;

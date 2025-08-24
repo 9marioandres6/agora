@@ -15,7 +15,7 @@
     <ion-card class="profile-card">
       <ion-card-content>
         <div class="user-profile">
-          <ion-avatar class="profile-avatar">
+          <ion-avatar class="profile-avatar avatar-large">
             @if (user()?.photoURL) {
               <img [src]="user()?.photoURL" [alt]="user()?.displayName || 'User'">
             } @else {

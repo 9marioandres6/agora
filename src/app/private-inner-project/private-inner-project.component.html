@@ -128,7 +128,7 @@
           <ion-card-content>
             <!-- Owner -->
             <div class="member-item owner">
-              <ion-avatar>
+              <ion-avatar class="avatar-small">
                 @if (project()?.creator?.photoURL) {
                   <img [src]="project()?.creator?.photoURL" [alt]="project()?.creator?.displayName">
                 } @else {
@@ -144,7 +144,7 @@
             <!-- Accepted Collaborators -->
             @for (collaborator of project()?.collaborators || []; track collaborator.uid) {
               <div class="member-item collaborator">
-                <ion-avatar>
+                <ion-avatar class="avatar-small">
                   @if (collaborator.photoURL) {
                     <img [src]="collaborator.photoURL" [alt]="collaborator.displayName">
                   } @else {
@@ -165,7 +165,7 @@
                 @for (request of pendingCollaborators(); track request.uid) {
                   <div class="pending-item">
                     <div class="request-info">
-                      <ion-avatar>
+                      <ion-avatar class="avatar-small">
                         @if (request.photoURL) {
                           <img [src]="request.photoURL" [alt]="request.displayName">
                         } @else {
