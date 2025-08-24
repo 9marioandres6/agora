@@ -41,6 +41,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   readonly editingProject = signal<Partial<Project>>({});
   readonly editingChapter = signal<Partial<Chapter>>({});
   readonly pendingCollaborators = signal<PendingCollaborator[]>([]);
+  readonly membersExpanded = signal(false);
   
   // Auto-save timer for project fields
   private projectAutoSaveTimer: any;
@@ -217,15 +218,24 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     try {
       if (!this.projectId) return;
       
-      await this.projectsService.acceptCollaboration(this.projectId, collaborator.uid);
+      const result = await this.projectsService.acceptCollaboration(this.projectId, collaborator.uid);
       
       // Remove from pending list
       this.pendingCollaborators.update(pending => 
         pending.filter(p => p.uid !== collaborator.uid)
       );
       
-      // Reload project to get updated collaborators list
-      await this.loadProject();
+      // Update local project state
+      this.project.update(project => {
+        if (project) {
+          return {
+            ...project,
+            collaborators: [...(project.collaborators || []), result.collaborator],
+            collaborationRequests: (project.collaborationRequests || []).filter(req => req.uid !== result.request.uid)
+          };
+        }
+        return project;
+      });
       
       await this.showToast(
         this.translateService.instant('PROJECT.COLLABORATOR_ACCEPTED', { name: collaborator.displayName }),
@@ -244,12 +254,23 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     try {
       if (!this.projectId) return;
       
-      await this.projectsService.rejectCollaboration(this.projectId, collaborator.uid);
+      const rejectedRequest = await this.projectsService.rejectCollaboration(this.projectId, collaborator.uid);
       
       // Remove from pending list
       this.pendingCollaborators.update(pending => 
         pending.filter(p => p.uid !== collaborator.uid)
       );
+      
+      // Update local project state
+      this.project.update(project => {
+        if (project) {
+          return {
+            ...project,
+            collaborationRequests: (project.collaborationRequests || []).filter(req => req.uid !== rejectedRequest.uid)
+          };
+        }
+        return project;
+      });
       
       await this.showToast(
         this.translateService.instant('PROJECT.COLLABORATOR_REJECTED', { name: collaborator.displayName }),
@@ -862,6 +883,28 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       'global': 'Global - International level'
     };
     return scopeLabels[scope] || scope;
+  }
+
+  getMembersSummary(): string {
+    const project = this.project();
+    if (!project) return '';
+    
+    const collaboratorsCount = (project.collaborators || []).length;
+    const pendingCount = (project.collaborationRequests || []).length;
+    
+    if (collaboratorsCount === 0 && pendingCount === 0) {
+      return '0 Collaborators yet - No requests';
+    } else if (collaboratorsCount === 0) {
+      return `0 Collaborators yet - ${pendingCount} request${pendingCount > 1 ? 's' : ''}`;
+    } else if (pendingCount === 0) {
+      return `${collaboratorsCount} Collaborator${collaboratorsCount > 1 ? 's' : ''} - No requests`;
+    } else {
+      return `${collaboratorsCount} Collaborator${collaboratorsCount > 1 ? 's' : ''} - ${pendingCount} request${pendingCount > 1 ? 's' : ''}`;
+    }
+  }
+
+  toggleMembers() {
+    this.membersExpanded.update(expanded => !expanded);
   }
 
   ngOnDestroy() {

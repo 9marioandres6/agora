@@ -15,87 +15,6 @@
     </div>
   } @else if (project()) {
     <div class="container">
-      <!-- Members Section -->
-      <ion-card class="members-section">
-        <ion-card-header>
-          <ion-card-title>{{ 'PROJECT.MEMBERS' | translate }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <!-- Owner -->
-          <div class="member-item owner">
-            <ion-avatar>
-              @if (project()?.creator?.photoURL) {
-                <img [src]="project()?.creator?.photoURL" [alt]="project()?.creator?.displayName">
-              } @else {
-                <ion-icon name="person"></ion-icon>
-              }
-            </ion-avatar>
-            <div class="member-info">
-              <h4>{{ project()?.creator?.displayName || 'Anonymous' }}</h4>
-              <ion-chip color="primary">{{ 'PROJECT.OWNER' | translate }}</ion-chip>
-            </div>
-          </div>
-
-          <!-- Accepted Collaborators -->
-          @for (collaborator of project()?.collaborators || []; track collaborator.uid) {
-            <div class="member-item collaborator">
-              <ion-avatar>
-                @if (collaborator.photoURL) {
-                  <img [src]="collaborator.photoURL" [alt]="collaborator.displayName">
-                } @else {
-                  <ion-icon name="person"></ion-icon>
-                }
-              </ion-avatar>
-              <div class="member-info">
-                <h4>{{ collaborator.displayName || 'Anonymous' }}</h4>
-                <ion-chip color="success">{{ 'PROJECT.COLLABORATOR' | translate }}</ion-chip>
-              </div>
-            </div>
-          }
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Pending Collaborators Section (Owner Only) -->
-      @if (isOwner() && (pendingCollaborators() || []).length > 0) {
-        <ion-card class="pending-section">
-          <ion-card-header>
-            <ion-card-title>{{ 'PROJECT.PENDING_COLLABORATORS' | translate }}</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            @for (request of pendingCollaborators(); track request.uid) {
-              <div class="pending-item">
-                <div class="request-info">
-                  <ion-avatar>
-                    @if (request.photoURL) {
-                      <img [src]="request.photoURL" [alt]="request.displayName">
-                    } @else {
-                      <ion-icon name="person"></ion-icon>
-                    }
-                  </ion-avatar>
-                  <div class="request-details">
-                    <h4>{{ request.displayName || 'Anonymous' }}</h4>
-                    <p>{{ request.email }}</p>
-                    @if (request.message) {
-                      <p class="request-message">{{ request.message }}</p>
-                    }
-                  </div>
-                </div>
-                <div class="request-actions">
-                  <ion-button size="small" color="success" (click)="acceptCollaborator(request)">
-                    <ion-icon name="checkmark" slot="start"></ion-icon>
-                    {{ 'PROJECT.ACCEPT' | translate }}
-                  </ion-button>
-                  <ion-button size="small" color="danger" fill="outline" (click)="rejectCollaborator(request)">
-                    <ion-icon name="close" slot="start"></ion-icon>
-                    {{ 'PROJECT.REJECT' | translate }}
-                  </ion-button>
-                </div>
-              </div>
-            }
-          </ion-card-content>
-        </ion-card>
-      }
-
       <!-- Information Section -->
       <ion-card class="project-info">
         <ion-card-header>
@@ -185,8 +104,97 @@
               }
             </div>
           </div>
+
+          <div class="info-row">
+            <label>{{ 'PROJECT.MEMBERS_LABEL' | translate }}</label>
+            <div class="info-content">
+              <div class="members-summary" (click)="toggleMembers()">
+                <span>{{ getMembersSummary() }}</span>
+                <ion-icon 
+                  [name]="membersExpanded() ? 'chevron-up' : 'chevron-down'" 
+                  class="expand-icon">
+                </ion-icon>
+              </div>
+            </div>
+          </div>
         </ion-card-content>
       </ion-card>
+
+      <!-- Collapsible Members Section -->
+      @if (membersExpanded()) {
+        <ion-card class="members-section">
+          <ion-card-content>
+            <!-- Owner -->
+            <div class="member-item owner">
+              <ion-avatar>
+                @if (project()?.creator?.photoURL) {
+                  <img [src]="project()?.creator?.photoURL" [alt]="project()?.creator?.displayName">
+                } @else {
+                  <ion-icon name="person"></ion-icon>
+                }
+              </ion-avatar>
+              <div class="member-info">
+                <h4>{{ project()?.creator?.displayName || 'Anonymous' }}</h4>
+                <ion-chip color="primary">{{ 'PROJECT.OWNER' | translate }}</ion-chip>
+              </div>
+            </div>
+
+            <!-- Accepted Collaborators -->
+            @for (collaborator of project()?.collaborators || []; track collaborator.uid) {
+              <div class="member-item collaborator">
+                <ion-avatar>
+                  @if (collaborator.photoURL) {
+                    <img [src]="collaborator.photoURL" [alt]="collaborator.displayName">
+                  } @else {
+                    <ion-icon name="person"></ion-icon>
+                  }
+                </ion-avatar>
+                <div class="member-info">
+                  <h4>{{ collaborator.displayName || 'Anonymous' }}</h4>
+                  <ion-chip color="success">{{ 'PROJECT.COLLABORATOR' | translate }}</ion-chip>
+                </div>
+              </div>
+            }
+
+            <!-- Pending Collaborators Section (Owner Only) -->
+            @if (isOwner() && (pendingCollaborators() || []).length > 0) {
+              <div class="pending-collaborators-section">
+                <h4 class="pending-title">{{ 'PROJECT.PENDING_COLLABORATORS' | translate }}</h4>
+                @for (request of pendingCollaborators(); track request.uid) {
+                  <div class="pending-item">
+                    <div class="request-info">
+                      <ion-avatar>
+                        @if (request.photoURL) {
+                          <img [src]="request.photoURL" [alt]="request.displayName">
+                        } @else {
+                          <ion-icon name="person"></ion-icon>
+                        }
+                      </ion-avatar>
+                      <div class="request-details">
+                        <h4>{{ request.displayName || 'Anonymous' }}</h4>
+                        <p>{{ request.email }}</p>
+                        @if (request.message) {
+                          <p class="request-message">{{ request.message }}</p>
+                        }
+                      </div>
+                    </div>
+                    <div class="request-actions">
+                      <ion-button size="small" color="success" (click)="acceptCollaborator(request)">
+                        <ion-icon name="checkmark" slot="start"></ion-icon>
+                        {{ 'PROJECT.ACCEPT' | translate }}
+                      </ion-button>
+                      <ion-button size="small" color="danger" fill="outline" (click)="rejectCollaborator(request)">
+                        <ion-icon name="close" slot="start"></ion-icon>
+                        {{ 'PROJECT.REJECT' | translate }}
+                      </ion-button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </ion-card-content>
+        </ion-card>
+      }
 
       <!-- Sections Section -->
       <ion-card class="chapters-section">

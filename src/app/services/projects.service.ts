@@ -431,7 +431,7 @@ export class ProjectsService {
     }
   }
 
-  async acceptCollaboration(projectId: string, requestUid: string): Promise<void> {
+  async acceptCollaboration(projectId: string, requestUid: string): Promise<{ request: CollaborationRequest; collaborator: Collaborator }> {
     try {
       const projectRef = doc(this.firestore, 'projects', projectId);
       
@@ -463,13 +463,15 @@ export class ProjectsService {
         collaborators: arrayUnion(collaborator),
         collaborationRequests: arrayRemove(request)
       });
+
+      return { request, collaborator };
     } catch (error) {
       console.error('Error accepting collaboration:', error);
       throw error;
     }
   }
 
-  async rejectCollaboration(projectId: string, requestUid: string): Promise<void> {
+  async rejectCollaboration(projectId: string, requestUid: string): Promise<CollaborationRequest> {
     try {
       const projectRef = doc(this.firestore, 'projects', projectId);
       
@@ -490,13 +492,15 @@ export class ProjectsService {
       await updateDoc(projectRef, {
         collaborationRequests: arrayRemove(request)
       });
+
+      return request;
     } catch (error) {
       console.error('Error rejecting collaboration:', error);
       throw error;
     }
   }
 
-  async removeCollaborator(projectId: string, collaboratorUid: string): Promise<void> {
+  async removeCollaborator(projectId: string, collaboratorUid: string): Promise<Collaborator> {
     try {
       const projectRef = doc(this.firestore, 'projects', projectId);
       
@@ -517,6 +521,8 @@ export class ProjectsService {
       await updateDoc(projectRef, {
         collaborators: arrayRemove(collaborator)
       });
+
+      return collaborator;
     } catch (error) {
       console.error('Error removing collaborator:', error);
       throw error;

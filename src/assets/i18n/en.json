@@ -200,6 +200,7 @@
   "PROJECT": {
     "LOADING": "Loading project...",
     "MEMBERS": "Members",
+    "MEMBERS_LABEL": "Members:",
     "PENDING_COLLABORATORS": "Pending Collaborators",
     "INFORMATION": "Information",
     "TITLE_LABEL": "Title:",

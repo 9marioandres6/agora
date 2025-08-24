@@ -39,6 +39,32 @@
   margin-bottom: 8px;
 }
 
+.members-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background: var(--ion-color-light-shade);
+  }
+  
+  span {
+    font-weight: 500;
+    color: var(--app-text);
+  }
+  
+  .expand-icon {
+    font-size: 18px;
+    color: var(--ion-color-medium);
+    transition: transform 0.2s ease;
+  }
+}
+
 .member-item {
   display: flex;
   align-items: center;
@@ -62,6 +88,20 @@
   ion-avatar {
     width: 40px;
     height: 40px;
+  }
+}
+
+/* Pending Collaborators within Members Section */
+.pending-collaborators-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ion-color-light);
+  
+  .pending-title {
+    margin: 0 0 0.75rem 0;
+    color: var(--app-text);
+    font-size: 1rem;
+    font-weight: 600;
   }
 }
 

@@ -135,8 +135,19 @@ export class PublicInnerProjectComponent implements OnInit {
     try {
       if (!this.projectId) return;
 
-      await this.projectsService.requestCollaboration(this.projectId, message);
+      const newRequest = await this.projectsService.requestCollaboration(this.projectId, message);
       this.collaborationMessage = '';
+      
+      // Update local project state to show pending request
+      this.project.update(project => {
+        if (project) {
+          return {
+            ...project,
+            collaborationRequests: [...(project.collaborationRequests || []), newRequest]
+          };
+        }
+        return project;
+      });
       
       await this.showToast(
         this.translateService.instant('HOME.COLLABORATION_REQUEST_SENT'),
