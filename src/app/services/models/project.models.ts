@@ -17,6 +17,7 @@ export interface Project {
   collaborators: Collaborator[];
   collaborationRequests: CollaborationRequest[];
   chapters?: Chapter[];
+  media?: Media[];
   creator?: {
     uid: string;
     displayName?: string;

@@ -72,6 +72,77 @@
           </div>
 
           <div class="info-row">
+            <label>{{ 'PROJECT.MEDIA_LABEL' | translate }}</label>
+            <div class="info-content">
+              @if (isOwner()) {
+                <div class="project-media-editor">
+                  @if (!project()?.media?.length) {
+                    <ion-button 
+                      fill="outline" 
+                      size="small" 
+                      (click)="showAddProjectMediaModal()"
+                      class="add-project-media-btn">
+                      <ion-icon name="add" slot="start"></ion-icon>
+                      {{ 'CHAPTERS.ADD_MEDIA' | translate }}
+                    </ion-button>
+                  } @else {
+                    <div class="project-media">
+                      <div class="media-grid">
+                        @for (media of project()?.media || []; track media.id) {
+                          <div class="media-item">
+                            <div class="media-preview clickable" (click)="replaceProjectMedia()">
+                              @if (media.type === 'image') {
+                                <img [src]="media.url" [alt]="media.caption" class="media-image">
+                              } @else if (media.type === 'video') {
+                                <div class="video-thumbnail">
+                                  <video [src]="media.url" class="media-video"></video>
+                                  <div class="play-overlay">
+                                    <ion-icon name="play-circle" size="large"></ion-icon>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                            <div class="media-info">
+                              <ion-button fill="clear" size="small" color="danger" class="delete-media-btn" (click)="deleteProjectMedia(media)">
+                                <ion-icon name="trash-outline"></ion-icon>
+                              </ion-button>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                @if (project()?.media?.length) {
+                  <div class="project-media">
+                    <div class="media-grid">
+                      @for (media of project()?.media || []; track media.id) {
+                        <div class="media-item">
+                          <div class="media-preview">
+                            @if (media.type === 'image') {
+                              <img [src]="media.url" [alt]="media.caption" class="media-image">
+                            } @else if (media.type === 'video') {
+                              <div class="video-thumbnail">
+                                <video [src]="media.url" class="media-video"></video>
+                                <div class="play-overlay">
+                                  <ion-icon name="play-circle" size="large"></ion-icon>
+                                </div>
+                              </div>
+                            }
+                          </div>
+                          <div class="media-info">
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
+
+          <div class="info-row">
             <label>{{ 'PROJECT.NEEDS_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isOwner()) {

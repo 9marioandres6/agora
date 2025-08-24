@@ -53,6 +53,31 @@
           
           <p class="project-description">{{ project()?.description }}</p>
           
+          @if (project()?.media?.length) {
+            <div class="project-media">
+              <div class="media-grid">
+                @for (media of project()?.media; track media.id) {
+                  <div class="media-item">
+                    <div class="media-preview">
+                      @if (media.type === 'image') {
+                        <img [src]="media.url" [alt]="media.caption" class="media-image">
+                      } @else if (media.type === 'video') {
+                        <div class="video-thumbnail">
+                          <video [src]="media.url" class="media-video"></video>
+                          <div class="play-overlay">
+                            <ion-icon name="play-circle" size="large"></ion-icon>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                    <div class="media-info">
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+          
           @if (project()?.needs && (project()?.needs?.length || 0) > 0) {
             <div class="project-needs">
               <ul class="needs-list">

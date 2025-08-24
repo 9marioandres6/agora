@@ -731,6 +731,128 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     }
   }
 
+  showAddProjectMediaModal() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*,video/*';
+    fileInput.multiple = false;
+    
+    fileInput.onchange = (event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        this.handleProjectFileUpload(Array.from(files));
+      }
+    };
+    
+    fileInput.click();
+  }
+
+  replaceProjectMedia() {
+    this.showAddProjectMediaModal();
+  }
+
+  async handleProjectFileUpload(files: File[]) {
+    const maxFileSize = 10 * 1024 * 1024;
+    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+    
+    for (const file of files) {
+      try {
+        if (file.size > maxFileSize) {
+          await this.showToast(`File ${file.name} is too large. Maximum size is 10MB.`, 'warning');
+          continue;
+        }
+        
+        const isValidImage = allowedImageTypes.includes(file.type);
+        const isValidVideo = allowedVideoTypes.includes(file.type);
+        
+        if (!isValidImage && !isValidVideo) {
+          await this.showToast(`File ${file.name} has an unsupported type.`, 'warning');
+          continue;
+        }
+        
+        await this.showToast(`Uploading ${file.name}...`, 'success');
+        
+        const uploadResult = await this.supabaseService.uploadFile(
+          file, 
+          'agora-project', 
+          'projects'
+        );
+        
+        if (!uploadResult) {
+          await this.showToast(`Failed to upload ${file.name}`, 'danger');
+          continue;
+        }
+        
+        const mediaType = isValidImage ? 'image' : 'video';
+        
+        const newMedia: Media = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          type: mediaType,
+          url: uploadResult.url,
+          caption: file.name || `Uploaded ${mediaType}`,
+          storagePath: uploadResult.path,
+          fileName: file.name,
+          fileSize: file.size
+        };
+        
+        this.project.update(project => {
+          if (project) {
+            return {
+              ...project,
+              media: [newMedia]
+            };
+          }
+          return project;
+        });
+        
+        try {
+          await this.projectsService.updateProject(this.projectId!, { media: [newMedia] });
+          await this.showToast(`Successfully uploaded ${file.name}`, 'success');
+        } catch (error) {
+          console.error('Error saving project media to database:', error);
+          await this.showToast(`Error saving ${file.name} to database`, 'danger');
+        }
+        
+      } catch (error) {
+        console.error('Error processing file:', file.name, error);
+        await this.showToast(`Error processing ${file.name}`, 'danger');
+      }
+    }
+  }
+
+  async deleteProjectMedia(media: Media) {
+    if (media.storagePath) {
+      try {
+        const deleted = await this.supabaseService.deleteFile(media.storagePath);
+        if (!deleted) {
+          await this.showToast(`Warning: Could not delete file from storage`, 'warning');
+        }
+      } catch (error) {
+        console.error('Error deleting file from storage:', error);
+        await this.showToast(`Warning: Could not delete file from storage`, 'warning');
+      }
+    }
+    
+    this.project.update(project => {
+      if (project) {
+        return {
+          ...project,
+          media: []
+        };
+      }
+      return project;
+    });
+    
+    try {
+      await this.projectsService.updateProject(this.projectId!, { media: [] });
+      await this.showToast(`Successfully deleted ${media.caption}`, 'success');
+    } catch (error) {
+      console.error('Error deleting project media from database:', error);
+      await this.showToast(`Error deleting media from database`, 'danger');
+    }
+  }
+
   replaceMedia(chapter: Chapter) {
     // Create a hidden file input for file selection
     const fileInput = document.createElement('input');

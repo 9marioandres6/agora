@@ -1,14 +1,15 @@
 import { Component, inject, signal, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, ModalController, IonInput } from '@ionic/angular';
+import { IonicModule, NavController, ModalController, IonInput, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { ProjectsService } from '../services/projects.service';
+import { SupabaseService } from '../services/supabase.service';
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
 import { ScopeOption } from './models/new-item.models';
-import { Need } from '../services/models/project.models';
+import { Need, Media } from '../services/models/project.models';
 
 @Component({
   selector: 'app-new-item',
@@ -25,6 +26,8 @@ export class NewItemComponent implements AfterViewInit {
   private themeService = inject(ThemeService);
   private projectsService = inject(ProjectsService);
   private modalCtrl = inject(ModalController);
+  private supabaseService = inject(SupabaseService);
+  private toastCtrl = inject(ToastController);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -36,6 +39,7 @@ export class NewItemComponent implements AfterViewInit {
   scope = '';
   newNeed = '';
   isSaving = false;
+  projectMedia: Media[] = [];
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', label: 'Grupal - Small Group Collaboration', icon: 'people' },
@@ -85,6 +89,98 @@ export class NewItemComponent implements AfterViewInit {
     await modal.present();
   }
 
+  showAddMediaModal() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*,video/*';
+    fileInput.multiple = false;
+    
+    fileInput.onchange = (event) => {
+      const files = (event.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        this.handleFileUpload(Array.from(files));
+      }
+    };
+    
+    fileInput.click();
+  }
+
+  replaceMedia() {
+    this.showAddMediaModal();
+  }
+
+  async handleFileUpload(files: File[]) {
+    const maxFileSize = 10 * 1024 * 1024;
+    const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    const allowedVideoTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+    
+    for (const file of files) {
+      try {
+        if (file.size > maxFileSize) {
+          await this.showToast(`File ${file.name} is too large. Maximum size is 10MB.`, 'warning');
+          continue;
+        }
+        
+        const isValidImage = allowedImageTypes.includes(file.type);
+        const isValidVideo = allowedVideoTypes.includes(file.type);
+        
+        if (!isValidImage && !isValidVideo) {
+          await this.showToast(`File ${file.name} has an unsupported type.`, 'warning');
+          continue;
+        }
+        
+        await this.showToast(`Uploading ${file.name}...`, 'success');
+        
+        const uploadResult = await this.supabaseService.uploadFile(
+          file, 
+          'agora-project', 
+          'projects'
+        );
+        
+        if (!uploadResult) {
+          await this.showToast(`Failed to upload ${file.name}`, 'danger');
+          continue;
+        }
+        
+        const mediaType = isValidImage ? 'image' : 'video';
+        
+        const newMedia: Media = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          type: mediaType,
+          url: uploadResult.url,
+          caption: file.name || `Uploaded ${mediaType}`,
+          storagePath: uploadResult.path,
+          fileName: file.name,
+          fileSize: file.size
+        };
+        
+        this.projectMedia = [newMedia];
+        await this.showToast(`Successfully uploaded ${file.name}`, 'success');
+        
+      } catch (error) {
+        console.error('Error processing file:', file.name, error);
+        await this.showToast(`Error processing ${file.name}`, 'danger');
+      }
+    }
+  }
+
+  async deleteMedia(media: Media) {
+    if (media.storagePath) {
+      try {
+        const deleted = await this.supabaseService.deleteFile(media.storagePath);
+        if (!deleted) {
+          await this.showToast(`Warning: Could not delete file from storage`, 'warning');
+        }
+      } catch (error) {
+        console.error('Error deleting file from storage:', error);
+        await this.showToast(`Warning: Could not delete file from storage`, 'warning');
+      }
+    }
+    
+    this.projectMedia = this.projectMedia.filter(m => m.id !== media.id);
+    await this.showToast(`Successfully deleted ${media.caption}`, 'success');
+  }
+
   async saveItem() {
     if (!this.title.trim() || !this.description.trim() || !this.scope) {
       return;
@@ -105,7 +201,8 @@ export class NewItemComponent implements AfterViewInit {
         scope: this.scope,
         createdBy: currentUser.uid,
         collaborators: [],
-        collaborationRequests: []
+        collaborationRequests: [],
+        media: this.projectMedia
       };
 
       const projectId = await this.projectsService.createProject(projectData);
@@ -123,11 +220,20 @@ export class NewItemComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Set focus on the title input field when the component loads
     setTimeout(() => {
       if (this.titleInput) {
         this.titleInput.setFocus();
       }
     }, 300);
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
   }
 }

@@ -89,6 +89,49 @@
             </ion-button>
           </ion-item>
 
+          <ion-item class="form-item">
+            <ion-label position="stacked">{{ 'NEW_ITEM.MEDIA' | translate }}</ion-label>
+            <div class="media-section">
+              @if (!projectMedia || projectMedia.length === 0) {
+                <ion-button 
+                  fill="outline" 
+                  expand="block"
+                  (click)="showAddMediaModal()"
+                  class="add-media-btn">
+                  <ion-icon name="add" slot="start"></ion-icon>
+                  {{ 'NEW_ITEM.ADD_MEDIA' | translate }}
+                </ion-button>
+              } @else {
+                <div class="media-preview">
+                  @for (media of projectMedia; track media.id) {
+                    <div class="media-item">
+                      <div class="media-content">
+                        @if (media.type === 'image') {
+                          <img [src]="media.url" [alt]="media.caption" class="media-image">
+                        } @else if (media.type === 'video') {
+                          <div class="video-thumbnail">
+                            <video [src]="media.url" class="media-video"></video>
+                            <div class="play-overlay">
+                              <ion-icon name="play-circle" size="large"></ion-icon>
+                            </div>
+                          </div>
+                        }
+                      </div>
+                      <div class="media-actions">
+                        <ion-button fill="clear" size="small" color="danger" (click)="deleteMedia(media)">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </ion-button>
+                        <ion-button fill="clear" size="small" color="primary" (click)="replaceMedia()">
+                          <ion-icon name="refresh-outline"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </ion-item>
+
           <div class="form-actions">
             <ion-button 
               expand="block" 
