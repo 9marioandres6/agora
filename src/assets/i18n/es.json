@@ -86,6 +86,7 @@
         "NO_REQUESTS": "No hay solicitudes pendientes",
         "ALREADY_COLLABORATING": "Ya estás colaborando o tienes una solicitud pendiente",
         "COLLABORATION_REQUEST_SENT": "Solicitud de colaboración enviada exitosamente",
+        "COLLABORATION_REQUEST_PENDING": "Solicitud de colaboración enviada. Por favor espera a que el propietario del proyecto revise tu solicitud.",
         "ERROR_SENDING_COLLABORATION_REQUEST": "Error al enviar solicitud de colaboración"
   },
   "SETTINGS": {

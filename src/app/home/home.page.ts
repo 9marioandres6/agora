@@ -6,7 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { SettingsModalComponent } from '../components/settings-modal/settings-modal.component';
 import { ProjectsService } from '../services/projects.service';
-import { Project } from '../services/models/project.models';
+import { Project, Comment, CollaborationRequest } from '../services/models/project.models';
 import { ViewWillEnter } from '@ionic/angular';
 import { ProjectCardComponent } from '../components/project-card/project-card.component';
 
@@ -103,8 +103,13 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      await this.projectsService.toggleSupport(projectId, currentUser.uid);
-      await this.loadProjects();
+      const result = await this.projectsService.toggleSupport(projectId, currentUser.uid);
+      this.updateProjectVoting(projectId, 'supports', result.action, currentUser.uid);
+      
+      // If support was added, also remove from opposes array in UI
+      if (result.action === 'added') {
+        this.removeUserFromOpposes(projectId, currentUser.uid);
+      }
     } catch (error) {
       console.error('Error supporting project:', error);
     }
@@ -118,8 +123,13 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      await this.projectsService.toggleOppose(projectId, currentUser.uid);
-      await this.loadProjects();
+      const result = await this.projectsService.toggleOppose(projectId, currentUser.uid);
+      this.updateProjectVoting(projectId, 'opposes', result.action, currentUser.uid);
+      
+      // If oppose was added, also remove from supports array in UI
+      if (result.action === 'added') {
+        this.removeUserFromSupports(projectId, currentUser.uid);
+      }
     } catch (error) {
       console.error('Error opposing project:', error);
     }
@@ -141,8 +151,8 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      await this.projectsService.addComment(projectId, commentText);
-      await this.loadProjects();
+      const newComment = await this.projectsService.addComment(projectId, commentText);
+      this.addCommentToProject(projectId, newComment);
     } catch (error) {
       console.error('Error adding comment:', error);
     }
@@ -165,22 +175,69 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   async requestCollaboration(projectId: string, message: string) {
     try {
-      await this.projectsService.requestCollaboration(projectId, message);
-      await this.loadProjects();
+      const newRequest = await this.projectsService.requestCollaboration(projectId, message);
+      this.addCollaborationRequestToProject(projectId, newRequest);
     } catch (error) {
       console.error('Error requesting collaboration:', error);
     }
   }
 
+  private updateProjectVoting(projectId: string, field: 'supports' | 'opposes', action: 'added' | 'removed', userId: string) {
+    this.projects.update(projects => 
+      projects.map(project => {
+        if (project.id !== projectId) return project;
+        
+        const currentArray = project[field] || [];
+        let newArray: string[];
+        
+        if (action === 'added') {
+          newArray = [...currentArray, userId];
+        } else {
+          newArray = currentArray.filter(id => id !== userId);
+        }
+        
+        return { ...project, [field]: newArray };
+      })
+    );
+  }
 
+  private removeUserFromSupports(projectId: string, userId: string) {
+    this.projects.update(projects => 
+      projects.map(project => {
+        if (project.id !== projectId) return project;
+        const newSupports = (project.supports || []).filter(id => id !== userId);
+        return { ...project, supports: newSupports };
+      })
+    );
+  }
 
+  private removeUserFromOpposes(projectId: string, userId: string) {
+    this.projects.update(projects => 
+      projects.map(project => {
+        if (project.id !== projectId) return project;
+        const newOpposes = (project.opposes || []).filter(id => id !== userId);
+        return { ...project, opposes: newOpposes };
+      })
+    );
+  }
 
+  private addCommentToProject(projectId: string, newComment: Comment) {
+    this.projects.update(projects => 
+      projects.map(project => 
+        project.id === projectId 
+          ? { ...project, comments: [...(project.comments || []), newComment] }
+          : project
+      )
+    );
+  }
 
-
-
-
-
-
-
-
+  private addCollaborationRequestToProject(projectId: string, newRequest: CollaborationRequest) {
+    this.projects.update(projects => 
+      projects.map(project => 
+        project.id === projectId 
+          ? { ...project, collaborationRequests: [...(project.collaborationRequests || []), newRequest] }
+          : project
+      )
+    );
+  }
 }

@@ -85,7 +85,8 @@
         "NO_COLLABORATORS": "No collaborators yet",
         "NO_REQUESTS": "No pending requests",
         "ALREADY_COLLABORATING": "You are already collaborating or have a pending request",
-        "COLLABORATION_REQUEST_SENT": "Collaboration request sent successfully",
+        "COLLABORATION_REQUEST_SENT": "Collaboration request sent successfully!",
+        "COLLABORATION_REQUEST_PENDING": "Collaboration request sent. Please wait for the project owner to review your request.",
         "ERROR_SENDING_COLLABORATION_REQUEST": "Error sending collaboration request"
   },
   "SETTINGS": {

@@ -375,7 +375,7 @@ export class ProjectsService {
     }
   }
 
-  async addComment(projectId: string, commentText: string): Promise<void> {
+  async addComment(projectId: string, commentText: string): Promise<Comment> {
     try {
       const currentUser = this.authService.user();
       if (!currentUser?.uid) {
@@ -394,13 +394,15 @@ export class ProjectsService {
       await updateDoc(projectRef, {
         comments: arrayUnion(comment)
       });
+
+      return comment;
     } catch (error) {
       console.error('Error adding comment:', error);
       throw error;
     }
   }
 
-  async requestCollaboration(projectId: string, message?: string): Promise<void> {
+  async requestCollaboration(projectId: string, message?: string): Promise<CollaborationRequest> {
     try {
       const currentUser = this.authService.user();
       if (!currentUser?.uid) {
@@ -421,6 +423,8 @@ export class ProjectsService {
       await updateDoc(projectRef, {
         collaborationRequests: arrayUnion(request)
       });
+
+      return request;
     } catch (error) {
       console.error('Error requesting collaboration:', error);
       throw error;
