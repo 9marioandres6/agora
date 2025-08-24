@@ -9,6 +9,8 @@ import { ProjectsService } from '../services/projects.service';
 import { Project, Comment, CollaborationRequest } from '../services/models/project.models';
 import { ViewWillEnter } from '@ionic/angular';
 import { ProjectCardComponent } from '../components/project-card/project-card.component';
+import { ConnectionService } from '../services/connection.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -22,6 +24,8 @@ export class HomePage implements OnInit, ViewWillEnter {
   private themeService = inject(ThemeService);
   private navCtrl = inject(NavController);
   private projectsService = inject(ProjectsService);
+  private connectionService = inject(ConnectionService);
+  private router = inject(Router);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -67,11 +71,22 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   ngOnInit() {
-    this.loadProjects();
+    this.checkConnectionAndLoadProjects();
   }
 
   ionViewWillEnter() {
-    this.loadProjects();
+    this.checkConnectionAndLoadProjects();
+  }
+
+  private async checkConnectionAndLoadProjects() {
+    // Check connection status first
+    if (!this.connectionService.isOnline()) {
+      this.router.navigate(['/no-connection']);
+      return;
+    }
+    
+    // If online, load projects
+    await this.loadProjects();
   }
 
   async loadProjects() {

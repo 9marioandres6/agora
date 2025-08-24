@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { ConnectionService } from '../services/connection.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-no-connection',
@@ -12,6 +13,7 @@ import { ConnectionService } from '../services/connection.service';
 })
 export class NoConnectionComponent implements OnDestroy {
   private connectionService = inject(ConnectionService);
+  private router = inject(Router);
   
   // Use signals from the service
   readonly isChecking = this.connectionService.isChecking;
@@ -34,7 +36,23 @@ export class NoConnectionComponent implements OnDestroy {
   });
 
   constructor() {
+    // Check connection status immediately when component is created
+    this.checkConnectionStatus();
     this.startAutoReconnection();
+  }
+
+  private checkConnectionStatus() {
+    // If we're actually online, redirect to home
+    if (this.isOnline()) {
+      this.router.navigate(['/home']);
+      return;
+    }
+    
+    // If we're offline, ensure connection state is properly set
+    if (!this.isOnline()) {
+      // Force a connection check to ensure state is accurate
+      this.connectionService.forceConnectionCheck();
+    }
   }
 
   ngOnDestroy() {

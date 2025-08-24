@@ -102,8 +102,8 @@ export class ConnectionService {
     // Start periodic connection quality checks
     this.startConnectionQualityMonitoring();
     
-    // Initial connection test
-    this.testConnection();
+    // Initial connection test with immediate check
+    this.performInitialConnectionCheck();
   }
 
   private async testConnection() {
@@ -248,6 +248,58 @@ export class ConnectionService {
     }
   }
 
+  // Public method to perform initial connection check
+  async performInitialConnectionCheck() {
+    // First check if navigator.onLine is reliable
+    if (!navigator.onLine) {
+      // If navigator.onLine says we're offline, set state immediately
+      this.connectionState.update(state => ({
+        ...state,
+        isOnline: false,
+        connectionQuality: 'offline',
+        lastCheck: new Date(),
+        isChecking: false
+      }));
+      return;
+    }
+
+    // Even if navigator.onLine says we're online, perform a quick network test
+    // to catch cases where WiFi is turned off but the browser hasn't updated yet
+    try {
+      // Quick test with a simple fetch to detect offline state
+      const testResponse = await fetch('/assets/icon/favicon.png', { 
+        method: 'HEAD',
+        cache: 'no-cache',
+        mode: 'no-cors'
+      });
+      
+      // If we can't even reach local assets, we're definitely offline
+      if (!testResponse.ok && testResponse.type !== 'opaque') {
+        this.connectionState.update(state => ({
+          ...state,
+          isOnline: false,
+          connectionQuality: 'offline',
+          lastCheck: new Date(),
+          isChecking: false
+        }));
+        return;
+      }
+    } catch (error) {
+      // If fetch fails, we're offline
+      this.connectionState.update(state => ({
+        ...state,
+        isOnline: false,
+        connectionQuality: 'offline',
+        lastCheck: new Date(),
+        isChecking: false
+      }));
+      return;
+    }
+
+    // If we reach here, we seem to be online, so perform full connection test
+    await this.testConnection();
+  }
+
   // Method to check if we should redirect from no-connection page
   shouldRedirectFromNoConnection(): boolean {
     return this.isOnline() && this.router.url === '/no-connection';
@@ -280,6 +332,42 @@ export class ConnectionService {
       connectionQuality: navigator.onLine ? 'excellent' : 'offline',
       lastCheck: new Date()
     }));
+  }
+
+  // Public method to force a connection check
+  async forceConnectionCheck(): Promise<boolean> {
+    try {
+      // Quick check first
+      const quickTest = await fetch('/assets/icon/favicon.png', { 
+        method: 'HEAD',
+        cache: 'no-cache',
+        mode: 'no-cors'
+      });
+      
+      if (!quickTest.ok && quickTest.type !== 'opaque') {
+        this.connectionState.update(state => ({
+          ...state,
+          isOnline: false,
+          connectionQuality: 'offline',
+          lastCheck: new Date(),
+          isChecking: false
+        }));
+        return false;
+      }
+      
+      // If quick test passes, do full test
+      await this.testConnection();
+      return this.isOnline();
+    } catch (error) {
+      this.connectionState.update(state => ({
+        ...state,
+        isOnline: false,
+        connectionQuality: 'offline',
+        lastCheck: new Date(),
+        isChecking: false
+      }));
+      return false;
+    }
   }
 
   // Cleanup method

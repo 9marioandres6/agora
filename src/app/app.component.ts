@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ThemeService } from './services/theme.service';
 import { TranslationService } from './services/translation.service';
 import { ConnectionService } from './services/connection.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -13,10 +14,39 @@ export class AppComponent implements OnInit {
   private themeService = inject(ThemeService);
   private translationService = inject(TranslationService);
   private connectionService = inject(ConnectionService);
+  private router = inject(Router);
+  
+  constructor() {
+    // Check connection immediately in constructor to catch offline states
+    // before any routing or component initialization happens
+    this.checkInitialConnection();
+  }
   
   ngOnInit(): void {
     this.translationService.initializeLanguage();
     this.themeService.loadTheme();
-    // Connection service is automatically initialized in its constructor
+    
+    // Perform additional connection check in ngOnInit
+    this.performInitialConnectionCheck();
+  }
+
+  private async checkInitialConnection() {
+    // Quick check to see if we're offline before any routing
+    if (!navigator.onLine) {
+      // If we're offline, set connection state immediately
+      this.connectionService.simulateConnectionIssue('offline');
+      
+      // Wait for router to be ready, then navigate
+      setTimeout(() => {
+        if (this.router.url !== '/no-connection') {
+          this.router.navigate(['/no-connection']);
+        }
+      }, 100);
+    }
+  }
+
+  private async performInitialConnectionCheck() {
+    // Perform full connection check
+    await this.connectionService.performInitialConnectionCheck();
   }
 }
