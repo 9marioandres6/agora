@@ -209,8 +209,7 @@ ion-content { --background: var(--app-background); }
         letter-spacing: 0.5px;
       }
 
-      .collaborator-item,
-      .comment-item {
+      .collaborator-item {
         padding: 12px;
         margin-bottom: 12px;
         background: var(--app-input-background);
@@ -271,6 +270,22 @@ ion-content { --background: var(--app-background); }
         color: var(--app-text-secondary);
         font-style: italic;
         margin: 20px 0;
+      }
+    }
+
+    .comment-item {
+      padding: 12px;
+      margin-bottom: 8px;
+      background: var(--app-input-background);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+
+      .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--app-divider);
       }
     }
 

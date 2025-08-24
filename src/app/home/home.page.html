@@ -145,15 +145,27 @@
             <!-- Comments Section -->
             @if (expandedComments() === project.id) {
               <div class="comments-container">
+                <div class="comments-header">
+                  <h4>{{ 'HOME.COMMENTS' | translate }}</h4>
+                  @if (project.comments && project.comments.length > 0) {
+                    <span class="comments-count">{{ project.comments.length }} {{ project.comments.length === 1 ? 'comment' : 'comments' }}</span>
+                  }
+                </div>
                 @if (project.comments && project.comments.length > 0) {
                   <div class="comments-list">
                     @for (comment of project.comments; track comment.id) {
                       <div class="comment-item">
                         <div class="comment-header">
-                          <strong>{{ comment.creatorName }}</strong>
-                          <small>{{ comment.createdAt | date:'short' }}</small>
+                          <div class="comment-author">
+                            <strong>{{ comment.creatorName }}</strong>
+                          </div>
+                          <div class="comment-date">
+                            <small>{{ comment.createdAt | date:'short' }}</small>
+                          </div>
                         </div>
-                        <p class="comment-text">{{ comment.text }}</p>
+                        <div class="comment-body">
+                          <p class="comment-text">{{ comment.text }}</p>
+                        </div>
                       </div>
                     }
                   </div>
