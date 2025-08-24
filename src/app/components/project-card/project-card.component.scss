@@ -39,34 +39,39 @@
         }
       }
     }
-
-    .scope-icon-container {
-      .scope-icon {
-        font-size: 24px;
-        color: var(--app-primary-color);
-      }
-    }
   }
 
   .project-body {
     padding: 16px;
     cursor: pointer;
 
-    .state-chip-container {
-      margin-bottom: 16px;
-
-      .state-chip {
-        font-size: 12px;
-        font-weight: 500;
-      }
-    }
-
-    .project-title {
-      margin: 0 0 12px;
+    .project-title-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 16px;
       font-size: 20px;
       font-weight: 700;
       color: var(--app-text);
       line-height: 1.3;
+
+      .scope-icon-inline {
+        font-size: 20px;
+        color: var(--app-primary-color);
+        flex-shrink: 0;
+      }
+
+      .project-title-text {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .state-chip-inline {
+        font-size: 12px;
+        font-weight: 500;
+        flex-shrink: 0;
+        margin: 0;
+      }
     }
 
     .project-description {

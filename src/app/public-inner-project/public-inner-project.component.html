@@ -40,19 +40,17 @@
               <p class="creator-email">{{ project()?.creator?.email || '' }}</p>
             </div>
           </div>
-          <div class="scope-icon-container">
-            <ion-icon [name]="getScopeIcon(project()?.scope || '')" class="scope-icon"></ion-icon>
-          </div>
         </ion-card-header>
 
         <ion-card-content class="project-body">
-          <div class="state-chip-container">
-            <ion-chip [color]="getStateColor(project()?.state || 'building')" class="state-chip">
+          <p class="project-title-line">
+            <ion-icon [name]="getScopeIcon(project()?.scope || '')" class="scope-icon-inline"></ion-icon>
+            <span class="project-title-text">{{ project()?.title }}</span>
+            <ion-chip [color]="getStateColor(project()?.state || 'building')" class="state-chip-inline">
               {{ getStateLabel(project()?.state || 'building') | translate }}
             </ion-chip>
-          </div>
+          </p>
           
-          <h2 class="project-title">{{ project()?.title }}</h2>
           <p class="project-description">{{ project()?.description }}</p>
           
           @if (project()?.needs && (project()?.needs?.length || 0) > 0) {
