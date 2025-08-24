@@ -5,7 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectsService } from '../services/projects.service';
-import { Project } from '../services/models/project.models';
+import { Project, Need } from '../services/models/project.models';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -97,14 +97,12 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     return stateLabels[state] || 'HOME.STATE_BUILDING';
   }
 
-  getNeedIcon(need: string): string {
-    const state = this.project()?.needStates?.[need] || 'pending';
-    return state === 'obtained' ? 'checkmark-circle' : 'time';
+  getNeedIcon(need: Need): string {
+    return need.state === 'obtained' ? 'checkmark-circle' : 'time';
   }
 
-  getNeedIconColor(need: string): string {
-    const state = this.project()?.needStates?.[need] || 'pending';
-    return state === 'obtained' ? 'success' : 'warning';
+  getNeedIconColor(need: Need): string {
+    return need.state === 'obtained' ? 'success' : 'warning';
   }
 
   async showCollaborationModal() {

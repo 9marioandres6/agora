@@ -8,6 +8,7 @@ import { ThemeService } from '../services/theme.service';
 import { ProjectsService } from '../services/projects.service';
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
 import { ScopeOption } from './models/new-item.models';
+import { Need } from '../services/models/project.models';
 
 @Component({
   selector: 'app-new-item',
@@ -31,7 +32,7 @@ export class NewItemComponent implements AfterViewInit {
 
   title = '';
   description = '';
-  needs: string[] = [];
+  needs: Need[] = [];
   scope = '';
   newNeed = '';
   isSaving = false;
@@ -45,14 +46,14 @@ export class NewItemComponent implements AfterViewInit {
   ];
 
   addNeed() {
-    if (this.newNeed.trim() && !this.needs.includes(this.newNeed.trim())) {
-      this.needs.push(this.newNeed.trim());
+    if (this.newNeed.trim() && !this.needs.some(need => need.name === this.newNeed.trim())) {
+      this.needs.push({ name: this.newNeed.trim(), state: 'pending' });
       this.newNeed = '';
     }
   }
 
-  removeNeed(need: string) {
-    this.needs = this.needs.filter(n => n !== need);
+  removeNeed(need: Need) {
+    this.needs = this.needs.filter(n => n.name !== need.name);
   }
 
   getScopeIcon(scope: string): string {
@@ -104,11 +105,7 @@ export class NewItemComponent implements AfterViewInit {
         scope: this.scope,
         createdBy: currentUser.uid,
         collaborators: [],
-        collaborationRequests: [],
-        needStates: this.needs.reduce((states, need) => {
-          states[need] = 'pending';
-          return states;
-        }, {} as { [key: string]: 'pending' | 'obtained' })
+        collaborationRequests: []
       };
 
       const projectId = await this.projectsService.createProject(projectData);

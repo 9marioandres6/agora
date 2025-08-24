@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, getDoc, DocumentData, arrayUnion, arrayRemove, onSnapshot, Unsubscribe } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
-import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment } from './models/project.models';
+import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, Need } from './models/project.models';
 
 @Injectable({
   providedIn: 'root'
@@ -94,6 +94,7 @@ export class ProjectsService {
         if (project.collaborationRequests === undefined) {
           project.collaborationRequests = [];
         }
+        
         return project;
       });
 
@@ -128,6 +129,7 @@ export class ProjectsService {
         if (project.comments === undefined) project.comments = [];
         if (project.collaborators === undefined) project.collaborators = [];
         if (project.collaborationRequests === undefined) project.collaborationRequests = [];
+        
         return project;
       });
 
@@ -785,8 +787,9 @@ export class ProjectsService {
     }
   }
 
-  private generateTags(title: string, description: string, needs: string[]): string[] {
-    const allText = `${title} ${description} ${needs.join(' ')}`.toLowerCase();
+  private generateTags(title: string, description: string, needs: Need[]): string[] {
+    const needNames = needs.map(need => need.name).join(' ');
+    const allText = `${title} ${description} ${needNames}`.toLowerCase();
     const words = allText.split(/\s+/).filter(word => word.length > 3);
     const tagCount: { [key: string]: number } = {};
     

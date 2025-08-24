@@ -88,7 +88,7 @@
                       fill="outline" 
                       size="small" 
                       (click)="addNewNeed()"
-                      [disabled]="!newNeedText?.trim()"
+                      [disabled]="!newNeedText.trim()"
                       class="add-need-btn">
                       <ion-icon name="add" slot="start"></ion-icon>
                       {{ 'PROJECT.ADD_NEED' | translate }}
@@ -108,7 +108,7 @@
                         </ion-icon>
                         <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
                       </ion-chip>
-                      <span class="need-text">{{ need }}</span>
+                      <span class="need-text">{{ need.name }}</span>
                       <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
                         <ion-icon name="trash-outline"></ion-icon>
                       </ion-button>
@@ -129,7 +129,7 @@
                           </ion-icon>
                           <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
                         </ion-chip>
-                        <span class="need-text-readonly">{{ need }}</span>
+                        <span class="need-text-readonly">{{ need.name }}</span>
                       </div>
                     }
                   </div>

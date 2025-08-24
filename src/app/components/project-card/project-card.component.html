@@ -39,14 +39,14 @@
     @if (project().needs && project().needs.length > 0) {
       <div class="project-needs">
         <ul class="needs-list">
-                          @for (need of project().needs; track need) {
+                          @for (need of project().needs; track need.name) {
                   <li>
                     <ion-icon 
                       [name]="getNeedIcon(need)" 
                       [color]="getNeedIconColor(need)"
                       class="need-icon">
                     </ion-icon>
-                    {{ need }}
+                    {{ need.name }}
                   </li>
                 }
         </ul>

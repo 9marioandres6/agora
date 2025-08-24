@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ProjectsService } from '../services/projects.service';
-import { Project, Chapter, Media } from '../services/models/project.models';
+import { Project, Chapter, Media, Need } from '../services/models/project.models';
 import { SupabaseService } from '../services/supabase.service';
 import { PendingCollaborator } from './models/private-inner-project.models';
 
@@ -196,7 +196,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     const currentNeeds = this.editingProject().needs || [];
     this.editingProject.update(project => ({
       ...project,
-      needs: [...currentNeeds, '']
+      needs: [...currentNeeds, { name: '', state: 'pending' }]
     }));
   }
 
@@ -207,7 +207,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     const newNeed = this.newNeedText.trim();
     
     // Check if need already exists
-    if (currentNeeds.includes(newNeed)) {
+    if (currentNeeds.some(need => need.name === newNeed)) {
       // You could show a toast message here about duplicate needs
       return;
     }
@@ -215,7 +215,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     // Add the new need
     this.editingProject.update(project => ({
       ...project,
-      needs: [...currentNeeds, newNeed]
+      needs: [...currentNeeds, { name: newNeed, state: 'pending' }]
     }));
     
     // Clear the input
@@ -497,7 +497,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           }
           break;
         case 'needs':
-          const newNeeds = this.editingProject().needs?.filter(need => need.trim()) || [];
+          const newNeeds = this.editingProject().needs?.filter(need => need.name?.trim()) || [];
           if (JSON.stringify(newNeeds) !== JSON.stringify(proj.needs)) {
             updates.needs = newNeeds;
           }
@@ -577,7 +577,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           }
           break;
         case 'needs':
-          const newNeeds = this.editingProject().needs?.filter(need => need.trim()) || [];
+          const newNeeds = this.editingProject().needs?.filter(need => need.name?.trim()) || [];
           if (JSON.stringify(newNeeds) !== JSON.stringify(proj.needs)) {
             updates.needs = newNeeds;
             hasChanges = true;
@@ -605,7 +605,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   // Needs management methods
   addProjectNeed() {
     const currentNeeds = this.editingProject().needs || [];
-    this.editingProject.update(project => ({ ...project, needs: [...currentNeeds, ''] }));
+    this.editingProject.update(project => ({ ...project, needs: [...currentNeeds, { name: '', state: 'pending' }] }));
     this.startProjectFieldAutoSave('needs');
   }
 
@@ -619,7 +619,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   updateProjectNeed(index: number, value: string) {
     const currentNeeds = this.editingProject().needs || [];
     const newNeeds = [...currentNeeds];
-    newNeeds[index] = value;
+    newNeeds[index] = { ...newNeeds[index], name: value };
     this.editingProject.update(project => ({ ...project, needs: newNeeds }));
     this.startProjectFieldAutoSave('needs');
   }
@@ -905,33 +905,29 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     return scopeLabels[scope] || scope;
   }
 
-  getNeedIcon(need: string): string {
-    const state = this.project()?.needStates?.[need] || 'pending';
-    return state === 'obtained' ? 'checkmark-circle' : 'time';
+  getNeedIcon(need: Need): string {
+    return need.state === 'obtained' ? 'checkmark-circle' : 'time';
   }
 
-  getNeedIconColor(need: string): string {
-    const state = this.project()?.needStates?.[need] || 'pending';
-    return state === 'obtained' ? 'success' : 'warning';
+  getNeedIconColor(need: Need): string {
+    return need.state === 'obtained' ? 'success' : 'warning';
   }
 
-  getNeedChipColor(need: string): string {
-    const state = this.project()?.needStates?.[need] || 'pending';
-    return state === 'obtained' ? 'success' : 'warning';
+  getNeedChipColor(need: Need): string {
+    return need.state === 'obtained' ? 'success' : 'warning';
   }
 
-  getNeedStateText(need: string): string {
-    const state = this.project()?.needStates?.[need] || 'pending';
-    return state === 'obtained' ? 'HOME.NEED_OBTAINED' : 'HOME.NEED_PENDING';
+  getNeedStateText(need: Need): string {
+    return need.state === 'obtained' ? 'HOME.NEED_OBTAINED' : 'HOME.NEED_PENDING';
   }
 
-  async toggleNeedState(need: string) {
+  async toggleNeedState(need: Need) {
     if (!this.isOwner() || !this.projectId) return;
     
     const currentProject = this.project();
     if (!currentProject) return;
     
-    const currentState = currentProject.needStates?.[need] || 'pending';
+    const currentState = need.state;
     const newState = currentState === 'pending' ? 'obtained' : 'pending';
     
     try {
@@ -940,10 +936,9 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         if (project) {
           return {
             ...project,
-            needStates: {
-              ...project.needStates,
-              [need]: newState
-            }
+            needs: project.needs.map(n => 
+              n.name === need.name ? { ...n, state: newState } : n
+            )
           };
         }
         return project;
@@ -951,10 +946,9 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       
       // Update in database
       await this.projectsService.updateProject(this.projectId, {
-        needStates: {
-          ...currentProject.needStates,
-          [need]: newState
-        }
+        needs: currentProject.needs.map(n => 
+          n.name === need.name ? { ...n, state: newState } : n
+        )
       });
       
     } catch (error) {
@@ -966,10 +960,9 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         if (project) {
           return {
             ...project,
-            needStates: {
-              ...project.needStates,
-              [need]: currentState
-            }
+            needs: project.needs.map(n => 
+              n.name === need.name ? { ...n, state: currentState } : n
+            )
           };
         }
         return project;

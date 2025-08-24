@@ -2,7 +2,7 @@ export interface Project {
   id?: string;
   title: string;
   description: string;
-  needs: string[];
+  needs: Need[];
   scope: string;
   createdBy: string;
   createdAt: string;
@@ -23,7 +23,11 @@ export interface Project {
     email?: string;
     photoURL?: string;
   };
-  needStates?: { [needText: string]: 'pending' | 'obtained' };
+}
+
+export interface Need {
+  name: string;
+  state: 'pending' | 'obtained';
 }
 
 export interface Chapter {

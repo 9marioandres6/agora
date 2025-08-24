@@ -58,12 +58,12 @@
             
             @if (needs.length > 0) {
               <div class="needs-chips">
-                @for (need of needs; track need) {
+                @for (need of needs; track need.name) {
                   <ion-chip 
                     color="primary" 
                     (click)="removeNeed(need)"
                     class="need-chip">
-                    <ion-label>{{ need }}</ion-label>
+                    <ion-label>{{ need.name }}</ion-label>
                     <ion-icon name="close" slot="end"></ion-icon>
                   </ion-chip>
                 }
