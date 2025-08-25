@@ -1,24 +1,30 @@
-/* Custom styles that cannot be replaced with Ionic utilities */
 .new-item-form {
-  padding: 8px;
+  padding: 16px;
   
   .form-card {
     margin: 0 0 16px 0;
+    border-radius: 12px;
+    box-shadow: none;
+    background: transparent;
+    border: none;
     
     ion-card-content {
-      padding: 20px !important;
+      padding: 16px !important;
+      --background: transparent;
     }
     
     .form-item {
       --padding-start: 0;
       --padding-end: 0;
       --inner-padding-end: 0;
-      margin-bottom: 20px;
+      --background: transparent;
+      margin-bottom: 16px;
       
       ion-label {
         font-weight: 600;
-        color: var(--ion-color-primary);
+        color: var(--app-text);
         margin-bottom: 8px;
+        font-size: 16px;
       }
       
       ion-input,
@@ -27,13 +33,15 @@
         --padding-end: 16px;
         --padding-top: 12px;
         --padding-bottom: 12px;
-        border: 1px solid var(--ion-color-light);
+        border: none;
         border-radius: 8px;
         margin-top: 8px;
+        --background: transparent;
+        color: var(--app-text);
         
         &:focus-within {
-          border-color: var(--ion-color-primary);
-          box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.2);
+          border: 1px solid var(--app-primary);
+          box-shadow: 0 0 0 2px var(--app-primary-light);
         }
       }
       
@@ -44,20 +52,39 @@
   }
 }
 
+.requirements-section {
+  margin-bottom: 16px;
+  
+  .requirements-label {
+    display: block;
+    font-weight: 600;
+    color: var(--app-text);
+    margin-bottom: 16px;
+    font-size: 16px;
+  }
+}
+
+.requirements-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
 .needs-input-container {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 8px;
+  order: 1;
   
   ion-input {
     flex: 1;
   }
   
   .add-need-btn {
-    --color: var(--ion-color-primary);
-    --color-hover: var(--ion-color-primary-shade);
-    --color-activated: var(--ion-color-primary-tint);
+    --color: var(--app-primary);
+    --color-hover: var(--app-primary-hover);
+    --color-activated: var(--app-primary);
     
     ion-icon {
       font-size: 20px;
@@ -69,7 +96,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  order: 2;
   
   .need-chip {
     cursor: pointer;
@@ -96,7 +123,7 @@ ion-select {
 .form-actions {
   margin-top: 24px;
   padding-top: 16px;
-  border-top: 1px solid var(--ion-color-light);
+  border-top: none;
   
   .send-button {
     --border-radius: 8px;
@@ -165,9 +192,9 @@ ion-select {
       align-items: center;
       gap: 12px;
       padding: 12px;
-      border: 1px solid var(--ion-color-light);
+      border: none;
       border-radius: 8px;
-      background: var(--ion-color-light-tint);
+      background: transparent;
       
       .media-content {
         flex: 1;
@@ -271,6 +298,10 @@ ion-select {
   .form-item ion-textarea {
     --padding-start: 12px;
     --padding-end: 12px;
+  }
+  
+  .requirements-container {
+    gap: 12px;
   }
   
   .needs-input-container {
