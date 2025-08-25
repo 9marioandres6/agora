@@ -75,20 +75,34 @@
 
           <ion-item class="form-item">
             <ion-label position="stacked">{{ 'NEW_ITEM.SCOPE' | translate }}</ion-label>
-            <ion-button 
-              fill="outline" 
-              expand="block"
-              (click)="openScopeModal()"
-              class="scope-selector-btn"
-              [color]="scope ? 'primary' : 'medium'">
-              @if (scope) {
-                <ion-icon [name]="getScopeIcon(scope)" slot="start"></ion-icon>
-                {{ 'NEW_ITEM.SCOPE_' + scope.toUpperCase() | translate }}
-              } @else {
-                <ion-icon name="chevron-down" slot="start"></ion-icon>
-                {{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}
-              }
-            </ion-button>
+            
+            @if (!scope) {
+              <ion-select 
+                [(ngModel)]="scope" 
+                name="scope"
+                placeholder="{{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}"
+                interface="popover"
+                class="scope-select">
+                @for (option of scopeOptions; track option.value) {
+                  <ion-select-option [value]="option.value">
+                    <ion-icon [name]="option.icon" slot="start"></ion-icon>
+                    {{ 'NEW_ITEM.SCOPE_' + option.value.toUpperCase() | translate }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            } @else {
+              <div class="selected-scope-display">
+                <ion-icon [name]="getScopeIcon(scope)" class="scope-icon"></ion-icon>
+                <span class="scope-label">{{ 'NEW_ITEM.SCOPE_' + scope.toUpperCase() | translate }}</span>
+                <ion-button 
+                  fill="clear" 
+                  size="small" 
+                  (click)="scope = ''"
+                  class="change-scope-btn">
+                  <ion-icon name="create-outline"></ion-icon>
+                </ion-button>
+              </div>
+            }
           </ion-item>
 
           <ion-item class="form-item">

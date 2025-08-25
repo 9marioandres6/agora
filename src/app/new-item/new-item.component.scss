@@ -155,29 +155,59 @@ ion-select {
   }
 }
 
-.scope-selector-btn {
-  --border-radius: 8px;
+.scope-select {
   --padding-start: 16px;
   --padding-end: 16px;
-  --padding-top: 16px;
-  --padding-bottom: 16px;
-  height: auto;
-  min-height: 48px;
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  border: none;
+  border-radius: 8px;
   margin-top: 8px;
+  --background: transparent;
+  color: var(--app-text);
+  --border-style: none;
+  --border-width: 0;
   
-  ion-icon {
-    margin-right: 12px;
+  &:focus-within {
+    border: 1px solid var(--app-primary);
+    box-shadow: 0 0 0 2px var(--app-primary-light);
+  }
+  
+  &::part(icon) {
+    color: var(--app-primary);
+  }
+}
+
+.selected-scope-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--app-primary-light);
+  border-radius: 6px;
+  
+  .scope-icon {
+    color: var(--app-primary);
     font-size: 18px;
   }
   
-  &:hover {
-    --background: var(--ion-color-light);
+  .scope-label {
+    color: var(--app-primary);
+    font-weight: 500;
+    font-size: 14px;
+    flex: 1;
   }
   
-  &[color="primary"] {
-    --background: var(--ion-color-primary);
-    --color: var(--ion-color-primary-contrast);
-    --border-color: var(--ion-color-primary);
+  .change-scope-btn {
+    --color: var(--app-primary);
+    --color-hover: var(--app-primary-hover);
+    --padding-start: 4px;
+    --padding-end: 4px;
+    
+    ion-icon {
+      font-size: 16px;
+    }
   }
 }
 
