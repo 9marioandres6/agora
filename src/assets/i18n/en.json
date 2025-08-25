@@ -118,7 +118,7 @@
     "AUTH_REQUIRED_MESSAGE": "Please log in to edit your profile"
   },
   "NEW_ITEM": {
-    "CREATE_NEW": "Propose",
+    "CREATE_NEW": "New",
     "TITLE": "What",
     "TITLE_PLACEHOLDER": "Write here what you want to propose",
     "DESCRIPTION": "How",

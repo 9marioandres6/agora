@@ -118,7 +118,7 @@
     "AUTH_REQUIRED_MESSAGE": "Por favor inicia sesión para editar tu perfil"
   },
   "NEW_ITEM": {
-    "CREATE_NEW": "Proponer",
+    "CREATE_NEW": "Nuevo",
     "TITLE": "Qué",
     "TITLE_PLACEHOLDER": "Escribe aquí qué quieres proponer",
     "DESCRIPTION": "Cómo",
