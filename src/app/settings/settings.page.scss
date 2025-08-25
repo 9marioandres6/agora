@@ -1,0 +1,185 @@
+ion-content {
+  --background: var(--app-background);
+}
+
+ion-header {
+  ion-toolbar {
+    --background: var(--app-toolbar-background);
+    --color: var(--app-toolbar-text);
+    --border-color: var(--app-toolbar-border);
+  }
+  
+  ion-button {
+    --color: var(--app-toolbar-text);
+    --background: transparent;
+    
+    &:hover {
+      --background: var(--app-button-hover);
+    }
+    
+    &:active {
+      --background: var(--app-button-active);
+    }
+  }
+}
+
+.profile-card {
+  margin: 1rem;
+  background: var(--app-card-background);
+  border: 1px solid var(--app-card-border);
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      
+      &.avatar-large {
+        width: 80px;
+        height: 80px;
+      }
+      
+      ion-icon {
+        color: var(--app-text-secondary);
+      }
+    }
+    
+    .profile-info {
+      flex: 1;
+      
+      h2 {
+        margin: 0 0 0.5rem 0;
+        color: var(--app-text);
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 0;
+        color: var(--app-text-secondary);
+        font-size: 0.9rem;
+      }
+    }
+    
+    .edit-profile-btn {
+      --color: var(--app-primary);
+      --background: transparent;
+      
+      &:hover {
+        --background: var(--app-button-hover);
+      }
+      
+      &:active {
+        --background: var(--app-button-active);
+      }
+    }
+  }
+}
+
+.settings-card,
+.account-card,
+.info-card {
+  margin: 1rem;
+  background: var(--app-card-background);
+  border: 1px solid var(--app-card-border);
+  
+  ion-card-header {
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--app-text);
+      font-size: 1.1rem;
+      
+      ion-icon {
+        color: var(--app-primary);
+      }
+    }
+  }
+  
+  // Fix the gaps between items
+  ion-list {
+    --background: var(--app-card-background);
+    background: var(--app-card-background);
+  }
+}
+
+// Use the same approach as the working language selector
+.setting-item {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --inner-padding-end: 0;
+  --background: var(--app-card-background);
+  margin: 0;
+  transition: all 0.3s ease;
+  
+  .setting-icon {
+    margin-right: 16px;
+    font-size: 22px;
+    color: var(--ion-color-medium);
+  }
+  
+  ion-label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .theme-badge {
+    margin-right: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .theme-indicator {
+    font-size: 1.2rem;
+  }
+}
+
+.logout-item {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --inner-padding-end: 0;
+  --background: var(--app-card-background);
+  margin: 0;
+  transition: all 0.3s ease;
+  
+  ion-icon {
+    margin-right: 16px;
+    font-size: 22px;
+    color: var(--ion-color-danger);
+  }
+  
+  ion-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--ion-color-danger);
+  }
+}
+
+.info-item {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --inner-padding-end: 0;
+  --background: var(--app-card-background);
+  margin: 0;
+  transition: all 0.3s ease;
+  
+  ion-icon {
+    margin-right: 16px;
+    font-size: 22px;
+    color: var(--ion-color-primary);
+  }
+  
+  ion-label {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  ion-note {
+    color: var(--app-text-secondary);
+    font-size: 0.9rem;
+  }
+}

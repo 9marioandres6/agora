@@ -1,10 +1,9 @@
 import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
-import { ModalController, NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
-import { SettingsModalComponent } from '../components/settings-modal/settings-modal.component';
 import { ProjectsService } from '../services/projects.service';
 import { Project, Comment, CollaborationRequest } from '../services/models/project.models';
 import { ViewWillEnter } from '@ionic/angular';
@@ -20,7 +19,6 @@ import { Router } from '@angular/router';
 })
 export class HomePage implements OnInit, ViewWillEnter {
   private authService = inject(AuthService);
-  private modalCtrl = inject(ModalController);
   private themeService = inject(ThemeService);
   private navCtrl = inject(NavController);
   private projectsService = inject(ProjectsService);
@@ -45,11 +43,7 @@ export class HomePage implements OnInit, ViewWillEnter {
 
 
   async presentSettingsModal() {
-    const modal = await this.modalCtrl.create({
-      component: SettingsModalComponent,
-      cssClass: 'settings-modal'
-    });
-    await modal.present();
+    this.navCtrl.navigateForward('/settings');
   }
 
   async logout() {
