@@ -69,44 +69,6 @@
   opacity: 0.7;
 }
 
-.actions {
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 300px;
-}
-
-.retry-button {
-  width: 100%;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 500;
-  background: var(--app-primary);
-  color: var(--app-primary-text);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.retry-button:hover:not(:disabled) {
-  background: var(--app-primary-hover);
-  transform: translateY(-2px);
-}
-
-.retry-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.retry-button span {
-  font-size: 1.2rem;
-}
-
 .tips {
   max-width: 500px;
   text-align: left;
