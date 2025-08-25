@@ -27,18 +27,17 @@
           </ion-item>
 
           <ion-item class="form-item">
-            <ion-label position="stacked">{{ 'NEW_ITEM.DESCRIPTION' | translate }}</ion-label>
+            <ion-label position="stacked">{{ 'NEW_ITEM.DESCRIPTION' | translate }} ({{ 'COMMON.OPTIONAL' | translate }})</ion-label>
             <ion-textarea 
               [(ngModel)]="description" 
               name="description"
               placeholder="{{ 'NEW_ITEM.DESCRIPTION_PLACEHOLDER' | translate }}"
-              rows="4"
-              required>
+              rows="4">
             </ion-textarea>
           </ion-item>
 
           <ion-item class="form-item">
-            <ion-label position="stacked">{{ 'NEW_ITEM.WHAT_WE_NEED' | translate }}</ion-label>
+            <ion-label position="stacked">{{ 'NEW_ITEM.WHAT_WE_NEED' | translate }} ({{ 'COMMON.OPTIONAL' | translate }})</ion-label>
             <div class="needs-input-container">
               <ion-input 
                 [(ngModel)]="newNeed" 
@@ -90,7 +89,7 @@
           </ion-item>
 
           <ion-item class="form-item">
-            <ion-label position="stacked">{{ 'NEW_ITEM.MEDIA' | translate }}</ion-label>
+            <ion-label position="stacked">{{ 'NEW_ITEM.MEDIA' | translate }} ({{ 'COMMON.OPTIONAL' | translate }})</ion-label>
             <div class="media-section">
               @if (!projectMedia || projectMedia.length === 0) {
                 <ion-button 
@@ -136,7 +135,7 @@
             <ion-button 
               expand="block" 
               (click)="saveItem()" 
-              [disabled]="!title.trim() || !description.trim() || !scope || isSaving"
+              [disabled]="!title.trim() || !scope || isSaving"
               [color]="isSaving ? 'medium' : 'primary'"
               class="send-button">
               <ion-icon [name]="isSaving ? 'hourglass' : 'send'" slot="start"></ion-icon>

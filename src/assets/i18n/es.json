@@ -24,7 +24,8 @@
     "SUCCESS": "Éxito",
     "WARNING": "Advertencia",
     "INFO": "Información",
-    "PROJECT_NOT_FOUND": "Proyecto no encontrado"
+    "PROJECT_NOT_FOUND": "Proyecto no encontrado",
+    "OPTIONAL": "Opcional"
   },
   "AUTH": {
     "LOGIN_TITLE": "Bienvenido de Vuelta",

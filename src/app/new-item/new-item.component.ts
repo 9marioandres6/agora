@@ -182,7 +182,7 @@ export class NewItemComponent implements AfterViewInit {
   }
 
   async saveItem() {
-    if (!this.title.trim() || !this.description.trim() || !this.scope) {
+    if (!this.title.trim() || !this.scope) {
       return;
     }
 
@@ -196,7 +196,7 @@ export class NewItemComponent implements AfterViewInit {
 
       const projectData = {
         title: this.title.trim(),
-        description: this.description.trim(),
+        description: this.description.trim() || '',
         needs: this.needs,
         scope: this.scope,
         createdBy: currentUser.uid,
