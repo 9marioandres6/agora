@@ -1,39 +1,15 @@
 <ion-card class="project-card">
   <ion-card-header class="project-header">
-          <div class="creator-info">
-        @if (project().creator; as creator) {
-          <ion-avatar class="creator-avatar avatar-small">
-            @if (creator.photoURL) {
-              <img [src]="creator.photoURL" [alt]="creator.displayName || 'Creator'">
-            } @else {
-              <ion-icon name="person" size="large"></ion-icon>
-            }
-          </ion-avatar>
-          <div class="creator-details">
-            <h3 class="creator-name">{{ creator.displayName || 'Anonymous' }}</h3>
-            <p class="creator-email">{{ creator.email || '' }}</p>
-          </div>
-        } @else {
-          <ion-avatar class="creator-avatar avatar-small">
-            <ion-icon name="person" size="large"></ion-icon>
-          </ion-avatar>
-          <div class="creator-details">
-            <h3 class="creator-name">Anonymous</h3>
-            <p class="creator-email"></p>
-          </div>
-        }
-      </div>
-  </ion-card-header>
-
-  <ion-card-content class="project-body" (click)="onProjectCardClick()">
-    <p class="project-title-line">
+    <div class="project-title-line">
       <ion-icon [name]="getScopeIcon(project().scope || '')" class="scope-icon-inline"></ion-icon>
       <span class="project-title-text">{{ project().title }}</span>
       <ion-chip [color]="getStateColor(project().state || 'building')" class="state-chip-inline">
         {{ getStateLabel(project().state || 'building') | translate }}
       </ion-chip>
-    </p>
-    
+    </div>
+  </ion-card-header>
+
+  <ion-card-content class="project-body" (click)="onProjectCardClick()">
     <p class="project-description">{{ project().description }}</p>
     
     @if (project().media?.length) {
@@ -77,6 +53,16 @@
         </ul>
       </div>
     }
+
+    <!-- Creator Avatar Section -->
+    <div class="creator-avatar-section">
+      <app-user-avatar 
+        [user]="getCreatorData()"
+        [variant]="'creator'"
+        [avatarSize]="'small'"
+        [showRole]="true">
+      </app-user-avatar>
+    </div>
   </ion-card-content>
 
   <div class="project-footer">
@@ -177,27 +163,29 @@
   <!-- Collaborators Section -->
   @if (expandedCollaborators()) {
     <div class="collaborators-container">
+      <!-- Creator Section -->
+      <div class="creator-section">
+        <h4>{{ 'HOME.CREATOR' | translate }}</h4>
+        <app-user-avatar 
+          [user]="getCreatorData()"
+          [variant]="'creator'"
+          [avatarSize]="'small'"
+          [showRole]="true">
+        </app-user-avatar>
+      </div>
+
       <!-- Current Collaborators -->
       <div class="collaborators-list">
         <h4>{{ 'HOME.COLLABORATORS' | translate }}</h4>
         @if (project().collaborators && project().collaborators.length > 0) {
           @for (collaborator of project().collaborators; track collaborator.uid) {
-            <div class="collaborator-item">
-              <div class="collaborator-info">
-                <ion-avatar class="collaborator-avatar avatar-small">
-                  @if (collaborator.photoURL) {
-                    <img [src]="collaborator.photoURL" [alt]="collaborator.displayName">
-                  } @else {
-                    <ion-icon name="person" size="large"></ion-icon>
-                  }
-                </ion-avatar>
-                <div class="collaborator-details">
-                  <strong>{{ collaborator.displayName }}</strong>
-                  <small>{{ collaborator.email }}</small>
-                  <span class="joined-date">{{ 'HOME.JOINED' | translate }}: {{ collaborator.joinedAt | date:'short' }}</span>
-                </div>
-              </div>
-            </div>
+            <app-user-avatar 
+              [user]="getCollaboratorData(collaborator)"
+              [variant]="'collaborator'"
+              [avatarSize]="'small'"
+              [showRole]="true"
+              [showJoinedDate]="true">
+            </app-user-avatar>
           }
         } @else {
           <p class="no-data">{{ 'HOME.NO_COLLABORATORS' | translate }}</p>

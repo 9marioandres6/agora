@@ -1,0 +1,21 @@
+<div class="user-avatar-item" [class]="'variant-' + variant()">
+  <ion-avatar [class]="(avatarSize() === 'small' ? 'avatar-small' : 'avatar-large') + ' variant-' + variant()">
+    @if (user().photoURL) {
+      <img [src]="user().photoURL" [alt]="user().displayName || 'User'">
+    } @else {
+      <ion-icon name="person" size="large"></ion-icon>
+    }
+  </ion-avatar>
+  
+  <div class="user-details">
+    <strong class="user-name">{{ user().displayName || 'Anonymous' }}</strong>
+    
+    @if (showRole() && user().role) {
+      <span class="user-role">{{ user().role | translate }}</span>
+    }
+    
+    @if (showJoinedDate() && user().joinedAt) {
+      <span class="user-joined-date">{{ 'HOME.JOINED' | translate }}: {{ user().joinedAt | date:'short' }}</span>
+    }
+  </div>
+</div>

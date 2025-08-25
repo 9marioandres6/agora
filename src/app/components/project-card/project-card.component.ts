@@ -5,13 +5,14 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Project, Need } from '../../services/models/project.models';
 import { AuthService } from '../../services/auth.service';
+import { UserAvatarComponent, UserAvatarData } from '../user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-project-card',
   templateUrl: './project-card.component.html',
   styleUrls: ['./project-card.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, TranslateModule]
+  imports: [CommonModule, IonicModule, FormsModule, TranslateModule, UserAvatarComponent]
 })
 export class ProjectCardComponent {
   private authService = inject(AuthService);
@@ -95,6 +96,37 @@ export class ProjectCardComponent {
 
   canInteractWithProject(project: Project): boolean {
     return this.isProjectCreator(project) || this.isProjectCollaborator(project);
+  }
+
+  getCreatorData(): UserAvatarData {
+    const project = this.project();
+    if (project.creator) {
+      return {
+        uid: project.creator.uid,
+        displayName: project.creator.displayName,
+        email: project.creator.email,
+        photoURL: project.creator.photoURL,
+        role: 'PROJECT.CREATOR'
+      };
+    }
+    return {
+      uid: project.createdBy || 'anonymous',
+      displayName: 'Anonymous',
+      email: '',
+      photoURL: undefined,
+              role: 'PROJECT.CREATOR'
+    };
+  }
+
+  getCollaboratorData(collaborator: any): UserAvatarData {
+    return {
+      uid: collaborator.uid,
+      displayName: collaborator.displayName,
+      email: collaborator.email,
+      photoURL: collaborator.photoURL,
+      role: collaborator.role,
+      joinedAt: collaborator.joinedAt
+    };
   }
 
 

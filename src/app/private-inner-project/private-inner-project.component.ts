@@ -51,7 +51,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   
   // Computed properties
   readonly currentUser = computed(() => this.authService.user());
-  readonly isOwner = computed(() => {
+  readonly isCreator = computed(() => {
     const user = this.currentUser();
     const proj = this.project();
     return user && proj && user.uid === proj.createdBy;
@@ -66,8 +66,8 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         this.project.set(project);
         this.isLoading.set(false);
         
-        // Load pending collaborators if owner
-        if (this.isOwner()) {
+        // Load pending collaborators if creator
+        if (this.isCreator()) {
           this.loadPendingCollaborators();
         }
       } else {
@@ -1044,7 +1044,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
 
   async toggleNeedState(need: Need) {
-    if (!this.isOwner() || !this.projectId) return;
+    if (!this.isCreator() || !this.projectId) return;
     
     const currentProject = this.project();
     if (!currentProject) return;

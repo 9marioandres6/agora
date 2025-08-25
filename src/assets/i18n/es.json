@@ -88,8 +88,9 @@
         "NO_REQUESTS": "No hay solicitudes pendientes",
         "ALREADY_COLLABORATING": "Ya estás colaborando o tienes una solicitud pendiente",
         "COLLABORATION_REQUEST_SENT": "Solicitud de colaboración enviada exitosamente",
-        "COLLABORATION_REQUEST_PENDING": "Solicitud de colaboración enviada. Por favor espera a que el propietario del proyecto revise tu solicitud.",
-        "ERROR_SENDING_COLLABORATION_REQUEST": "Error al enviar solicitud de colaboración"
+        "COLLABORATION_REQUEST_PENDING": "Solicitud de colaboración enviada. Por favor espera a que el creador del proyecto revise tu solicitud.",
+        "ERROR_SENDING_COLLABORATION_REQUEST": "Error al enviar solicitud de colaboración",
+        "CREATOR": "Creador"
   },
   "SETTINGS": {
     "GENERAL": "General",
@@ -220,7 +221,7 @@
     "PROJECT_NOT_FOUND_MESSAGE": "El proyecto que buscas no existe o no tienes acceso a él.",
     "NEW_PROJECT": "Nuevo Proyecto",
     "PROJECT_DESCRIPTION_PLACEHOLDER": "La descripción del proyecto va aquí.",
-    "OWNER": "Propietario",
+        "CREATOR": "Creador",
     "COLLABORATOR": "Colaborador",
     "ACCEPT": "Aceptar",
     "REJECT": "Rechazar",

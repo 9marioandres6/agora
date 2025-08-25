@@ -27,30 +27,16 @@
     <div class="project-container">
       <ion-card class="project-card">
         <ion-card-header class="project-header">
-          <div class="creator-info">
-            <ion-avatar class="creator-avatar avatar-small">
-              @if (project()?.creator?.photoURL) {
-                <img [src]="project()?.creator?.photoURL" [alt]="project()?.creator?.displayName || 'Creator'">
-              } @else {
-                <ion-icon name="person" size="large"></ion-icon>
-              }
-            </ion-avatar>
-            <div class="creator-details">
-              <h3 class="creator-name">{{ project()?.creator?.displayName || 'Anonymous' }}</h3>
-              <p class="creator-email">{{ project()?.creator?.email || '' }}</p>
-            </div>
-          </div>
-        </ion-card-header>
-
-        <ion-card-content class="project-body">
-          <p class="project-title-line">
+          <div class="project-title-line">
             <ion-icon [name]="getScopeIcon(project()?.scope || '')" class="scope-icon-inline"></ion-icon>
             <span class="project-title-text">{{ project()?.title }}</span>
             <ion-chip [color]="getStateColor(project()?.state || 'building')" class="state-chip-inline">
               {{ getStateLabel(project()?.state || 'building') | translate }}
             </ion-chip>
-          </p>
-          
+          </div>
+        </ion-card-header>
+
+        <ion-card-content class="project-body">
           <p class="project-description">{{ project()?.description }}</p>
           
           @if (project()?.media?.length) {
@@ -94,6 +80,16 @@
               </ul>
             </div>
           }
+
+          <!-- Creator Avatar Section -->
+          <div class="creator-avatar-section">
+            <app-user-avatar 
+              [user]="getCreatorData()"
+              [variant]="'creator'"
+              [avatarSize]="'small'"
+              [showRole]="true">
+            </app-user-avatar>
+          </div>
         </ion-card-content>
       </ion-card>
 

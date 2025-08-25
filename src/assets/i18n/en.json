@@ -88,8 +88,9 @@
         "NO_REQUESTS": "No pending requests",
         "ALREADY_COLLABORATING": "You are already collaborating or have a pending request",
         "COLLABORATION_REQUEST_SENT": "Collaboration request sent successfully!",
-        "COLLABORATION_REQUEST_PENDING": "Collaboration request sent. Please wait for the project owner to review your request.",
-        "ERROR_SENDING_COLLABORATION_REQUEST": "Error sending collaboration request"
+        "COLLABORATION_REQUEST_PENDING": "Collaboration request sent. Please wait for the project creator to review your request.",
+        "ERROR_SENDING_COLLABORATION_REQUEST": "Error sending collaboration request",
+        "CREATOR": "Creator"
   },
   "SETTINGS": {
     "GENERAL": "General",
@@ -220,7 +221,7 @@
     "PROJECT_NOT_FOUND_MESSAGE": "The project you're looking for doesn't exist or you don't have access to it.",
     "NEW_PROJECT": "New Project",
     "PROJECT_DESCRIPTION_PLACEHOLDER": "Project description goes here.",
-    "OWNER": "Owner",
+        "CREATOR": "Creator",
     "COLLABORATOR": "Collaborator",
     "ACCEPT": "Accept",
     "REJECT": "Reject",

@@ -23,7 +23,7 @@
           <div class="info-row">
             <label>{{ 'PROJECT.TITLE_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isOwner()) {
+              @if (isCreator()) {
                 <ion-input 
                   [ngModel]="editingProject().title || project()?.title || ''" 
                   (ngModelChange)="updateProjectField('title', $event)"
@@ -38,7 +38,7 @@
           <div class="info-row">
             <label>{{ 'PROJECT.SCOPE_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isOwner()) {
+              @if (isCreator()) {
                 <ion-select 
                   [ngModel]="editingProject().scope || project()?.scope || ''" 
                   (ngModelChange)="updateProjectField('scope', $event)"
@@ -58,7 +58,7 @@
           <div class="info-row">
             <label>{{ 'PROJECT.DESCRIPTION_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isOwner()) {
+              @if (isCreator()) {
                 <ion-textarea 
                   [ngModel]="editingProject().description || project()?.description || ''" 
                   (ngModelChange)="updateProjectField('description', $event)"
@@ -74,7 +74,7 @@
           <div class="info-row">
             <label>{{ 'PROJECT.MEDIA_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isOwner()) {
+              @if (isCreator()) {
                 <div class="project-media-editor">
                   @if (!project()?.media?.length) {
                     <ion-button 
@@ -145,7 +145,7 @@
           <div class="info-row">
             <label>{{ 'PROJECT.NEEDS_LABEL' | translate }}</label>
             <div class="info-content">
-              @if (isOwner()) {
+              @if (isCreator()) {
                 <div class="needs-editor">
                   <!-- Add new need input -->
                   <div class="add-need-section">
@@ -228,8 +228,8 @@
       @if (membersExpanded()) {
         <ion-card class="members-section">
           <ion-card-content>
-            <!-- Owner -->
-            <div class="member-item owner">
+            <!-- Creator -->
+            <div class="member-item creator">
               <ion-avatar class="avatar-small">
                 @if (project()?.creator?.photoURL) {
                   <img [src]="project()?.creator?.photoURL" [alt]="project()?.creator?.displayName">
@@ -239,7 +239,7 @@
               </ion-avatar>
               <div class="member-info">
                 <h4>{{ project()?.creator?.displayName || 'Anonymous' }}</h4>
-                <p class="member-role">{{ 'PROJECT.OWNER' | translate }}</p>
+                                  <p class="member-role">{{ 'PROJECT.CREATOR' | translate }}</p>
               </div>
             </div>
 
@@ -260,8 +260,8 @@
               </div>
             }
 
-            <!-- Pending Collaborators Section (Owner Only) -->
-            @if (isOwner() && (pendingCollaborators() || []).length > 0) {
+            <!-- Pending Collaborators Section (Creator Only) -->
+            @if (isCreator() && (pendingCollaborators() || []).length > 0) {
               <div class="pending-collaborators-section">
                 <h4 class="pending-title">{{ 'PROJECT.PENDING_COLLABORATORS' | translate }}</h4>
                 @for (request of pendingCollaborators(); track request.uid) {

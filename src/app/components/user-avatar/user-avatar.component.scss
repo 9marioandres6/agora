@@ -1,0 +1,55 @@
+.user-avatar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--app-border-color);
+
+  &.variant-creator {
+    .user-details .user-name {
+      color: var(--app-primary-color);
+      font-weight: 700;
+    }
+  }
+
+  &.variant-collaborator {
+    .user-details .user-role {
+      color: var(--app-success-color);
+      font-weight: 500;
+    }
+  }
+
+  .user-details {
+    flex: 1;
+
+    .user-name {
+      display: block;
+      color: var(--app-text);
+      margin-bottom: 4px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .user-email {
+      display: block;
+      color: var(--app-text-secondary);
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .user-role {
+      display: block;
+      color: var(--app-text-secondary);
+      margin-bottom: 4px;
+      font-size: 12px;
+      text-transform: capitalize;
+    }
+
+    .user-joined-date {
+      display: block;
+      color: var(--app-text-secondary);
+      font-size: 12px;
+    }
+  }
+}
