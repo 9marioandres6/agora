@@ -43,13 +43,6 @@ export class HomePage implements OnInit, ViewWillEnter {
     return allProjects;
   });
 
-  // Computed loading state - true until projects are loaded
-  computedIsLoading = computed(() => {
-    const projectsData = this.projects();
-    // Show loading if no projects yet, but only if user is authenticated
-    return this.isAuthenticated() && projectsData.length === 0;
-  });
-
 
   async presentSettingsModal() {
     const modal = await this.modalCtrl.create({

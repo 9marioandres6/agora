@@ -3,6 +3,7 @@ import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where,
 import { AuthService } from './auth.service';
 import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, Need } from './models/project.models';
 import { MessagesService } from './messages.service';
+import { LoadingService } from './loading.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class ProjectsService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
   private messagesService = inject(MessagesService);
+  private loadingService = inject(LoadingService);
 
   // Reactive signals for real-time data
   private _projects = signal<Project[]>([]);
@@ -34,6 +36,8 @@ export class ProjectsService {
   // Initialize real-time listeners
   constructor() {
     try {
+      this.loadingService.setProjectsLoading(true);
+      
       // Set up global projects listener
       this.setupGlobalProjectsListener();
       
@@ -48,7 +52,7 @@ export class ProjectsService {
         }
       });
     } catch (error) {
-      // Handle initialization errors silently
+      this.loadingService.setProjectsLoading(false);
     }
   }
 
@@ -101,8 +105,10 @@ export class ProjectsService {
       });
 
       this._projects.set(processedProjects);
+      this.loadingService.setProjectsLoading(false);
     }, (error) => {
       console.error('Error in global projects listener:', error);
+      this.loadingService.setProjectsLoading(false);
     });
 
     this.listeners.set('global', unsubscribe);

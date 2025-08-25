@@ -12,6 +12,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { GlobalSpinnerComponent } from './components/global-spinner/global-spinner.component';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,7 +24,8 @@ import { AppRoutingModule } from './app-routing.module';
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       useDefaultLang: true
-    })
+    }),
+    GlobalSpinnerComponent
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
