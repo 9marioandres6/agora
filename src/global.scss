@@ -79,6 +79,12 @@
   --app-primary-hover: #3171e0;
   --app-border: #404040;
   --app-primary-light: rgba(56, 128, 255, 0.2);
+  
+  /* Spinner Theme Variables */
+  --spinner-overlay-bg: rgba(0, 0, 0, 0.7);
+  --spinner-container-bg: #2d2d2d;
+  --spinner-color: #3880ff;
+  --spinner-text-color: #adb5bd;
 }
 
 .light-theme {
@@ -98,9 +104,13 @@
   --app-text-secondary: #6c757d;
   --app-card-hover-background: rgba(0,0,0,0.05);
   --app-primary: #3880ff;
-  --app-primary-text: #ffffff;
-  --app-primary-hover: #3171e0;
-  --app-border: #e0e0e0;
+  
+  /* Spinner Theme Variables */
+  --spinner-overlay-bg: rgba(0, 0, 0, 0.5);
+  --spinner-container-bg: #ffffff;
+  --spinner-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --spinner-color: #3880ff;
+  --spinner-text-color: #6c757d;
 }
 
 /* Apply theme variables to body */
