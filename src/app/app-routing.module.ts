@@ -24,6 +24,11 @@ const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'filter',
+    loadChildren: () => import('./filter/filter.module').then(m => m.FilterPageModule),
+    canActivate: [authGuard]
+  },
+  {
     path: 'login',
     loadComponent: () => import('./login/login.component').then(c => c.LoginComponent),
     canActivate: [publicGuard]

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
 import { LocationFilterService } from '../services/location-filter.service';
+import { FilterStateService } from '../services/filter-state.service';
 
 @Component({
   selector: 'app-home',
@@ -26,6 +27,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   private locationService = inject(LocationService);
   private userSearchService = inject(UserSearchService);
   private locationFilterService = inject(LocationFilterService);
+  private filterStateService = inject(FilterStateService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -37,24 +39,33 @@ export class HomePage implements OnInit, ViewWillEnter {
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
   userLocation: any = null;
-  currentScope = signal('all'); // Default to show all projects
+  currentScope = signal('all');
   isLoadingMore = false;
-  showFilter = false;
-  isFilterActive = signal(false);
 
   projects = computed(() => {
-    if (this.isFilterActive()) {
-      return this.projectsService.filteredProjects();
+    const filteredProjects = this.projectsService.filteredProjects();
+    const isFilterActive = this.currentScope() !== 'all';
+    
+    if (isFilterActive && filteredProjects.length > 0) {
+      return filteredProjects;
+    } else if (isFilterActive && filteredProjects.length === 0) {
+      return []; // Show empty when filter is active but no results
     } else {
-      return this.projectsService.projects();
+      return this.projectsService.projects(); // Show all when no filter
     }
+  });
+
+  isFilterActive = computed(() => {
+    return this.currentScope() !== 'all';
   });
 
   constructor() {
     effect(() => {
       const projects = this.projectsService.projects();
-      if (projects.length > 0 && this.isFilterActive()) {
-        this.projectsService.setFilteredProjects(this.currentScope());
+      const scope = this.currentScope();
+      
+      if (projects.length > 0 && scope !== 'all') {
+        this.projectsService.setFilteredProjects(scope);
       }
     });
   }
@@ -76,14 +87,11 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   navigateToProject(project: Project) {
-    // Check if user is creator or editor of the project
     const currentUser = this.user();
     if (currentUser && (project.creator?.uid === currentUser.uid || 
         (project.collaborators || []).some(c => c.uid === currentUser.uid))) {
-      // User is creator or editor - navigate to private page
       this.navCtrl.navigateForward(`/project/${project.id}/private`);
     } else {
-      // User is viewer - navigate to public page
       this.navCtrl.navigateForward(`/project/${project.id}/public`);
     }
   }
@@ -96,32 +104,34 @@ export class HomePage implements OnInit, ViewWillEnter {
   ionViewWillEnter() {
     this.checkConnection();
     this.loadUserLocation();
+    
+    const selectedScope = this.filterStateService.getSelectedScope();
+    this.currentScope.set(selectedScope);
+    
+    if (selectedScope !== 'all') {
+      this.projectsService.setFilteredProjects(selectedScope);
+    } else {
+      this.projectsService.resetFilteredProjects();
+    }
   }
 
-  showFilterModal() {
-    this.showFilter = true;
-  }
-
-  closeFilterModal() {
-    this.showFilter = false;
+  navigateToFilterPage() {
+    this.navCtrl.navigateForward('/filter');
   }
 
   applyFilter() {
     if (this.currentScope() === 'all') {
-      this.isFilterActive.set(false);
       this.projectsService.resetFilteredProjects();
     } else {
-      this.isFilterActive.set(true);
       this.projectsService.setFilteredProjects(this.currentScope());
     }
-    this.closeFilterModal();
+    this.navCtrl.back();
   }
 
   resetFilter() {
-    this.isFilterActive.set(false);
     this.currentScope.set('all');
     this.projectsService.resetFilteredProjects();
-    this.closeFilterModal();
+    this.navCtrl.back();
   }
 
   async loadUserLocation() {

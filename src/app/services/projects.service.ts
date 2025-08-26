@@ -697,7 +697,6 @@ export class ProjectsService {
         collaborationRequests: arrayUnion(request)
       });
 
-      console.log('Sending collaboration request message to:', project.createdBy);
       const messageId = await this.messagesService.sendMessage({
         recipientUid: project.createdBy,
         senderUid: currentUser.uid,
@@ -710,7 +709,6 @@ export class ProjectsService {
         title: 'New Collaboration Request',
         content: `${currentUser.displayName || 'Anonymous'} wants to collaborate in your project "${project.title}"`
       });
-      console.log('Message sent successfully with ID:', messageId);
 
       return request;
     } catch (error) {
@@ -752,7 +750,6 @@ export class ProjectsService {
         collaborationRequests: arrayRemove(request)
       });
 
-      console.log('Sending collaboration accepted message to:', request.uid);
       const messageId = await this.messagesService.sendMessage({
         recipientUid: request.uid,
         senderUid: project.createdBy,
@@ -765,7 +762,6 @@ export class ProjectsService {
         title: 'Collaboration Request Accepted',
         content: `Your collaboration request for "${project.title}" has been accepted!`
       });
-      console.log('Collaboration accepted message sent successfully with ID:', messageId);
 
       return { request, collaborator };
     } catch (error) {
@@ -796,7 +792,6 @@ export class ProjectsService {
         collaborationRequests: arrayRemove(request)
       });
 
-      console.log('Sending collaboration rejected message to:', request.uid);
       const messageId = await this.messagesService.sendMessage({
         recipientUid: request.uid,
         senderUid: project.createdBy,
@@ -809,7 +804,6 @@ export class ProjectsService {
         title: 'Collaboration Request Rejected',
         content: `Your collaboration request for "${project.title}" has been rejected.`
       });
-      console.log('Collaboration rejected message sent successfully with ID:', messageId);
 
       return request;
     } catch (error) {

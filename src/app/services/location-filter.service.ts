@@ -132,13 +132,19 @@ export class LocationFilterService {
 
   private filterByScopeOnly(projects: Project[], scope: string, userId: string): Project[] {
     switch (scope) {
+      case 'my-projects':
+        return this.filterMyProjects(projects, userId);
       case 'grupal':
         return this.filterGrupalProjects(projects, userId);
       case 'global':
         return projects;
-      default:
-        // For local/state/national without location, return empty array
+      case 'local':
+      case 'state':
+      case 'national':
+        // For location-based scopes without user location, return empty array
         return [];
+      default:
+        return projects;
     }
   }
 
