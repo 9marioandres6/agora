@@ -867,33 +867,24 @@ export class ProjectsService {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
 
-  // Manual refresh methods for specific data
   public refreshProjects() {
-    // The real-time listener will automatically update the signal
-    // This method can be used to trigger manual refresh if needed
   }
 
   public refreshUserProjects() {
-    // The real-time listener will automatically update the signal
-    // This method can be used to trigger manual refresh if needed
   }
 
   public refreshProject(projectId: string) {
-    // The real-time listener will automatically update the signal
-    // This method can be used to trigger manual refresh if needed
   }
 
   public refreshScopeProjects(scope: string) {
-    // The real-time listener will automatically update the signal
-    // This method can be used to trigger manual refresh if needed
   }
 
-  // Location-based filtering methods
   public setFilteredProjects(scope: string) {
     const currentUser = this.authService.user();
     if (currentUser?.uid) {
       this.locationFilterService.setInitialProjects(this.projects(), scope, currentUser.uid);
-      this._filteredProjects.set(this.locationFilterService.filteredProjects());
+      const filtered = this.locationFilterService.filteredProjects();
+      this._filteredProjects.set(filtered);
     }
   }
 
@@ -924,7 +915,6 @@ export class ProjectsService {
     this.locationFilterService.refreshUserLocation();
   }
 
-  // Get computed values for specific queries
   public getProjectsByTag(tag: string): Project[] {
     return this.projects().filter(project => 
       project.tags?.includes(tag)

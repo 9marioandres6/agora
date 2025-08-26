@@ -7,12 +7,18 @@
     </ion-buttons>
     
     @if (isAuthenticated() && userLocation) {
-      <ion-title class="ion-text-center">
-        <div class="location-info">
-          <ion-icon name="location" color="primary"></ion-icon>
-          <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
-        </div>
-      </ion-title>
+              <ion-title class="ion-text-center">
+          <div class="location-info">
+            <ion-icon name="location" color="primary"></ion-icon>
+            <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
+          </div>
+          @if (isFilterActive()) {
+            <div class="filter-status">
+              <ion-icon name="filter" color="warning"></ion-icon>
+              <span>Filtered: {{ currentScope() }}</span>
+            </div>
+          }
+        </ion-title>
     } @else {
       <ion-title class="ion-text-center">{{ 'COMMON.HOME' | translate }}</ion-title>
     }
@@ -109,7 +115,7 @@
         <h3>{{ 'HOME.SELECT_SCOPE' | translate }}</h3>
         <p>{{ 'HOME.SCOPE_DESCRIPTION' | translate }}</p>
         
-        <ion-segment [(ngModel)]="currentScope" (ionChange)="changeScope($event.detail.value?.toString() || 'all')" class="filter-scope-segment">
+        <ion-segment [value]="currentScope()" (ionChange)="changeScope($event.detail.value?.toString() || 'all')" class="filter-scope-segment">
           <ion-segment-button value="all">
             <ion-icon name="list"></ion-icon>
           </ion-segment-button>

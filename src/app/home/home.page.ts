@@ -1,18 +1,14 @@
 import { Component, inject, OnInit, signal, computed, effect } from '@angular/core';
-import { NavController } from '@ionic/angular';
-import { TranslateModule } from '@ngx-translate/core';
-import { FormsModule } from '@angular/forms';
+import { NavController, ViewWillEnter } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { ProjectsService } from '../services/projects.service';
-import { Project, Comment, CollaborationRequest } from '../services/models/project.models';
-import { ViewWillEnter } from '@ionic/angular';
-import { ProjectCardComponent } from '../components/project-card/project-card.component';
+import { Project } from '../services/models/project.models';
 import { ConnectionService } from '../services/connection.service';
 import { Router } from '@angular/router';
 import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
-import { CommonModule } from '@angular/common';
+import { LocationFilterService } from '../services/location-filter.service';
 
 @Component({
   selector: 'app-home',
@@ -29,38 +25,36 @@ export class HomePage implements OnInit, ViewWillEnter {
   private router = inject(Router);
   private locationService = inject(LocationService);
   private userSearchService = inject(UserSearchService);
+  private locationFilterService = inject(LocationFilterService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
   isDark = this.themeService.isDark;
   location = this.locationService.location;
   
-  // Use all projects by default, filtered projects when filter is applied
   allProjects = this.projectsService.projects;
   filteredProjects = this.projectsService.filteredProjects;
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
   userLocation: any = null;
-  currentScope = 'all'; // Default to show all projects
+  currentScope = signal('all'); // Default to show all projects
   isLoadingMore = false;
   showFilter = false;
-  isFilterActive = false;
+  isFilterActive = signal(false);
 
-  // Computed values for reactive filtering
   projects = computed(() => {
-    if (this.isFilterActive) {
-      return this.filteredProjects();
+    if (this.isFilterActive()) {
+      return this.projectsService.filteredProjects();
     } else {
-      return this.allProjects();
+      return this.projectsService.projects();
     }
   });
 
   constructor() {
-    // Set up scope-based filtering when projects change (only when filter is active)
     effect(() => {
       const projects = this.projectsService.projects();
-      if (projects.length > 0 && this.isFilterActive) {
-        this.projectsService.setFilteredProjects(this.currentScope);
+      if (projects.length > 0 && this.isFilterActive()) {
+        this.projectsService.setFilteredProjects(this.currentScope());
       }
     });
   }
@@ -113,20 +107,21 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   applyFilter() {
-    if (this.currentScope === 'all') {
-      this.resetFilter();
-    } else {
-      this.isFilterActive = true;
+    if (this.currentScope() === 'all') {
+      this.isFilterActive.set(false);
       this.projectsService.resetFilteredProjects();
-      this.projectsService.setFilteredProjects(this.currentScope);
+    } else {
+      this.isFilterActive.set(true);
+      this.projectsService.setFilteredProjects(this.currentScope());
     }
     this.closeFilterModal();
   }
 
   resetFilter() {
-    this.isFilterActive = false;
-    this.currentScope = 'all';
+    this.isFilterActive.set(false);
+    this.currentScope.set('all');
     this.projectsService.resetFilteredProjects();
+    this.closeFilterModal();
   }
 
   async loadUserLocation() {
@@ -144,19 +139,13 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   private checkConnection() {
-    // Check connection status
     if (!this.connectionService.isOnline()) {
       this.router.navigate(['/no-connection']);
       return;
     }
-    
-    // Projects are now automatically loaded via real-time listeners
-    // No need to manually load them
   }
 
   async refreshProjects(event?: any) {
-    // Projects are automatically updated via real-time listeners
-    // Just complete the refresh event
     if (event) {
       event.target.complete();
     }
@@ -171,13 +160,12 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.isLoadingMore = true;
     
     try {
-      if (this.isFilterActive) {
-        const hasMore = await this.projectsService.loadMoreFilteredProjects(this.currentScope);
+      if (this.isFilterActive()) {
+        const hasMore = await this.projectsService.loadMoreFilteredProjects(this.currentScope());
         if (!hasMore) {
           event.target.disabled = true;
         }
       } else {
-        // For all projects, just complete the event since we're showing all
         event.target.complete();
         return;
       }
@@ -190,7 +178,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   changeScope(scope: string) {
-    this.currentScope = scope;
+    this.currentScope.set(scope);
   }
 
   async supportProject(projectId: string, event?: Event) {
@@ -201,7 +189,6 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      // The real-time listener will automatically update the UI
       await this.projectsService.toggleSupport(projectId, currentUser.uid);
     } catch (error) {
       console.error('Error supporting project:', error);
@@ -216,7 +203,6 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      // The real-time listener will automatically update the UI
       await this.projectsService.toggleOppose(projectId, currentUser.uid);
     } catch (error) {
       console.error('Error opposing project:', error);
@@ -239,7 +225,6 @@ export class HomePage implements OnInit, ViewWillEnter {
       const currentUser = this.user();
       if (!currentUser?.uid) return;
 
-      // The real-time listener will automatically update the UI
       await this.projectsService.addComment(projectId, commentText);
     } catch (error) {
       console.error('Error adding comment:', error);
@@ -259,20 +244,11 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   async requestCollaboration(projectId: string, message: string) {
     try {
-      // The real-time listener will automatically update the UI
       await this.projectsService.requestCollaboration(projectId, message);
     } catch (error) {
       console.error('Error requesting collaboration:', error);
     }
   }
 
-  // Project voting updates are now handled automatically by real-time listeners
 
-  // User support updates are now handled automatically by real-time listeners
-
-  // User oppose updates are now handled automatically by real-time listeners
-
-  // Comment updates are now handled automatically by real-time listeners
-
-  // Collaboration request updates are now handled automatically by real-time listeners
 }
