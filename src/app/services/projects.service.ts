@@ -5,6 +5,7 @@ import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, N
 import { MessagesService } from './messages.service';
 import { LoadingService } from './loading.service';
 import { LocationFilterService } from './location-filter.service';
+import { FilterStateService } from './filter-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class ProjectsService {
   private messagesService = inject(MessagesService);
   private loadingService = inject(LoadingService);
   private locationFilterService = inject(LocationFilterService);
+  private filterStateService = inject(FilterStateService);
 
   // Reactive signals for real-time data
   private _projects = signal<Project[]>([]);
@@ -876,9 +878,29 @@ export class ProjectsService {
   public setFilteredProjects(scope: string) {
     const currentUser = this.authService.user();
     if (currentUser?.uid) {
+      // 1. Immediate local filtering from existing projects
       this.locationFilterService.setInitialProjects(this.projects(), scope, currentUser.uid);
       const filtered = this.locationFilterService.filteredProjects();
       this._filteredProjects.set(filtered);
+      
+      // 2. Fetch additional projects from server that match the filter
+      this.fetchFilteredProjectsFromServer(scope, currentUser.uid);
+    }
+  }
+
+  private async fetchFilteredProjectsFromServer(scope: string, userId: string) {
+    try {
+      const serverProjects = await this.getProjectsByScopeAsync(scope);
+      
+      // Merge server projects with existing filtered projects, avoiding duplicates
+      const existingFilteredIds = new Set(this._filteredProjects().map(p => p.id));
+      const newProjects = serverProjects.filter(project => !existingFilteredIds.has(project.id));
+      
+      if (newProjects.length > 0) {
+        this._filteredProjects.update(current => [...current, ...newProjects]);
+      }
+    } catch (error) {
+      console.error('Error fetching filtered projects from server:', error);
     }
   }
 
@@ -886,11 +908,27 @@ export class ProjectsService {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return false;
 
-    const hasMore = await this.locationFilterService.loadMoreProjects(this.projects(), scope, currentUser.uid);
-    if (hasMore) {
-      this._filteredProjects.set(this.locationFilterService.filteredProjects());
+    try {
+      // Get more projects from server for this scope
+      const serverProjects = await this.getProjectsByScopeAsync(scope);
+      
+      // Get current filtered projects to avoid duplicates
+      const currentFilteredIds = new Set(this._filteredProjects().map(p => p.id));
+      
+      // Filter out projects we already have
+      const newProjects = serverProjects.filter(project => !currentFilteredIds.has(project.id));
+      
+      if (newProjects.length > 0) {
+        // Add new projects to existing filtered projects
+        this._filteredProjects.update(current => [...current, ...newProjects]);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error('Error loading more filtered projects:', error);
+      return false;
     }
-    return hasMore;
   }
 
   public resetFilteredProjects() {
@@ -902,7 +940,8 @@ export class ProjectsService {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return 0;
     
-    return this.locationFilterService.getTotalFilteredCount(this.projects(), scope, currentUser.uid);
+    // Return the count of currently filtered projects
+    return this._filteredProjects().length;
   }
 
   public refreshUserLocation() {
@@ -921,5 +960,22 @@ export class ProjectsService {
 
   public getProjectsByStatus(status: 'active' | 'completed' | 'cancelled'): Project[] {
     return this.projects().filter(project => project.status === status);
+  }
+
+  public refreshFilteredProjects() {
+    const currentUser = this.authService.user();
+    if (!currentUser?.uid) return;
+    
+    // Get current scope from FilterStateService
+    const currentScope = this.filterStateService?.getSelectedScope() || 'all';
+    if (currentScope !== 'all') {
+      // Re-apply the current filter to include any new projects
+      this.setFilteredProjects(currentScope);
+    }
+  }
+
+  public handleNewProjectsAdded() {
+    // When new projects are added to the main list, refresh filtered projects if a filter is active
+    this.refreshFilteredProjects();
   }
 }
