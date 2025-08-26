@@ -7,9 +7,10 @@ import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { ProjectsService } from '../services/projects.service';
 import { SupabaseService } from '../services/supabase.service';
+import { UserSearchService, UserProfile } from '../services/user-search.service';
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
 import { ScopeOption } from './models/new-item.models';
-import { Need, Media } from '../services/models/project.models';
+import { Need, Media, Collaborator } from '../services/models/project.models';
 
 @Component({
   selector: 'app-new-item',
@@ -27,6 +28,7 @@ export class NewItemComponent implements AfterViewInit {
   private projectsService = inject(ProjectsService);
   private modalCtrl = inject(ModalController);
   private supabaseService = inject(SupabaseService);
+  private userSearchService = inject(UserSearchService);
   private toastCtrl = inject(ToastController);
 
   user = this.authService.user;
@@ -40,6 +42,11 @@ export class NewItemComponent implements AfterViewInit {
   newNeed = '';
   isSaving = false;
   projectMedia: Media[] = [];
+  
+  searchTerm = '';
+  searchResults: UserProfile[] = [];
+  isSearching = false;
+  selectedCollaborators: Collaborator[] = [];
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', label: 'Grupal - Small Group Collaboration', icon: 'people' },
@@ -58,6 +65,83 @@ export class NewItemComponent implements AfterViewInit {
 
   removeNeed(need: Need) {
     this.needs = this.needs.filter(n => n.name !== need.name);
+  }
+
+  async searchUsers() {
+    if (!this.searchTerm.trim() || this.searchTerm.length < 2) {
+      this.searchResults = [];
+      return;
+    }
+
+    try {
+      this.isSearching = true;
+      const allUsers = await this.userSearchService.searchUsers(this.searchTerm);
+      
+      // Filter out users who are already selected as collaborators and the current user
+      const currentUser = this.user();
+      this.searchResults = allUsers.filter(user => 
+        user.uid !== currentUser?.uid && 
+        !this.selectedCollaborators.some(collaborator => collaborator.uid === user.uid)
+      );
+    } catch (error) {
+      console.error('Error searching users:', error);
+      this.searchResults = [];
+    } finally {
+      this.isSearching = false;
+    }
+  }
+
+  addCollaborator(user: UserProfile) {
+    if (this.selectedCollaborators.some(c => c.uid === user.uid)) {
+      this.showToast('User is already a collaborator', 'warning');
+      return;
+    }
+
+    const collaborator: Collaborator = {
+      uid: user.uid,
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+      joinedAt: new Date().toISOString(),
+      role: 'collaborator'
+    };
+
+    this.selectedCollaborators.push(collaborator);
+    this.searchTerm = '';
+    
+    // Refresh search results to remove the added user
+    if (this.searchTerm.trim().length >= 2) {
+      this.searchUsers();
+    } else {
+      this.searchResults = [];
+    }
+    
+    this.showToast('Collaborator added successfully', 'success');
+  }
+
+  removeCollaborator(collaborator: Collaborator) {
+    this.selectedCollaborators = this.selectedCollaborators.filter(c => c.uid !== collaborator.uid);
+    
+    // Refresh search results to show the removed user again if there's an active search
+    if (this.searchTerm.trim().length >= 2) {
+      this.searchUsers();
+    }
+    
+    this.showToast('Collaborator removed successfully', 'success');
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+  }
+
+
+
+  onSearchInput() {
+    if (this.searchTerm.trim().length >= 2) {
+      this.searchUsers();
+    } else {
+      this.searchResults = [];
+    }
   }
 
   getScopeIcon(scope: string): string {
@@ -200,7 +284,7 @@ export class NewItemComponent implements AfterViewInit {
         needs: this.needs,
         scope: this.scope,
         createdBy: currentUser.uid,
-        collaborators: [],
+        collaborators: this.selectedCollaborators,
         collaborationRequests: [],
         media: this.projectMedia
       };

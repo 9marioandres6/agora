@@ -332,6 +332,210 @@ ion-select {
   }
 }
 
+.collaborators-section {
+  margin-top: 8px;
+  
+  .collaborators-description {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    line-height: 1.4;
+  }
+  
+  .search-container {
+    margin-bottom: 16px;
+    
+    .search-input {
+      --padding-start: 16px;
+      --padding-end: 16px;
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      border: none;
+      border-radius: 8px;
+      --background: transparent;
+      color: var(--app-text);
+      --border-style: none;
+      --border-width: 0;
+      
+      &:focus-within {
+        border: 1px solid var(--app-primary);
+        box-shadow: 0 0 0 2px var(--app-primary-light);
+      }
+    }
+  }
+  
+  .search-results {
+    margin-bottom: 16px;
+    border: 1px solid var(--ion-color-light);
+    border-radius: 8px;
+    overflow: hidden;
+    
+    .search-results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--ion-color-light);
+      border-bottom: 1px solid var(--ion-color-light);
+      font-weight: 600;
+      color: var(--app-text);
+      font-size: 14px;
+      
+      ion-button {
+        --color: var(--ion-color-medium);
+        --padding-start: 4px;
+        --padding-end: 4px;
+        
+        ion-icon {
+          font-size: 16px;
+        }
+      }
+    }
+    
+          .user-result {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border: none;
+        border-bottom: 1px solid var(--ion-color-light);
+        border-radius: 0;
+        margin-bottom: 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        &:hover {
+          background: var(--app-primary-light);
+        }
+      
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        
+        .user-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        
+        .user-avatar-placeholder {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: var(--ion-color-light);
+          color: var(--ion-color-medium);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+        }
+        
+        .user-details {
+          .user-name {
+            font-weight: 600;
+            color: var(--app-text);
+            margin-bottom: 4px;
+          }
+          
+          .user-email {
+            font-size: 14px;
+            color: var(--ion-color-medium);
+          }
+        }
+      }
+    }
+  }
+  
+  .no-results {
+    text-align: center;
+    padding: 16px;
+    color: var(--ion-color-medium);
+    font-style: italic;
+  }
+  
+  .searching {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    color: var(--ion-color-medium);
+    
+    ion-spinner {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  .selected-collaborators {
+    margin-top: 16px;
+    
+    h4 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--app-text);
+    }
+    
+    .collaborator-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border: 1px solid var(--ion-color-light);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: var(--app-primary-light);
+      
+      .collaborator-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        
+        .collaborator-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        
+        .collaborator-avatar-placeholder {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: var(--ion-color-light);
+          color: var(--ion-color-medium);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+        }
+        
+        .collaborator-details {
+          .collaborator-name {
+            font-weight: 600;
+            color: var(--app-text);
+            margin-bottom: 4px;
+          }
+          
+          .collaborator-email {
+            font-size: 14px;
+            color: var(--ion-color-medium);
+          }
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 576px) {
   .form-card {
     margin: 4px;

@@ -143,7 +143,19 @@
     "MEDIA_DELETE_ERROR": "Error al eliminar multimedia",
     "SEND_PROJECT": "Enviar",
     "AUTH_REQUIRED": "Autenticación Requerida",
-    "AUTH_REQUIRED_MESSAGE": "Por favor inicia sesión para crear nuevos elementos"
+    "AUTH_REQUIRED_MESSAGE": "Por favor inicia sesión para crear nuevos elementos",
+    "COLLABORATORS": "Colaboradores",
+    "COLLABORATORS_DESCRIPTION": "Invita a otros usuarios a colaborar en este proyecto desde el principio",
+    "SEARCH_USERS": "Buscar usuarios por nombre o correo",
+    "SEARCH_PLACEHOLDER": "Ingresa nombre o correo para buscar...",
+    "SEARCH_RESULTS": "Resultados de Búsqueda",
+    "NO_USERS_FOUND": "No se encontraron usuarios",
+    "ADD_COLLABORATOR": "Agregar como Colaborador",
+    "REMOVE_COLLABORATOR": "Remover",
+    "COLLABORATOR_ADDED": "Colaborador agregado exitosamente",
+    "COLLABORATOR_REMOVED": "Colaborador removido exitosamente",
+    "ERROR_ADDING_COLLABORATOR": "Error al agregar colaborador",
+    "ERROR_REMOVING_COLLABORATOR": "Error al remover colaborador"
   },
   "FORMS": {
     "DISPLAY_NAME": "Nombre de Usuario",

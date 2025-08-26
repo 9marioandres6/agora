@@ -143,7 +143,19 @@
     "MEDIA_DELETE_ERROR": "Error deleting media",
     "SEND_PROJECT": "Send",
     "AUTH_REQUIRED": "Authentication Required",
-    "AUTH_REQUIRED_MESSAGE": "Please log in to create new items"
+    "AUTH_REQUIRED_MESSAGE": "Please log in to create new items",
+    "COLLABORATORS": "Collaborators",
+    "COLLABORATORS_DESCRIPTION": "Invite other users to collaborate on this project from the beginning",
+    "SEARCH_USERS": "Search users by name or email",
+    "SEARCH_PLACEHOLDER": "Enter name or email to search...",
+    "SEARCH_RESULTS": "Search Results",
+    "NO_USERS_FOUND": "No users found",
+    "ADD_COLLABORATOR": "Add as Collaborator",
+    "REMOVE_COLLABORATOR": "Remove",
+    "COLLABORATOR_ADDED": "Collaborator added successfully",
+    "COLLABORATOR_REMOVED": "Collaborator removed successfully",
+    "ERROR_ADDING_COLLABORATOR": "Error adding collaborator",
+    "ERROR_REMOVING_COLLABORATOR": "Error removing collaborator"
   },
   "FORMS": {
     "DISPLAY_NAME": "Display Name",

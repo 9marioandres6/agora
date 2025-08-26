@@ -3,6 +3,7 @@ import { Auth, User, signInWithEmailAndPassword, createUserWithEmailAndPassword,
 import { Router } from '@angular/router';
 import { AuthState } from './models/auth.models';
 import { LoadingService } from './loading.service';
+import { UserSearchService } from './user-search.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class AuthService {
   private auth = inject(Auth);
   private router = inject(Router);
   private loadingService = inject(LoadingService);
+  private userSearchService = inject(UserSearchService);
   private googleProvider = new GoogleAuthProvider();
 
   private authState = signal<AuthState>({
@@ -39,7 +41,11 @@ export class AuthService {
   }
 
   private initializeAuth() {
-    onAuthStateChanged(this.auth, (user) => {
+    onAuthStateChanged(this.auth, async (user) => {
+      if (user) {
+        await this.userSearchService.createOrUpdateUserProfile(user);
+      }
+      
       this.authState.update(state => ({
         ...state,
         user,
@@ -131,6 +137,8 @@ export class AuthService {
       if (displayName) {
         await updateProfile(credential.user, { displayName });
       }
+      
+      await this.userSearchService.createOrUpdateUserProfile(credential.user);
       this.loadingService.setAuthLoading(false);
     } catch (error: any) {
       this.authState.update(state => ({
@@ -163,6 +171,7 @@ export class AuthService {
       const currentUser = this.auth.currentUser;
       if (currentUser) {
         await updateProfile(currentUser, profileData);
+        await this.userSearchService.createOrUpdateUserProfile(currentUser);
         this.authState.update(state => ({
           ...state,
           user: currentUser

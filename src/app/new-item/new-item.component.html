@@ -105,6 +105,93 @@
             }
           </ion-item>
 
+          @if (scope === 'grupal') {
+            <ion-item class="form-item">
+              <ion-label position="stacked">{{ 'NEW_ITEM.COLLABORATORS' | translate }}</ion-label>
+              <div class="collaborators-section">
+                <p class="collaborators-description">{{ 'NEW_ITEM.COLLABORATORS_DESCRIPTION' | translate }}</p>
+                
+                <div class="search-container">
+                  <ion-input 
+                    [(ngModel)]="searchTerm" 
+                    name="searchTerm"
+                    placeholder="{{ 'NEW_ITEM.SEARCH_PLACEHOLDER' | translate }}"
+                    (ionInput)="onSearchInput()"
+                    class="search-input">
+                  </ion-input>
+                </div>
+
+                @if (searchResults.length > 0) {
+                  <div class="search-results">
+                    <div class="search-results-header">
+                      <span>{{ 'NEW_ITEM.SEARCH_RESULTS' | translate }} ({{ searchResults.length }})</span>
+                      <ion-button fill="clear" size="small" (click)="clearSearch()">
+                        <ion-icon name="close" slot="icon-only"></ion-icon>
+                      </ion-button>
+                    </div>
+                    @for (user of searchResults; track user.uid) {
+                      <div class="user-result" (click)="addCollaborator(user)">
+                        <div class="user-info">
+                          @if (user.photoURL) {
+                            <img [src]="user.photoURL" [alt]="user.displayName" class="user-avatar">
+                          } @else {
+                            <ion-icon name="person" class="user-avatar-placeholder"></ion-icon>
+                          }
+                          <div class="user-details">
+                            <div class="user-name">{{ user.displayName }}</div>
+                            <div class="user-email">{{ user.email }}</div>
+                          </div>
+                        </div>
+                        <ion-button fill="clear" size="small" color="primary">
+                          <ion-icon name="add" slot="icon-only"></ion-icon>
+                        </ion-button>
+                      </div>
+                    }
+                  </div>
+                } @else if (searchTerm.length >= 2 && !isSearching) {
+                  <div class="no-results">
+                    {{ 'NEW_ITEM.NO_USERS_FOUND' | translate }}
+                  </div>
+                }
+
+                @if (isSearching) {
+                  <div class="searching">
+                    <ion-spinner name="crescent"></ion-spinner>
+                    {{ 'COMMON.LOADING' | translate }}
+                  </div>
+                }
+
+                @if (selectedCollaborators.length > 0) {
+                  <div class="selected-collaborators">
+                    <h4>{{ 'NEW_ITEM.COLLABORATORS' | translate }}</h4>
+                    @for (collaborator of selectedCollaborators; track collaborator.uid) {
+                      <div class="collaborator-item">
+                        <div class="collaborator-info">
+                          @if (collaborator.photoURL) {
+                            <img [src]="collaborator.photoURL" [alt]="collaborator.displayName" class="collaborator-avatar">
+                          } @else {
+                            <ion-icon name="person" class="collaborator-avatar-placeholder"></ion-icon>
+                          }
+                          <div class="collaborator-details">
+                            <div class="collaborator-name">{{ collaborator.displayName }}</div>
+                            <div class="collaborator-email">{{ collaborator.email }}</div>
+                          </div>
+                        </div>
+                        <ion-button 
+                          fill="clear" 
+                          size="small" 
+                          color="danger" 
+                          (click)="removeCollaborator(collaborator)">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </ion-button>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </ion-item>
+          }
+
           <ion-item class="form-item">
             <ion-label position="stacked">{{ 'NEW_ITEM.MEDIA' | translate }} ({{ 'COMMON.OPTIONAL' | translate }})</ion-label>
             <div class="media-section">

@@ -7,14 +7,14 @@ import { ActivatedRoute } from '@angular/router';
 import { ProjectsService } from '../services/projects.service';
 import { Project, Need } from '../services/models/project.models';
 import { AuthService } from '../services/auth.service';
-import { UserAvatarComponent, UserAvatarData } from '../components/user-avatar/user-avatar.component';
+
 
 @Component({
   selector: 'app-public-inner-project',
   templateUrl: './public-inner-project.component.html',
   styleUrls: ['./public-inner-project.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule, FormsModule, UserAvatarComponent]
+  imports: [CommonModule, IonicModule, TranslateModule, FormsModule]
 })
 export class PublicInnerProjectComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -193,25 +193,7 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     await toast.present();
   }
 
-  getCreatorData(): UserAvatarData {
-    const project = this.project();
-    if (project?.creator) {
-      return {
-        uid: project.creator.uid,
-        displayName: project.creator.displayName,
-        email: project.creator.email,
-        photoURL: project.creator.photoURL,
-        role: 'PROJECT.CREATOR'
-      };
-    }
-    return {
-      uid: project?.createdBy || 'anonymous',
-      displayName: 'Anonymous',
-      email: '',
-      photoURL: undefined,
-              role: 'PROJECT.CREATOR'
-    };
-  }
+
 
   ngOnDestroy() {
     // Clean up the project listener
