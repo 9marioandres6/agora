@@ -101,6 +101,8 @@
     "ERROR_SENDING_COLLABORATION_REQUEST": "Error sending collaboration request",
     "CREATOR": "Creator",
     "FILTER_PROJECTS": "Filter Projects",
+    "SEARCH_PROJECTS": "Search Projects",
+    "SEARCH_PLACEHOLDER": "Search projects by name...",
     "SELECT_SCOPE": "Select Scope",
     "SCOPE_DESCRIPTION": "Choose a scope to filter projects by location and collaboration status",
     "SCOPE_ALL": "All Projects",

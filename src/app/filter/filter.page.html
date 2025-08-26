@@ -11,37 +11,83 @@
 
 <ion-content class="ion-padding">
   <div class="filter-content">
-    <h3>{{ 'HOME.SELECT_SCOPE' | translate }}</h3>
-    <p>{{ 'HOME.SCOPE_DESCRIPTION' | translate }}</p>
-    
-    <div class="scope-legend">
-      <div class="legend-item" (click)="applyFilter('all')">
-        <ion-icon name="list" color="primary"></ion-icon>
-        <span>{{ 'HOME.SCOPE_ALL' | translate }}</span>
+    <div class="search-section">
+      <h3>{{ 'HOME.SEARCH_PROJECTS' | translate }}</h3>
+      <div class="search-container">
+        <ion-item>
+          <ion-icon name="search" slot="start"></ion-icon>
+          <ion-input
+            [value]="searchTerm()"
+            (ionInput)="onSearchChange($event)"
+            (ionClear)="clearSearch()"
+            [placeholder]="'HOME.SEARCH_PLACEHOLDER' | translate"
+            [clearInput]="!isSearching()">
+          </ion-input>
+          <ion-spinner *ngIf="isSearching()" name="crescent" slot="end"></ion-spinner>
+        </ion-item>
+        
+        <div class="search-dropdown" *ngIf="(searchResults().length > 0 || (searchTerm().trim().length > 0 && !isSearching())) && searchTerm().trim().length > 0">
+          <div *ngIf="isSearching()" class="dropdown-loading">
+            <ion-spinner name="crescent"></ion-spinner>
+            <span>{{ 'COMMON.LOADING' | translate }}</span>
+          </div>
+          
+          <div *ngIf="!isSearching() && searchResults().length > 0" class="dropdown-results">
+            <div class="dropdown-header">
+              <span>{{ 'COMMON.SEARCH' | translate }} ({{ searchResults().length }})</span>
+            </div>
+            <div class="dropdown-item" *ngFor="let project of searchResults()" (click)="selectProject(project)">
+              <div class="project-info">
+                <h5>{{ project.title }}</h5>
+                <p>{{ project.description }}</p>
+                <div class="project-meta">
+                  <span class="scope">{{ 'NEW_ITEM.SCOPE_' + project.scope?.toUpperCase() | translate }}</span>
+                  <span class="state">{{ 'HOME.STATE_' + project.state?.toUpperCase() | translate }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div *ngIf="!isSearching() && searchResults().length === 0 && searchTerm().trim().length > 0" class="dropdown-no-results">
+            <p>{{ 'HOME.NO_FILTERED_PROJECTS_MESSAGE' | translate }}</p>
+          </div>
+        </div>
       </div>
-      <div class="legend-item" (click)="applyFilter('my-projects')">
-        <ion-icon name="person" color="primary"></ion-icon>
-        <span>{{ 'HOME.SCOPE_MY_PROJECTS' | translate }}</span>
-      </div>
-      <div class="legend-item" (click)="applyFilter('grupal')">
-        <ion-icon name="people" color="primary"></ion-icon>
-        <span>{{ 'NEW_ITEM.SCOPE_GRUPAL' | translate }}</span>
-      </div>
-      <div class="legend-item" (click)="applyFilter('local')">
-        <ion-icon name="home" color="primary"></ion-icon>
-        <span>{{ 'NEW_ITEM.SCOPE_LOCAL' | translate }}</span>
-      </div>
-      <div class="legend-item" (click)="applyFilter('state')">
-        <ion-icon name="business" color="primary"></ion-icon>
-        <span>{{ 'NEW_ITEM.SCOPE_STATE' | translate }}</span>
-      </div>
-      <div class="legend-item" (click)="applyFilter('national')">
-        <ion-icon name="flag" color="primary"></ion-icon>
-        <span>{{ 'NEW_ITEM.SCOPE_NATIONAL' | translate }}</span>
-      </div>
-      <div class="legend-item" (click)="applyFilter('global')">
-        <ion-icon name="planet" color="primary"></ion-icon>
-        <span>{{ 'NEW_ITEM.SCOPE_GLOBAL' | translate }}</span>
+    </div>
+
+    <div class="scope-section">
+      <h3>{{ 'HOME.SELECT_SCOPE' | translate }}</h3>
+      <p>{{ 'HOME.SCOPE_DESCRIPTION' | translate }}</p>
+      
+      <div class="scope-legend">
+        <div class="legend-item" (click)="applyFilter('all')">
+          <ion-icon name="list" color="primary"></ion-icon>
+          <span>{{ 'HOME.SCOPE_ALL' | translate }}</span>
+        </div>
+        <div class="legend-item" (click)="applyFilter('my-projects')">
+          <ion-icon name="person" color="primary"></ion-icon>
+          <span>{{ 'HOME.SCOPE_MY_PROJECTS' | translate }}</span>
+        </div>
+        <div class="legend-item" (click)="applyFilter('grupal')">
+          <ion-icon name="people" color="primary"></ion-icon>
+          <span>{{ 'NEW_ITEM.SCOPE_GRUPAL' | translate }}</span>
+        </div>
+        <div class="legend-item" (click)="applyFilter('local')">
+          <ion-icon name="home" color="primary"></ion-icon>
+          <span>{{ 'NEW_ITEM.SCOPE_LOCAL' | translate }}</span>
+        </div>
+        <div class="legend-item" (click)="applyFilter('state')">
+          <ion-icon name="business" color="primary"></ion-icon>
+          <span>{{ 'NEW_ITEM.SCOPE_STATE' | translate }}</span>
+        </div>
+        <div class="legend-item" (click)="applyFilter('national')">
+          <ion-icon name="flag" color="primary"></ion-icon>
+          <span>{{ 'NEW_ITEM.SCOPE_NATIONAL' | translate }}</span>
+        </div>
+        <div class="legend-item" (click)="applyFilter('global')">
+          <ion-icon name="planet" color="primary"></ion-icon>
+          <span>{{ 'NEW_ITEM.SCOPE_GLOBAL' | translate }}</span>
+        </div>
       </div>
     </div>
   </div>

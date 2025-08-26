@@ -4,6 +4,8 @@ import { AuthService } from '../services/auth.service';
 import { ProjectsService } from '../services/projects.service';
 import { LocationFilterService } from '../services/location-filter.service';
 import { FilterStateService } from '../services/filter-state.service';
+import { FormsModule } from '@angular/forms';
+import { Project } from '../services/models/project.models';
 
 @Component({
   selector: 'app-filter',
@@ -20,6 +22,9 @@ export class FilterPage {
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
+  searchTerm = signal('');
+  searchResults = signal<Project[]>([]);
+  isSearching = signal(false);
 
 
 
@@ -37,5 +42,38 @@ export class FilterPage {
 
   goBack() {
     this.navCtrl.back();
+  }
+
+  async onSearchChange(event: any) {
+    const term = event.detail.value;
+    this.searchTerm.set(term);
+    
+    if (!term || term.trim().length === 0) {
+      this.searchResults.set([]);
+      this.isSearching.set(false);
+      return;
+    }
+    
+    this.isSearching.set(true);
+    
+    try {
+      const results = await this.projectsService.searchProjectsByName(term);
+      this.searchResults.set(results);
+    } catch (error) {
+      console.error('Error searching projects:', error);
+      this.searchResults.set([]);
+    } finally {
+      this.isSearching.set(false);
+    }
+  }
+
+  clearSearch() {
+    this.searchTerm.set('');
+    this.searchResults.set([]);
+  }
+
+  selectProject(project: Project) {
+    this.searchTerm.set(project.title);
+    this.searchResults.set([]);
   }
 }

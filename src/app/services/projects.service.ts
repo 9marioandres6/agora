@@ -978,4 +978,71 @@ export class ProjectsService {
     // When new projects are added to the main list, refresh filtered projects if a filter is active
     this.refreshFilteredProjects();
   }
+
+  public async searchProjectsByName(searchTerm: string): Promise<Project[]> {
+    if (!searchTerm || searchTerm.trim().length === 0) {
+      return [];
+    }
+    
+    try {
+      const term = searchTerm.trim();
+      
+      // Create a query that searches for projects where title or description contains the search term
+      // Note: Firebase doesn't support full-text search, so we'll use a combination of approaches
+      
+      // First, try to find projects by title (case-insensitive search is limited in Firestore)
+      const titleQuery = query(
+        this.projectsCollection,
+        where('title', '>=', term),
+        where('title', '<=', term + '\uf8ff'),
+        orderBy('title'),
+        limit(20)
+      );
+      
+      const titleSnapshot = await getDocs(titleQuery);
+      const titleResults = titleSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[];
+      
+      // Filter results to include only projects that actually contain the search term
+      const filteredResults = titleResults.filter(project => 
+        project.title?.toLowerCase().includes(term.toLowerCase()) ||
+        project.description?.toLowerCase().includes(term.toLowerCase())
+      );
+      
+      // Process projects to ensure they have all required fields
+      const processedResults = filteredResults.map(project => {
+        if (!project.creator) {
+          project.creator = {
+            uid: project.createdBy,
+            displayName: 'Anonymous',
+            email: '',
+            photoURL: ''
+          };
+        }
+        if (!project.creator.photoURL) {
+          project.creator.photoURL = '';
+        }
+        if (project.state === undefined) {
+          project.state = 'building';
+        }
+        if (project.supports === undefined || typeof project.supports === 'number') {
+          project.supports = [];
+        }
+        if (project.opposes === undefined || typeof project.opposes === 'number') {
+          project.opposes = [];
+        }
+        if (project.comments === undefined) {
+          project.comments = [];
+        }
+        return project;
+      });
+      
+      return processedResults;
+    } catch (error) {
+      console.error('Error searching projects in Firebase:', error);
+      return [];
+    }
+  }
 }

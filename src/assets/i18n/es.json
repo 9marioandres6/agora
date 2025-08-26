@@ -101,6 +101,8 @@
     "ERROR_SENDING_COLLABORATION_REQUEST": "Error al enviar solicitud de colaboración",
     "CREATOR": "Creador",
     "FILTER_PROJECTS": "Filtrar Proyectos",
+    "SEARCH_PROJECTS": "Buscar Proyectos",
+    "SEARCH_PLACEHOLDER": "Buscar proyectos por nombre...",
     "SELECT_SCOPE": "Seleccionar Alcance",
     "SCOPE_DESCRIPTION": "Elige un alcance para filtrar proyectos por ubicación y estado de colaboración",
     "SCOPE_ALL": "Todos los Proyectos",

@@ -44,9 +44,13 @@ export class LoginComponent implements OnInit {
   }
 
   private async checkLocationPermission() {
-    const hasPermission = await this.locationService.requestLocationPermission();
-    if (!hasPermission) {
-      this.showLocationDialog = true;
+    try {
+      const hasPermission = await this.locationService.requestLocationPermission();
+      if (!hasPermission) {
+        this.showLocationDialog = true;
+      }
+    } catch (error) {
+      console.warn('Location permission check failed:', error);
     }
   }
 
@@ -61,6 +65,7 @@ export class LoginComponent implements OnInit {
 
   skipLocationAccess() {
     this.showLocationDialog = false;
+    this.locationService.clearError();
   }
 
   async signIn() {

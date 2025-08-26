@@ -64,11 +64,16 @@
   </div>
 </ion-content>
 
-<ion-modal [isOpen]="showLocationDialog" [backdropDismiss]="false">
+<ion-modal [isOpen]="showLocationDialog" [backdropDismiss]="true">
   <ng-template>
     <ion-header>
       <ion-toolbar>
         <ion-title>{{ 'AUTH.LOCATION_PERMISSION_TITLE' | translate }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="skipLocationAccess()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     
