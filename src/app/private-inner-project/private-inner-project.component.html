@@ -21,7 +21,6 @@
         </ion-card-header>
         <ion-card-content>
           <div class="info-row">
-            <label>{{ 'PROJECT.TITLE_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isCreator()) {
                 <ion-input 
@@ -36,7 +35,6 @@
           </div>
 
           <div class="info-row">
-            <label>{{ 'PROJECT.SCOPE_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isCreator()) {
                 <ion-select 
@@ -56,7 +54,6 @@
           </div>
 
           <div class="info-row">
-            <label>{{ 'PROJECT.DESCRIPTION_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isCreator()) {
                 <ion-textarea 
@@ -72,7 +69,6 @@
           </div>
 
           <div class="info-row">
-            <label>{{ 'PROJECT.MEDIA_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isCreator()) {
                 <div class="project-media-editor">
@@ -143,7 +139,6 @@
           </div>
 
           <div class="info-row">
-            <label>{{ 'PROJECT.NEEDS_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isCreator()) {
                 @if (canEditNeeds()) {
@@ -230,7 +225,6 @@
           </div>
 
           <div class="info-row">
-            <label>{{ 'PROJECT.MEMBERS_LABEL' | translate }}</label>
             <div class="info-content">
               <div class="members-summary" (click)="toggleMembers()">
                 <span>{{ getMembersSummary() }}</span>

@@ -168,20 +168,10 @@
 }
 
 .info-row {
-  display: flex;
   margin-bottom: 1rem;
-  align-items: flex-start;
-
-  label {
-    font-weight: 600;
-    color: var(--app-text);
-    min-width: 120px;
-    margin-right: 1rem;
-    margin-top: 0.5rem;
-  }
 
   .info-content {
-    flex: 1;
+    width: 100%;
   }
 }
 
