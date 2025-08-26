@@ -7,14 +7,14 @@
     </ion-buttons>
     
     @if (isAuthenticated() && userLocation) {
-              <ion-title class="ion-text-center">
-          <div class="location-info">
-            <ion-icon name="location" color="primary"></ion-icon>
-            <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
-          </div>
-        </ion-title>
+      <div class="location-container">
+        <div class="location-info">
+          <ion-icon name="location" color="primary"></ion-icon>
+          <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
+        </div>
+      </div>
     } @else {
-      <ion-title class="ion-text-center">{{ 'COMMON.HOME' | translate }}</ion-title>
+      <ion-title>{{ 'COMMON.HOME' | translate }}</ion-title>
     }
     
     <ion-buttons slot="end">
