@@ -267,8 +267,6 @@ export class ProjectsService {
         supports: [],
         opposes: [],
         comments: [],
-        collaborators: [],
-        collaborationRequests: [],
         participants: [projectData.createdBy],
         tags: this.generateTags(projectData.title, projectData.description, projectData.needs),
         creator: {

@@ -123,12 +123,6 @@
 
                 @if (searchResults.length > 0) {
                   <div class="search-results">
-                    <div class="search-results-header">
-                      <span>{{ 'NEW_ITEM.SEARCH_RESULTS' | translate }} ({{ searchResults.length }})</span>
-                      <ion-button fill="clear" size="small" (click)="clearSearch()">
-                        <ion-icon name="close" slot="icon-only"></ion-icon>
-                      </ion-button>
-                    </div>
                     @for (user of searchResults; track user.uid) {
                       <div class="user-result" (click)="addCollaborator(user)">
                         <div class="user-info">
