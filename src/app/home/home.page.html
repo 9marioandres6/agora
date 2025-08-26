@@ -12,12 +12,6 @@
             <ion-icon name="location" color="primary"></ion-icon>
             <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
           </div>
-          @if (isFilterActive()) {
-            <div class="filter-status">
-              <ion-icon name="filter" color="warning"></ion-icon>
-              <span>Filtered</span>
-            </div>
-          }
         </ion-title>
     } @else {
       <ion-title class="ion-text-center">{{ 'COMMON.HOME' | translate }}</ion-title>
@@ -43,12 +37,27 @@
     @if (projects().length === 0) {
       <div class="empty-state">
         <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
-        <h2>{{ 'HOME.NO_PROJECTS' | translate }}</h2>
-        <p>{{ 'HOME.NO_PROJECTS_MESSAGE' | translate }}</p>
-        <ion-button (click)="createNew()" fill="outline">
-          <ion-icon name="add" slot="start"></ion-icon>
-          {{ 'HOME.CREATE_FIRST_PROJECT' | translate }}
-        </ion-button>
+        @if (isFilterActive()) {
+          <h2>{{ 'HOME.NO_FILTERED_PROJECTS' | translate }}</h2>
+          <p>{{ 'HOME.NO_FILTERED_PROJECTS_MESSAGE' | translate }}</p>
+          <div class="empty-state-actions">
+            <ion-button (click)="resetFilter()" fill="outline" class="reset-filter-btn">
+              <ion-icon name="refresh" slot="start"></ion-icon>
+              {{ 'HOME.RESET_FILTER' | translate }}
+            </ion-button>
+            <ion-button (click)="createNew()" fill="outline">
+              <ion-icon name="add" slot="start"></ion-icon>
+              {{ 'HOME.CREATE_NEW_PROJECT' | translate }}
+            </ion-button>
+          </div>
+        } @else {
+          <h2>{{ 'HOME.NO_PROJECTS' | translate }}</h2>
+          <p>{{ 'HOME.NO_PROJECTS_MESSAGE' | translate }}</p>
+          <ion-button (click)="createNew()" fill="outline">
+            <ion-icon name="add" slot="start"></ion-icon>
+            {{ 'HOME.CREATE_FIRST_PROJECT' | translate }}
+          </ion-button>
+        }
       </div>
     } @else {
       <div class="projects-feed">

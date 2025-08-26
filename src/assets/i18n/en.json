@@ -106,7 +106,10 @@
     "SCOPE_ALL": "All Projects",
     "SCOPE_MY_PROJECTS": "My Projects",
     "APPLY_FILTER": "Apply Filter",
-    "RESET_FILTER": "Reset Filter"
+    "RESET_FILTER": "Reset Filter",
+    "NO_FILTERED_PROJECTS": "No Projects Found",
+    "NO_FILTERED_PROJECTS_MESSAGE": "No projects match your current filter. Try adjusting the filter or create a new project.",
+    "CREATE_NEW_PROJECT": "Create New Project"
   },
   "SETTINGS": {
     "GENERAL": "General",

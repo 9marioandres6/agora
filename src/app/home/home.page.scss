@@ -17,20 +17,6 @@ ion-content { --background: var(--app-background); }
   }
 }
 
-.filter-status {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--ion-color-warning);
-  
-  ion-icon {
-    font-size: 14px;
-  }
-}
-
 .new-button {
   --color: var(--ion-color-primary);
 }
@@ -40,30 +26,34 @@ ion-content { --background: var(--app-background); }
 }
 
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 60px 20px;
+  padding: 2rem;
   
   ion-icon {
-    margin-bottom: 24px;
-    opacity: 0.6;
+    margin-bottom: 1rem;
   }
   
   h2 {
-    margin: 0 0 16px 0;
+    margin-bottom: 0.5rem;
     color: var(--ion-color-medium);
-    font-size: 24px;
-    font-weight: 600;
   }
   
   p {
-    margin: 0 0 32px 0;
+    margin-bottom: 1.5rem;
     color: var(--ion-color-medium);
     line-height: 1.5;
-    max-width: 400px;
+  }
+  
+  .empty-state-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    
+    .reset-filter-btn {
+      --color: var(--ion-color-warning);
+      --border-color: var(--ion-color-warning);
+    }
   }
 }
 

@@ -67,7 +67,6 @@ export class LocationFilterService {
   }
 
   filterProjectsByLocation(projects: Project[], scope: string, userId: string): Project[] {
-    // If scope is 'all', return all projects
     if (scope === 'all') {
       return projects;
     }
@@ -75,7 +74,6 @@ export class LocationFilterService {
     const userLocation = this._userLocation();
     
     if (!userLocation) {
-      // If no location, apply basic scope filtering
       return this.filterByScopeOnly(projects, scope, userId);
     }
 
@@ -92,7 +90,7 @@ export class LocationFilterService {
         return this.filterByLocationAndScope(projects, scope, userLocation);
       
       case 'global':
-        return projects; // All projects for global scope
+        return this.filterByGlobalScope(projects);
       
       default:
         return projects;
@@ -107,17 +105,14 @@ export class LocationFilterService {
   }
 
   private filterGrupalProjects(projects: Project[], userId: string): Project[] {
-    return projects.filter(project => 
-      project.createdBy === userId || 
-      project.collaborators?.some(c => c.uid === userId)
-    );
+    return projects.filter(project => project.scope === 'grupal');
   }
 
   private filterByLocationAndScope(projects: Project[], scope: string, userLocation: LocationData): Project[] {
     const radiusKm = this.LOCATION_RADIUS_KM[scope as keyof typeof this.LOCATION_RADIUS_KM] || Infinity;
     
     return projects.filter(project => {
-      if (!project.location) return false;
+      if (!project.location || project.scope !== scope) return false;
       
       const distance = this.calculateDistance(
         userLocation.latitude, 
@@ -130,6 +125,10 @@ export class LocationFilterService {
     });
   }
 
+  private filterByGlobalScope(projects: Project[]): Project[] {
+    return projects.filter(project => project.scope === 'global');
+  }
+
   private filterByScopeOnly(projects: Project[], scope: string, userId: string): Project[] {
     switch (scope) {
       case 'my-projects':
@@ -137,12 +136,11 @@ export class LocationFilterService {
       case 'grupal':
         return this.filterGrupalProjects(projects, userId);
       case 'global':
-        return projects;
+        return this.filterByGlobalScope(projects);
       case 'local':
       case 'state':
       case 'national':
-        // For location-based scopes without user location, return empty array
-        return [];
+        return projects.filter(project => project.scope === scope);
       default:
         return projects;
     }
