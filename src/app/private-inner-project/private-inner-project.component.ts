@@ -56,6 +56,17 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     const proj = this.project();
     return user && proj && user.uid === proj.createdBy;
   });
+
+  readonly canEditNeeds = computed(() => {
+    const proj = this.project();
+    if (!proj) return false;
+    
+    const supportCount = (proj.supports || []).length;
+    const opposeCount = (proj.opposes || []).length;
+    const netSupport = supportCount - opposeCount;
+    
+    return netSupport >= this.getRequiredSupportThreshold(proj.scope);
+  });
   
   constructor() {
     // Subscribe to project changes in constructor (injection context)
@@ -1140,6 +1151,37 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   // Helper method to check if media is from Supabase storage
   isSupabaseMedia(media: Media): boolean {
     return media.url.includes('supabase.co') || !!media.storagePath;
+  }
+
+  private getRequiredSupportThreshold(scope: string): number {
+    switch (scope) {
+      case 'grupal':
+        return 0; // Immediate access for small group projects
+      case 'local':
+        return 8; // Neighborhood/community validation
+      case 'state':
+        return 25; // Regional validation
+      case 'national':
+        return 100; // Country-wide validation
+      case 'global':
+        return 500; // International validation
+      default:
+        return 0;
+    }
+  }
+
+  getNeedsUnlockStatus(): { current: number; required: number; progress: number; unlocked: boolean } {
+    const proj = this.project();
+    if (!proj) return { current: 0, required: 0, progress: 0, unlocked: false };
+    
+    const supportCount = (proj.supports || []).length;
+    const opposeCount = (proj.opposes || []).length;
+    const netSupport = supportCount - opposeCount;
+    const required = this.getRequiredSupportThreshold(proj.scope);
+    const progress = Math.min((netSupport / required) * 100, 100);
+    const unlocked = netSupport >= required;
+    
+    return { current: netSupport, required, progress, unlocked };
   }
 
   private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {

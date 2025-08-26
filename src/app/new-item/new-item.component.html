@@ -36,42 +36,7 @@
             </ion-textarea>
           </ion-item>
 
-          <div class="requirements-section">
-            <ion-label class="requirements-label">{{ 'NEW_ITEM.WHAT_WE_NEED' | translate }} ({{ 'COMMON.OPTIONAL' | translate }})</ion-label>
-            
-            <div class="requirements-container">
-              <div class="needs-input-container">
-                <ion-input 
-                  [(ngModel)]="newNeed" 
-                  name="newNeed"
-                  placeholder="{{ 'NEW_ITEM.NEED_PLACEHOLDER' | translate }}"
-                  (keyup.enter)="addNeed()">
-                </ion-input>
-                <ion-button 
-                  fill="clear" 
-                  size="small" 
-                  (click)="addNeed()"
-                  [disabled]="!newNeed.trim()"
-                  class="add-need-btn">
-                  <ion-icon name="add" slot="icon-only"></ion-icon>
-                </ion-button>
-              </div>
-              
-              @if (needs.length > 0) {
-                <div class="needs-chips">
-                  @for (need of needs; track need.name) {
-                    <ion-chip 
-                      color="primary" 
-                      (click)="removeNeed(need)"
-                      class="need-chip">
-                      <ion-label>{{ need.name }}</ion-label>
-                      <ion-icon name="close" slot="end"></ion-icon>
-                    </ion-chip>
-                  }
-                </div>
-              }
-            </div>
-          </div>
+
 
           <ion-item class="form-item">
             <ion-label position="stacked">{{ 'NEW_ITEM.SCOPE' | translate }}</ion-label>

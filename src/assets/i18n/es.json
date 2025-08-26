@@ -118,7 +118,7 @@
     "AUTH_REQUIRED_MESSAGE": "Por favor inicia sesión para editar tu perfil"
   },
   "NEW_ITEM": {
-    "CREATE_NEW": "Nuevo",
+    "CREATE_NEW": "Propone",
     "TITLE": "Qué",
     "TITLE_PLACEHOLDER": "Escribe aquí qué quieres proponer",
     "DESCRIPTION": "Cómo",
@@ -243,7 +243,10 @@
     "COLLABORATOR_REMOVED": "El colaborador ha sido removido",
     "ERROR_ACCEPTING_COLLABORATOR": "Error al aceptar colaborador",
     "ERROR_REJECTING_COLLABORATOR": "Error al rechazar colaborador",
-    "ERROR_REMOVING_COLLABORATOR": "Error al remover colaborador"
+    "ERROR_REMOVING_COLLABORATOR": "Error al remover colaborador",
+    "NEEDS_LOCKED_TITLE": "Sección de Necesidades Bloqueada",
+    "NEEDS_LOCKED_MESSAGE": "Esta sección se desbloquea cuando tu proyecto recibe suficiente apoyo de la comunidad. El apoyo requerido varía según el alcance del proyecto.",
+    "SUPPORT_VOTES": "votos de apoyo"
   },
   "PUBLIC": {
     "PUBLIC_PROJECT": "Proyecto Público",

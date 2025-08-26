@@ -146,46 +146,66 @@
             <label>{{ 'PROJECT.NEEDS_LABEL' | translate }}</label>
             <div class="info-content">
               @if (isCreator()) {
-                <div class="needs-editor">
-                  <!-- Add new need input -->
-                  <div class="add-need-section">
-                    <ion-input 
-                      [(ngModel)]="newNeedText"
-                      placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"
-                      (keyup.enter)="addNewNeed()"
-                      class="new-need-input">
-                    </ion-input>
-                    <ion-button 
-                      fill="outline" 
-                      size="small" 
-                      (click)="addNewNeed()"
-                      [disabled]="!newNeedText.trim()"
-                      class="add-need-btn">
-                      <ion-icon name="add" slot="start"></ion-icon>
-                      {{ 'PROJECT.ADD_NEED' | translate }}
-                    </ion-button>
-                  </div>
-                  
-                  <!-- Existing needs list -->
-                  @for (need of editingProject().needs || project()?.needs || []; track $index) {
-                    <div class="need-item">
-                      <ion-chip 
-                        [color]="getNeedChipColor(need)"
-                        class="need-chip clickable"
-                        (click)="toggleNeedState(need)">
-                        <ion-icon 
-                          [name]="getNeedIcon(need)" 
-                          [color]="getNeedIconColor(need)">
-                        </ion-icon>
-                        <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
-                      </ion-chip>
-                      <span class="need-text">{{ need.name }}</span>
-                      <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
-                        <ion-icon name="trash-outline"></ion-icon>
+                @if (canEditNeeds()) {
+                  <div class="needs-editor">
+                    <!-- Add new need input -->
+                    <div class="add-need-section">
+                      <ion-input 
+                        [(ngModel)]="newNeedText"
+                        placeholder="{{ 'PROJECT.NEED_PLACEHOLDER' | translate }}"
+                        (keyup.enter)="addNewNeed()"
+                        class="new-need-input">
+                      </ion-input>
+                      <ion-button 
+                        fill="outline" 
+                        size="small" 
+                        (click)="addNewNeed()"
+                        [disabled]="!newNeedText.trim()"
+                        class="add-need-btn">
+                        <ion-icon name="add" slot="start"></ion-icon>
+                        {{ 'PROJECT.ADD_NEED' | translate }}
                       </ion-button>
                     </div>
-                  }
-                </div>
+                    
+                    <!-- Existing needs list -->
+                    @for (need of editingProject().needs || project()?.needs || []; track $index) {
+                      <div class="need-item">
+                        <ion-chip 
+                          [color]="getNeedChipColor(need)"
+                          class="need-chip clickable"
+                          (click)="toggleNeedState(need)">
+                          <ion-icon 
+                            [name]="getNeedIcon(need)" 
+                            [color]="getNeedIconColor(need)">
+                          </ion-icon>
+                          <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
+                        </ion-chip>
+                        <span class="need-text">{{ need.name }}</span>
+                        <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </ion-button>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="needs-locked">
+                    <div class="needs-lock-info">
+                      <ion-icon name="lock-closed" class="lock-icon"></ion-icon>
+                      <div class="lock-text">
+                        <h4>{{ 'PROJECT.NEEDS_LOCKED_TITLE' | translate }}</h4>
+                        <p>{{ 'PROJECT.NEEDS_LOCKED_MESSAGE' | translate }}</p>
+                        <div class="support-progress">
+                          <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="getNeedsUnlockStatus().progress"></div>
+                          </div>
+                          <span class="progress-text">
+                            {{ getNeedsUnlockStatus().current }}/{{ getNeedsUnlockStatus().required }} {{ 'PROJECT.SUPPORT_VOTES' | translate }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
               } @else {
                 <div class="needs-display">
                   <div class="needs-list-readonly">

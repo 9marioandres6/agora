@@ -330,6 +330,66 @@
   }
 }
 
+.needs-locked {
+  .needs-lock-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--ion-color-light);
+    border-radius: 8px;
+    border: 1px solid var(--ion-color-light-shade);
+
+    .lock-icon {
+      font-size: 24px;
+      color: var(--ion-color-medium);
+      margin-top: 4px;
+    }
+
+    .lock-text {
+      flex: 1;
+
+      h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--app-text);
+      }
+
+      p {
+        margin: 0 0 1rem 0;
+        font-size: 14px;
+        color: var(--ion-color-medium);
+        line-height: 1.4;
+      }
+
+      .support-progress {
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: var(--ion-color-light-shade);
+          border-radius: 4px;
+          overflow: hidden;
+          margin-bottom: 0.5rem;
+
+          .progress-fill {
+            height: 100%;
+            background: var(--ion-color-success);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+          }
+        }
+
+        .progress-text {
+          font-size: 12px;
+          color: var(--ion-color-medium);
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
 .needs-display {
   .needs-list {
     margin: 0;

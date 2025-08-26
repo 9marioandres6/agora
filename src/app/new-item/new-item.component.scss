@@ -65,65 +65,7 @@
   }
 }
 
-.requirements-section {
-  margin-bottom: 16px;
-  
-  .requirements-label {
-    display: block;
-    font-weight: 600;
-    color: var(--app-text);
-    margin-bottom: 16px;
-    font-size: 16px;
-  }
-}
 
-.requirements-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-}
-
-.needs-input-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  order: 1;
-  
-  ion-input {
-    flex: 1;
-  }
-  
-  .add-need-btn {
-    --color: var(--app-primary);
-    --color-hover: var(--app-primary-hover);
-    --color-activated: var(--app-primary);
-    
-    ion-icon {
-      font-size: 20px;
-    }
-  }
-}
-
-.needs-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  order: 2;
-  
-  .need-chip {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      transform: scale(1.05);
-    }
-    
-    ion-icon {
-      font-size: 16px;
-    }
-  }
-}
 
 ion-select {
   margin-top: 8px;
@@ -529,16 +471,5 @@ ion-select {
     --padding-end: 12px;
   }
   
-  .requirements-container {
-    gap: 12px;
-  }
-  
-  .needs-input-container {
-    flex-direction: column;
-    align-items: stretch;
-    
-    .add-need-btn {
-      align-self: flex-end;
-    }
-  }
+
 }

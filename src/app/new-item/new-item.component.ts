@@ -39,7 +39,6 @@ export class NewItemComponent implements AfterViewInit {
   description = '';
   needs: Need[] = [];
   scope = '';
-  newNeed = '';
   isSaving = false;
   projectMedia: Media[] = [];
   
@@ -56,16 +55,7 @@ export class NewItemComponent implements AfterViewInit {
     { value: 'global', label: 'Global - International level', icon: 'globe' }
   ];
 
-  addNeed() {
-    if (this.newNeed.trim() && !this.needs.some(need => need.name === this.newNeed.trim())) {
-      this.needs.push({ name: this.newNeed.trim(), state: 'pending' });
-      this.newNeed = '';
-    }
-  }
 
-  removeNeed(need: Need) {
-    this.needs = this.needs.filter(n => n.name !== need.name);
-  }
 
   async searchUsers() {
     if (!this.searchTerm.trim() || this.searchTerm.length < 2) {
