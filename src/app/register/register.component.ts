@@ -6,6 +6,7 @@ import { RouterModule, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { ConnectionService } from '../services/connection.service';
+import { LocationService } from '../services/location.service';
 
 @Component({
   selector: 'app-register',
@@ -17,6 +18,7 @@ import { ConnectionService } from '../services/connection.service';
 export class RegisterComponent implements OnInit {
   private authService = inject(AuthService);
   private connectionService = inject(ConnectionService);
+  private locationService = inject(LocationService);
   private router = inject(Router);
 
   email = '';
@@ -26,18 +28,40 @@ export class RegisterComponent implements OnInit {
   user = this.authService.user;
   loading = this.authService.loading;
   error = this.authService.error;
+  location = this.locationService.location;
   
-  // Separate loading state for Google button to avoid showing spinner during popup
   googleLoading = false;
+  showLocationDialog = false;
 
   ngOnInit() {
     this.checkConnection();
+    this.checkLocationPermission();
   }
 
   private checkConnection() {
     if (!this.connectionService.isOnline()) {
       this.router.navigate(['/no-connection']);
     }
+  }
+
+  private async checkLocationPermission() {
+    const hasPermission = await this.locationService.requestLocationPermission();
+    if (!hasPermission) {
+      this.showLocationDialog = true;
+    }
+  }
+
+  async grantLocationAccess() {
+    try {
+      this.showLocationDialog = false;
+      await this.locationService.getLocationWithAddress();
+    } catch (error) {
+      console.error('Error accessing location:', error);
+    }
+  }
+
+  skipLocationAccess() {
+    this.showLocationDialog = false;
   }
 
   async signUp() {
@@ -50,8 +74,6 @@ export class RegisterComponent implements OnInit {
 
   async signInWithGoogle() {
     try {
-      // Set Google button loading to true briefly, then immediately to false
-      // since the popup will open and we don't want to show spinner during popup
       this.googleLoading = true;
       setTimeout(() => {
         this.googleLoading = false;

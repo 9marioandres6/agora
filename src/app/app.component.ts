@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ThemeService } from './services/theme.service';
 import { TranslationService } from './services/translation.service';
 import { ConnectionService } from './services/connection.service';
+import { LocationService } from './services/location.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
   private themeService = inject(ThemeService);
   private translationService = inject(TranslationService);
   private connectionService = inject(ConnectionService);
+  private locationService = inject(LocationService);
   private router = inject(Router);
   
   constructor() {
@@ -28,6 +30,9 @@ export class AppComponent implements OnInit {
     
     // Perform additional connection check in ngOnInit
     this.performInitialConnectionCheck();
+    
+    // Request location permission on app startup
+    this.requestLocationPermission();
   }
 
   private async checkInitialConnection() {
@@ -48,5 +53,14 @@ export class AppComponent implements OnInit {
   private async performInitialConnectionCheck() {
     // Perform full connection check
     await this.connectionService.performInitialConnectionCheck();
+  }
+
+  private async requestLocationPermission() {
+    try {
+      // Request location permission on app startup
+      await this.locationService.requestLocationPermission();
+    } catch (error) {
+      console.warn('Could not request location permission on startup:', error);
+    }
   }
 }

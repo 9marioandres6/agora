@@ -1,57 +1,105 @@
 /* Custom styles that cannot be replaced with Ionic utilities */
 ion-content { --background: var(--app-background); }
 
-.projects-container {
-  padding: 16px;
-  max-width: 800px;
-  margin: 0 auto;
+.location-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  ion-icon {
+    font-size: 16px;
+  }
+  
+  .location-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ion-color-primary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.new-button {
+  --color: var(--ion-color-primary);
 }
 
 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 40px 20px;
-  color: var(--app-text);
-
-  h2 {
-    margin: 16px 0 8px 0;
-    color: var(--app-text);
+  padding: 60px 20px;
+  
+  ion-icon {
+    margin-bottom: 24px;
+    opacity: 0.6;
   }
-
+  
+  h2 {
+    margin: 0 0 16px 0;
+    color: var(--ion-color-medium);
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
   p {
-    margin: 0 0 24px 0;
-    color: var(--app-text-secondary);
-    line-height: 1.6;
+    margin: 0 0 32px 0;
+    color: var(--ion-color-medium);
+    line-height: 1.5;
+    max-width: 400px;
+  }
+}
+
+.projects-feed {
+  padding: 16px;
+  
+  app-project-card {
+    margin-bottom: 16px;
+    display: block;
   }
 }
 
 .welcome-section {
   text-align: center;
-  padding: 20px;
-
+  padding: 40px 20px;
+  
   h1 {
-    color: var(--app-text);
-    margin-bottom: 16px;
+    margin: 0 0 16px 0;
+    color: var(--ion-color-primary);
+    font-size: 32px;
+    font-weight: 700;
   }
-
+  
   p {
-    color: var(--app-text-secondary);
-    margin-bottom: 24px;
+    margin: 0 0 32px 0;
+    color: var(--ion-color-medium);
     line-height: 1.6;
+    font-size: 18px;
   }
-
+  
   ion-card {
-    margin: 20px 0;
+    max-width: 500px;
+    margin: 0 auto;
     
     ion-card-content {
+      padding: 24px;
+      
       h2 {
-        color: var(--app-text);
-        margin-bottom: 12px;
+        margin: 0 0 16px 0;
+        color: var(--ion-color-dark);
+        font-size: 20px;
+        font-weight: 600;
       }
       
       p {
-        color: var(--app-text-secondary);
-        margin-bottom: 20px;
-        line-height: 1.6;
+        margin: 0 0 24px 0;
+        color: var(--ion-color-medium);
+        line-height: 1.5;
+        font-size: 16px;
       }
     }
   }

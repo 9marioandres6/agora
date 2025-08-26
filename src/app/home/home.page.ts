@@ -10,6 +10,8 @@ import { ViewWillEnter } from '@ionic/angular';
 import { ProjectCardComponent } from '../components/project-card/project-card.component';
 import { ConnectionService } from '../services/connection.service';
 import { Router } from '@angular/router';
+import { LocationService } from '../services/location.service';
+import { UserSearchService } from '../services/user-search.service';
 
 @Component({
   selector: 'app-home',
@@ -24,15 +26,19 @@ export class HomePage implements OnInit, ViewWillEnter {
   private projectsService = inject(ProjectsService);
   private connectionService = inject(ConnectionService);
   private router = inject(Router);
+  private locationService = inject(LocationService);
+  private userSearchService = inject(UserSearchService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
   isDark = this.themeService.isDark;
+  location = this.locationService.location;
   
   // Use reactive signals from ProjectsService
   projects = this.projectsService.projects;
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
+  userLocation: any = null;
 
   // Computed values for reactive filtering
   filteredProjects = computed(() => {
@@ -40,7 +46,6 @@ export class HomePage implements OnInit, ViewWillEnter {
     // Add any filtering logic here if needed
     return allProjects;
   });
-
 
   async presentSettingsModal() {
     this.navCtrl.navigateForward('/settings');
@@ -71,12 +76,28 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-    ngOnInit() {
+  ngOnInit() {
     this.checkConnection();
+    this.loadUserLocation();
   }
 
   ionViewWillEnter() {
     this.checkConnection();
+    this.loadUserLocation();
+  }
+
+  private async loadUserLocation() {
+    try {
+      const currentUser = this.user();
+      if (currentUser) {
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        if (userProfile?.location) {
+          this.userLocation = userProfile.location;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user location:', error);
+    }
   }
 
   private checkConnection() {
@@ -97,8 +118,6 @@ export class HomePage implements OnInit, ViewWillEnter {
       event.target.complete();
     }
   }
-
-
 
   async supportProject(projectId: string, event?: Event) {
     if (event) {
@@ -153,8 +172,6 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-
-
   toggleCollaborators(projectId: string, event?: Event) {
     if (event) {
       event.stopPropagation();
@@ -165,8 +182,6 @@ export class HomePage implements OnInit, ViewWillEnter {
       this.expandedCollaborators.set(projectId);
     }
   }
-
-
 
   async requestCollaboration(projectId: string, message: string) {
     try {

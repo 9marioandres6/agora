@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthState } from './models/auth.models';
 import { LoadingService } from './loading.service';
 import { UserSearchService } from './user-search.service';
+import { LocationService, LocationData } from './location.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class AuthService {
   private router = inject(Router);
   private loadingService = inject(LoadingService);
   private userSearchService = inject(UserSearchService);
+  private locationService = inject(LocationService);
   private googleProvider = new GoogleAuthProvider();
 
   private authState = signal<AuthState>({
@@ -40,10 +42,11 @@ export class AuthService {
     });
   }
 
-  private initializeAuth() {
+  private async initializeAuth() {
     onAuthStateChanged(this.auth, async (user) => {
       if (user) {
-        await this.userSearchService.createOrUpdateUserProfile(user);
+        const location = await this.getUserLocation();
+        await this.userSearchService.createOrUpdateUserProfile(user, location);
       }
       
       this.authState.update(state => ({
@@ -62,6 +65,9 @@ export class AuthService {
     try {
       const result = await getRedirectResult(this.auth);
       if (result) {
+        const location = await this.getUserLocation();
+        await this.userSearchService.createOrUpdateUserProfile(result.user, location);
+        
         this.authState.update(state => ({
           ...state,
           user: result.user,
@@ -78,6 +84,18 @@ export class AuthService {
       }));
       this.loadingService.setAuthLoading(false);
     }
+  }
+
+  private async getUserLocation(): Promise<LocationData | null> {
+    try {
+      const hasPermission = await this.locationService.requestLocationPermission();
+      if (hasPermission) {
+        return await this.locationService.getLocationWithAddress();
+      }
+    } catch (error) {
+      console.warn('Could not get user location:', error);
+    }
+    return null;
   }
 
   async signInWithGoogle() {
@@ -138,7 +156,8 @@ export class AuthService {
         await updateProfile(credential.user, { displayName });
       }
       
-      await this.userSearchService.createOrUpdateUserProfile(credential.user);
+      const location = await this.getUserLocation();
+      await this.userSearchService.createOrUpdateUserProfile(credential.user, location);
       this.loadingService.setAuthLoading(false);
     } catch (error: any) {
       this.authState.update(state => ({
@@ -171,7 +190,8 @@ export class AuthService {
       const currentUser = this.auth.currentUser;
       if (currentUser) {
         await updateProfile(currentUser, profileData);
-        await this.userSearchService.createOrUpdateUserProfile(currentUser);
+        const location = await this.getUserLocation();
+        await this.userSearchService.createOrUpdateUserProfile(currentUser, location);
         this.authState.update(state => ({
           ...state,
           user: currentUser

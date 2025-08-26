@@ -42,7 +42,15 @@
     "PASSWORD_MISMATCH": "Passwords do not match",
     "LOGIN_SUCCESS": "Login successful",
     "REGISTER_SUCCESS": "Registration successful",
-    "LOGOUT_SUCCESS": "Logout successful"
+    "LOGOUT_SUCCESS": "Logout successful",
+    "LOCATION_PERMISSION_TITLE": "Location Access Required",
+    "LOCATION_PERMISSION_MESSAGE": "This app needs access to your location to provide better services and connect you with nearby projects.",
+    "LOCATION_PERMISSION_GRANT": "Grant Access",
+    "LOCATION_PERMISSION_DENY": "Skip for Now",
+    "LOCATION_ACCESSING": "Accessing location...",
+    "LOCATION_SUCCESS": "Location accessed successfully",
+    "LOCATION_ERROR": "Could not access location",
+    "LOCATION_PERMISSION_DENIED": "Location permission denied"
   },
   "HOME": {
     "WELCOME": "Welcome to MiApp20",
@@ -115,7 +123,13 @@
     "PHOTO_URL_PLACEHOLDER": "Enter photo URL (optional)",
     "EMAIL_READONLY": "Email cannot be changed",
     "AUTH_REQUIRED": "Authentication Required",
-    "AUTH_REQUIRED_MESSAGE": "Please log in to edit your profile"
+    "AUTH_REQUIRED_MESSAGE": "Please log in to edit your profile",
+    "LOCATION": "Location",
+    "LOCATION_DETAILS": "Location Details",
+    "LATITUDE": "Latitude",
+    "LONGITUDE": "Longitude",
+    "ACCURACY": "Accuracy",
+    "LAST_UPDATED": "Last Updated"
   },
   "NEW_ITEM": {
     "CREATE_NEW": "Propose",

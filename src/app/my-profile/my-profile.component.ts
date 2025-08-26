@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
+import { LocationService, LocationData } from '../services/location.service';
+import { UserSearchService } from '../services/user-search.service';
 
 @Component({
   selector: 'app-my-profile',
@@ -17,17 +19,22 @@ export class MyProfileComponent {
   private authService = inject(AuthService);
   private navCtrl = inject(NavController);
   private themeService = inject(ThemeService);
+  private locationService = inject(LocationService);
+  private userSearchService = inject(UserSearchService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
   isDark = signal(this.themeService.isDarkMode());
+  location = this.locationService.location;
 
   displayName = '';
   email = '';
   photoURL = '';
+  userLocation: LocationData | null = null;
 
   constructor() {
     this.initializeProfile();
+    this.loadUserLocation();
   }
 
   private initializeProfile(): void {
@@ -36,6 +43,35 @@ export class MyProfileComponent {
       this.displayName = currentUser.displayName || '';
       this.email = currentUser.email || '';
       this.photoURL = currentUser.photoURL || '';
+    }
+  }
+
+  private async loadUserLocation(): Promise<void> {
+    try {
+      const currentUser = this.user();
+      if (currentUser) {
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        if (userProfile?.location) {
+          this.userLocation = userProfile.location;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user location:', error);
+    }
+  }
+
+  async updateLocation(): Promise<void> {
+    try {
+      const location = await this.locationService.getLocationWithAddress();
+      if (location) {
+        this.userLocation = location;
+        const currentUser = this.user();
+        if (currentUser) {
+          await this.userSearchService.createOrUpdateUserProfile(currentUser, location);
+        }
+      }
+    } catch (error) {
+      console.error('Error updating location:', error);
     }
   }
 

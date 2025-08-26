@@ -1,11 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, setDoc, getDoc } from '@angular/fire/firestore';
+import { LocationData } from './location.service';
 
 export interface UserProfile {
   uid: string;
   displayName: string;
   email: string;
   photoURL?: string;
+  location?: LocationData | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -59,7 +61,7 @@ export class UserSearchService {
     }
   }
 
-  async createOrUpdateUserProfile(user: any): Promise<void> {
+  async createOrUpdateUserProfile(user: any, location?: LocationData | null): Promise<void> {
     try {
       const userRef = doc(this.usersCollection, user.uid);
       const userDoc = await getDoc(userRef);
@@ -70,6 +72,7 @@ export class UserSearchService {
           displayName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
           email: user.email || '',
           photoURL: user.photoURL || '',
+          location: location,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
@@ -82,6 +85,7 @@ export class UserSearchService {
           displayName: user.displayName || existingData.displayName,
           email: user.email || existingData.email,
           photoURL: user.photoURL || existingData.photoURL,
+          location: location || existingData.location,
           updatedAt: new Date().toISOString()
         };
         

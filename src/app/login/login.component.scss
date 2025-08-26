@@ -14,27 +14,49 @@
 
 /* Custom styles that cannot be replaced with Ionic utilities */
 .divider {
+  display: flex;
+  align-items: center;
   text-align: center;
   margin: 20px 0;
-  position: relative;
   
-  &::before {
+  &::before,
+  &::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: var(--ion-color-medium);
+    flex: 1;
+    border-bottom: 1px solid var(--ion-color-medium);
   }
   
   span {
-    background: var(--ion-background-color);
-    padding: 0 15px;
+    padding: 0 10px;
     color: var(--ion-color-medium);
     font-size: 14px;
-    position: relative;
-    z-index: 1;
+  }
+}
+
+ion-modal {
+  --height: auto;
+  --max-height: 80vh;
+  
+  ion-content {
+    --padding-top: 20px;
+    --padding-bottom: 20px;
+  }
+  
+  h2 {
+    margin: 0 0 16px 0;
+    color: var(--ion-color-primary);
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  p {
+    margin: 0 0 24px 0;
+    color: var(--ion-color-medium);
+    line-height: 1.5;
+  }
+  
+  ion-icon {
+    margin-bottom: 16px;
   }
 }
 

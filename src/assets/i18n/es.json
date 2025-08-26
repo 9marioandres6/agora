@@ -42,7 +42,15 @@
     "PASSWORD_MISMATCH": "Las contraseñas no coinciden",
     "LOGIN_SUCCESS": "Inicio de sesión exitoso",
     "REGISTER_SUCCESS": "Registro exitoso",
-    "LOGOUT_SUCCESS": "Cierre de sesión exitoso"
+    "LOGOUT_SUCCESS": "Cierre de sesión exitoso",
+    "LOCATION_PERMISSION_TITLE": "Acceso a Ubicación Requerido",
+    "LOCATION_PERMISSION_MESSAGE": "Esta aplicación necesita acceso a tu ubicación para proporcionar mejores servicios y conectarte con proyectos cercanos.",
+    "LOCATION_PERMISSION_GRANT": "Conceder Acceso",
+    "LOCATION_PERMISSION_DENY": "Omitir por Ahora",
+    "LOCATION_ACCESSING": "Accediendo a ubicación...",
+    "LOCATION_SUCCESS": "Ubicación accedida exitosamente",
+    "LOCATION_ERROR": "No se pudo acceder a la ubicación",
+    "LOCATION_PERMISSION_DENIED": "Permiso de ubicación denegado"
   },
   "HOME": {
     "WELCOME": "Bienvenido a MiApp20",
@@ -115,7 +123,13 @@
     "PHOTO_URL_PLACEHOLDER": "Ingresa URL de foto (opcional)",
     "EMAIL_READONLY": "El correo no puede ser cambiado",
     "AUTH_REQUIRED": "Autenticación Requerida",
-    "AUTH_REQUIRED_MESSAGE": "Por favor inicia sesión para editar tu perfil"
+    "AUTH_REQUIRED_MESSAGE": "Por favor inicia sesión para editar tu perfil",
+    "LOCATION": "Ubicación",
+    "LOCATION_DETAILS": "Detalles de Ubicación",
+    "LATITUDE": "Latitud",
+    "LONGITUDE": "Longitud",
+    "ACCURACY": "Precisión",
+    "LAST_UPDATED": "Última Actualización"
   },
   "NEW_ITEM": {
     "CREATE_NEW": "Propone",

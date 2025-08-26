@@ -63,3 +63,30 @@
     </ion-card>
   </div>
 </ion-content>
+
+<ion-modal [isOpen]="showLocationDialog" [backdropDismiss]="false">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ 'AUTH.LOCATION_PERMISSION_TITLE' | translate }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="ion-padding">
+      <div class="ion-text-center">
+        <ion-icon name="location" size="large" color="primary" class="ion-margin-bottom"></ion-icon>
+        <h2>{{ 'AUTH.LOCATION_PERMISSION_TITLE' | translate }}</h2>
+        <p>{{ 'AUTH.LOCATION_PERMISSION_MESSAGE' | translate }}</p>
+        
+        <div class="ion-margin-top">
+          <ion-button expand="block" (click)="grantLocationAccess()" class="ion-margin-bottom">
+            {{ 'AUTH.LOCATION_PERMISSION_GRANT' | translate }}
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="skipLocationAccess()">
+            {{ 'AUTH.LOCATION_PERMISSION_DENY' | translate }}
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

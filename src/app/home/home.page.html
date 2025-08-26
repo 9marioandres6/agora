@@ -5,6 +5,18 @@
         <ion-icon name="add" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
+    
+    @if (isAuthenticated() && userLocation) {
+      <ion-title class="ion-text-center">
+        <div class="location-info">
+          <ion-icon name="location" color="primary"></ion-icon>
+          <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
+        </div>
+      </ion-title>
+    } @else {
+      <ion-title class="ion-text-center">{{ 'COMMON.HOME' | translate }}</ion-title>
+    }
+    
     <ion-buttons slot="end">
       <app-messages-button></app-messages-button>
       <app-settings-button (onSettingsClick)="presentSettingsModal()"></app-settings-button>
