@@ -9,21 +9,18 @@
     @if (isAuthenticated() && userLocation) {
       <div class="location-container">
         <div class="location-info" (click)="requestLocationAccess()">
-          <ion-icon name="location" color="primary"></ion-icon>
           <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
         </div>
       </div>
     } @else if (isAuthenticated() && isRequestingLocation()) {
       <div class="location-container">
         <div class="location-info location-requesting">
-          <ion-icon name="location-outline" color="medium"></ion-icon>
           <span class="location-text">{{ 'AUTH.LOCATION_ACCESSING' | translate }}</span>
         </div>
       </div>
     } @else if (isAuthenticated()) {
       <div class="location-container">
         <div class="location-info location-request" (click)="requestLocationAccess()">
-          <ion-icon name="location-outline" color="medium"></ion-icon>
           <span class="location-text">{{ 'AUTH.LOCATION_CLICK_TO_ENABLE' | translate }}</span>
         </div>
       </div>
