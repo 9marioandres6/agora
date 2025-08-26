@@ -41,6 +41,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   userLocation: any = null;
   currentScope = signal('all');
   isLoadingMore = false;
+  isRequestingLocation = signal(false);
 
   projects = computed(() => {
     const filteredProjects = this.projectsService.filteredProjects();
@@ -141,10 +142,30 @@ export class HomePage implements OnInit, ViewWillEnter {
         const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
         if (userProfile?.location) {
           this.userLocation = userProfile.location;
+        } else {
+          await this.requestLocationAccess();
         }
       }
     } catch (error) {
       console.error('Error loading user location:', error);
+      await this.requestLocationAccess();
+    }
+  }
+
+  async requestLocationAccess() {
+    try {
+      this.isRequestingLocation.set(true);
+      const hasPermission = await this.locationService.requestLocationPermission();
+      if (hasPermission) {
+        const locationData = await this.locationService.getLocationWithAddress();
+        if (locationData) {
+          this.userLocation = locationData;
+        }
+      }
+    } catch (error) {
+      console.error('Error requesting location access:', error);
+    } finally {
+      this.isRequestingLocation.set(false);
     }
   }
 

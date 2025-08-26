@@ -50,7 +50,8 @@
     "LOCATION_ACCESSING": "Accessing location...",
     "LOCATION_SUCCESS": "Location accessed successfully",
     "LOCATION_ERROR": "Could not access location",
-    "LOCATION_PERMISSION_DENIED": "Location permission denied"
+    "LOCATION_PERMISSION_DENIED": "Location permission denied",
+    "LOCATION_CLICK_TO_ENABLE": "Click to enable location"
   },
   "HOME": {
     "WELCOME": "Welcome to MiApp20",

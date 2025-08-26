@@ -16,6 +16,7 @@ ion-content { --background: var(--app-background); }
   justify-content: flex-start;
   gap: 8px;
   width: 100%;
+  cursor: pointer;
   
   ion-icon {
     font-size: 16px;
@@ -29,6 +30,40 @@ ion-content { --background: var(--app-background); }
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+  }
+}
+
+.location-request {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  
+  &:hover {
+    opacity: 1;
+  }
+  
+  .location-text {
+    color: var(--ion-color-medium);
+  }
+}
+
+.location-requesting {
+  opacity: 0.8;
+  
+  .location-text {
+    color: var(--ion-color-medium);
+  }
+  
+  ion-icon {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
   }
 }
 

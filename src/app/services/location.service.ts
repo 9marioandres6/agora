@@ -39,36 +39,65 @@ export class LocationService {
         return false;
       }
 
+      this.locationState.update(state => ({ ...state, loading: true, error: null }));
+
       return new Promise((resolve) => {
-        navigator.permissions.query({ name: 'geolocation' as PermissionName }).then((permissionStatus) => {
-          if (permissionStatus.state === 'granted') {
-            this.locationState.update(state => ({ ...state, permissionGranted: true }));
-            resolve(true);
-          } else if (permissionStatus.state === 'prompt') {
-            this.locationState.update(state => ({ ...state, permissionGranted: false }));
-            resolve(false);
-          } else {
-            this.locationState.update(state => ({ 
-              ...state, 
-              error: 'Location permission denied',
-              permissionGranted: false 
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const locationData: LocationData = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy,
+              timestamp: position.timestamp
+            };
+
+            this.locationState.update(state => ({
+              ...state,
+              location: locationData,
+              loading: false,
+              permissionGranted: true,
+              error: null
             }));
+
+            resolve(true);
+          },
+          (error) => {
+            let errorMessage = 'Unknown error occurred';
+            
+            switch (error.code) {
+              case error.PERMISSION_DENIED:
+                errorMessage = 'Location permission denied';
+                break;
+              case error.POSITION_UNAVAILABLE:
+                errorMessage = 'Location information unavailable';
+                break;
+              case error.TIMEOUT:
+                errorMessage = 'Location request timed out';
+                break;
+            }
+
+            this.locationState.update(state => ({
+              ...state,
+              error: errorMessage,
+              loading: false,
+              permissionGranted: false
+            }));
+
             resolve(false);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000
           }
-        }).catch(() => {
-          this.locationState.update(state => ({ 
-            ...state, 
-            error: 'Could not check location permission',
-            permissionGranted: false 
-          }));
-          resolve(false);
-        });
+        );
       });
     } catch (error) {
-      this.locationState.update(state => ({ 
-        ...state, 
+      this.locationState.update(state => ({
+        ...state,
         error: 'Error requesting location permission',
-        permissionGranted: false 
+        loading: false,
+        permissionGranted: false
       }));
       return false;
     }
