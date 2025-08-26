@@ -11,6 +11,7 @@ import { UserSearchService, UserProfile } from '../services/user-search.service'
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
 import { ScopeOption } from './models/new-item.models';
 import { Need, Media, Collaborator } from '../services/models/project.models';
+import { LocationService } from '../services/location.service';
 
 @Component({
   selector: 'app-new-item',
@@ -30,6 +31,7 @@ export class NewItemComponent implements AfterViewInit {
   private supabaseService = inject(SupabaseService);
   private userSearchService = inject(UserSearchService);
   private toastCtrl = inject(ToastController);
+  private locationService = inject(LocationService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -268,6 +270,15 @@ export class NewItemComponent implements AfterViewInit {
         return;
       }
 
+      // Get user's current location
+      let userLocation = null;
+      try {
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        userLocation = userProfile?.location || null;
+      } catch (error) {
+        console.warn('Could not get user location for project:', error);
+      }
+
       const projectData = {
         title: this.title.trim(),
         description: this.description.trim() || '',
@@ -276,7 +287,9 @@ export class NewItemComponent implements AfterViewInit {
         createdBy: currentUser.uid,
         collaborators: this.selectedCollaborators,
         collaborationRequests: [],
-        media: this.projectMedia
+        media: this.projectMedia,
+        location: userLocation || undefined,
+        locationAddress: userLocation?.address || undefined
       };
 
       const projectId = await this.projectsService.createProject(projectData);

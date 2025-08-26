@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, Need } from './models/project.models';
 import { MessagesService } from './messages.service';
 import { LoadingService } from './loading.service';
+import { LocationFilterService } from './location-filter.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +14,21 @@ export class ProjectsService {
   private authService = inject(AuthService);
   private messagesService = inject(MessagesService);
   private loadingService = inject(LoadingService);
+  private locationFilterService = inject(LocationFilterService);
 
   // Reactive signals for real-time data
   private _projects = signal<Project[]>([]);
   private _userProjects = signal<Project[]>([]);
   private _projectsByScope = signal<Map<string, Project[]>>(new Map());
   private _currentProject = signal<Project | null>(null);
+  private _filteredProjects = signal<Project[]>([]);
   
   // Public computed signals
   public readonly projects = this._projects.asReadonly();
   public readonly userProjects = this._userProjects.asReadonly();
-  public readonly projectsByScope = this._projectsByScope.asReadonly();
+  public readonly projectsByScope = this._projects.asReadonly();
   public readonly currentProject = this._currentProject.asReadonly();
+  public readonly filteredProjects = this._filteredProjects.asReadonly();
 
   // Active listeners to clean up
   private listeners: Map<string, Unsubscribe> = new Map();
@@ -413,8 +417,8 @@ export class ProjectsService {
   getProjectsByScope(scope: string): Project[] {
     // Set up listener if not already listening
     this.setupScopeProjectsListener(scope);
-    const scopeMap = this.projectsByScope();
-    return scopeMap.get(scope) || [];
+    // For now, return filtered projects by scope from the main projects array
+    return this.projects().filter(project => project.scope === scope);
   }
 
   // Legacy async method for backward compatibility
@@ -884,7 +888,41 @@ export class ProjectsService {
     // This method can be used to trigger manual refresh if needed
   }
 
+  // Location-based filtering methods
+  public setFilteredProjects(scope: string) {
+    const currentUser = this.authService.user();
+    if (currentUser?.uid) {
+      this.locationFilterService.setInitialProjects(this.projects(), scope, currentUser.uid);
+      this._filteredProjects.set(this.locationFilterService.filteredProjects());
+    }
+  }
 
+  public async loadMoreFilteredProjects(scope: string): Promise<boolean> {
+    const currentUser = this.authService.user();
+    if (!currentUser?.uid) return false;
+
+    const hasMore = await this.locationFilterService.loadMoreProjects(this.projects(), scope, currentUser.uid);
+    if (hasMore) {
+      this._filteredProjects.set(this.locationFilterService.filteredProjects());
+    }
+    return hasMore;
+  }
+
+  public resetFilteredProjects() {
+    this.locationFilterService.resetPagination();
+    this._filteredProjects.set([]);
+  }
+
+  public getFilteredProjectsCount(scope: string): number {
+    const currentUser = this.authService.user();
+    if (!currentUser?.uid) return 0;
+    
+    return this.locationFilterService.getTotalFilteredCount(this.projects(), scope, currentUser.uid);
+  }
+
+  public refreshUserLocation() {
+    this.locationFilterService.refreshUserLocation();
+  }
 
   // Get computed values for specific queries
   public getProjectsByTag(tag: string): Project[] {

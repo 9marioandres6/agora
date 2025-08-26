@@ -12,6 +12,7 @@ import { ConnectionService } from '../services/connection.service';
 import { Router } from '@angular/router';
 import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -34,18 +35,35 @@ export class HomePage implements OnInit, ViewWillEnter {
   isDark = this.themeService.isDark;
   location = this.locationService.location;
   
-  // Use reactive signals from ProjectsService
-  projects = this.projectsService.projects;
+  // Use all projects by default, filtered projects when filter is applied
+  allProjects = this.projectsService.projects;
+  filteredProjects = this.projectsService.filteredProjects;
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
   userLocation: any = null;
+  currentScope = 'all'; // Default to show all projects
+  isLoadingMore = false;
+  showFilter = false;
+  isFilterActive = false;
 
   // Computed values for reactive filtering
-  filteredProjects = computed(() => {
-    const allProjects = this.projects();
-    // Add any filtering logic here if needed
-    return allProjects;
+  projects = computed(() => {
+    if (this.isFilterActive) {
+      return this.filteredProjects();
+    } else {
+      return this.allProjects();
+    }
   });
+
+  constructor() {
+    // Set up scope-based filtering when projects change (only when filter is active)
+    effect(() => {
+      const projects = this.projectsService.projects();
+      if (projects.length > 0 && this.isFilterActive) {
+        this.projectsService.setFilteredProjects(this.currentScope);
+      }
+    });
+  }
 
   async presentSettingsModal() {
     this.navCtrl.navigateForward('/settings');
@@ -86,7 +104,32 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.loadUserLocation();
   }
 
-  private async loadUserLocation() {
+  showFilterModal() {
+    this.showFilter = true;
+  }
+
+  closeFilterModal() {
+    this.showFilter = false;
+  }
+
+  applyFilter() {
+    if (this.currentScope === 'all') {
+      this.resetFilter();
+    } else {
+      this.isFilterActive = true;
+      this.projectsService.resetFilteredProjects();
+      this.projectsService.setFilteredProjects(this.currentScope);
+    }
+    this.closeFilterModal();
+  }
+
+  resetFilter() {
+    this.isFilterActive = false;
+    this.currentScope = 'all';
+    this.projectsService.resetFilteredProjects();
+  }
+
+  async loadUserLocation() {
     try {
       const currentUser = this.user();
       if (currentUser) {
@@ -117,6 +160,37 @@ export class HomePage implements OnInit, ViewWillEnter {
     if (event) {
       event.target.complete();
     }
+  }
+
+  async loadMoreProjects(event: any) {
+    if (this.isLoadingMore) {
+      event.target.complete();
+      return;
+    }
+
+    this.isLoadingMore = true;
+    
+    try {
+      if (this.isFilterActive) {
+        const hasMore = await this.projectsService.loadMoreFilteredProjects(this.currentScope);
+        if (!hasMore) {
+          event.target.disabled = true;
+        }
+      } else {
+        // For all projects, just complete the event since we're showing all
+        event.target.complete();
+        return;
+      }
+    } catch (error) {
+      console.error('Error loading more projects:', error);
+    } finally {
+      this.isLoadingMore = false;
+      event.target.complete();
+    }
+  }
+
+  changeScope(scope: string) {
+    this.currentScope = scope;
   }
 
   async supportProject(projectId: string, event?: Event) {

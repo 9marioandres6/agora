@@ -18,6 +18,9 @@
     }
     
     <ion-buttons slot="end">
+      <ion-button (click)="showFilterModal()" fill="clear" class="filter-button">
+        <ion-icon name="filter" slot="icon-only"></ion-icon>
+      </ion-button>
       <app-messages-button></app-messages-button>
       <app-settings-button (onSettingsClick)="presentSettingsModal()"></app-settings-button>
     </ion-buttons>
@@ -25,7 +28,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
   <!-- Projects Feed -->
   @if (isAuthenticated()) {
     <ion-refresher slot="fixed" (ionRefresh)="refreshProjects($event)">
@@ -59,6 +61,14 @@
           </app-project-card>
         }
       </div>
+
+      <!-- Infinite Scroll -->
+      <ion-infinite-scroll (ionInfinite)="loadMoreProjects($event)">
+        <ion-infinite-scroll-content
+          loadingSpinner="bubbles"
+          loadingText="Loading more projects...">
+        </ion-infinite-scroll-content>
+      </ion-infinite-scroll>
     }
   } @else {
     <div class="ion-padding">
@@ -79,3 +89,90 @@
     </div>
   }
 </ion-content>
+
+<!-- Filter Modal -->
+<ion-modal [isOpen]="showFilter" [backdropDismiss]="true">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ 'HOME.FILTER_PROJECTS' | translate }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeFilterModal()" fill="clear">
+            <ion-icon name="close" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    
+    <ion-content class="ion-padding">
+      <div class="filter-content">
+        <h3>{{ 'HOME.SELECT_SCOPE' | translate }}</h3>
+        <p>{{ 'HOME.SCOPE_DESCRIPTION' | translate }}</p>
+        
+        <ion-segment [(ngModel)]="currentScope" (ionChange)="changeScope($event.detail.value?.toString() || 'all')" class="filter-scope-segment">
+          <ion-segment-button value="all">
+            <ion-icon name="list"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="my-projects">
+            <ion-icon name="person"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="grupal">
+            <ion-icon name="people"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="local">
+            <ion-icon name="home"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="state">
+            <ion-icon name="business"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="national">
+            <ion-icon name="flag"></ion-icon>
+          </ion-segment-button>
+          <ion-segment-button value="global">
+            <ion-icon name="planet"></ion-icon>
+          </ion-segment-button>
+        </ion-segment>
+        
+        <div class="scope-legend">
+          <div class="legend-item">
+            <ion-icon name="list" color="primary"></ion-icon>
+            <span>{{ 'HOME.SCOPE_ALL' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <ion-icon name="person" color="primary"></ion-icon>
+            <span>{{ 'HOME.SCOPE_MY_PROJECTS' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <ion-icon name="people" color="primary"></ion-icon>
+            <span>{{ 'NEW_ITEM.SCOPE_GRUPAL' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <ion-icon name="home" color="primary"></ion-icon>
+            <span>{{ 'NEW_ITEM.SCOPE_LOCAL' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <ion-icon name="business" color="primary"></ion-icon>
+            <span>{{ 'NEW_ITEM.SCOPE_STATE' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <ion-icon name="flag" color="primary"></ion-icon>
+            <span>{{ 'NEW_ITEM.SCOPE_NATIONAL' | translate }}</span>
+          </div>
+          <div class="legend-item">
+            <ion-icon name="planet" color="primary"></ion-icon>
+            <span>{{ 'NEW_ITEM.SCOPE_GLOBAL' | translate }}</span>
+          </div>
+        </div>
+        
+        <div class="filter-actions">
+          <ion-button expand="block" (click)="applyFilter()" class="ion-margin-bottom">
+            {{ 'HOME.APPLY_FILTER' | translate }}
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="resetFilter()">
+            {{ 'HOME.RESET_FILTER' | translate }}
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

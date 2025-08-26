@@ -1,3 +1,5 @@
+import { LocationData } from '../location.service';
+
 export interface Project {
   id?: string;
   title: string;
@@ -24,6 +26,8 @@ export interface Project {
     email?: string;
     photoURL?: string;
   };
+  location?: LocationData;
+  locationAddress?: string;
 }
 
 export interface Need {
