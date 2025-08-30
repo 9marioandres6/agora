@@ -9,10 +9,12 @@ export class LoadingService {
   
   private _authLoading = signal<boolean>(true);
   private _projectsLoading = signal<boolean>(false);
+  private _filteredProjectsLoading = signal<boolean>(false);
   private _globalLoading = signal<boolean>(false);
 
   authLoading = this._authLoading.asReadonly();
   projectsLoading = this._projectsLoading.asReadonly();
+  filteredProjectsLoading = this._filteredProjectsLoading.asReadonly();
   globalLoading = this._globalLoading.asReadonly();
 
   isLoading = computed(() => {
@@ -23,6 +25,7 @@ export class LoadingService {
     
     return this._authLoading() || 
            this._projectsLoading() || 
+           this._filteredProjectsLoading() ||
            this._globalLoading();
   });
 
@@ -45,6 +48,10 @@ export class LoadingService {
 
   setProjectsLoading(loading: boolean) {
     this._projectsLoading.set(loading);
+  }
+
+  setFilteredProjectsLoading(loading: boolean) {
+    this._filteredProjectsLoading.set(loading);
   }
 
   setGlobalLoading(loading: boolean) {

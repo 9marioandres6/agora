@@ -53,17 +53,30 @@ export class ProjectsService {
           this.setupUserProjectsListener(user.uid);
         } else {
           this.cleanupUserProjectsListener();
+          // Only set loading to false when there's no user
+          this.loadingService.setProjectsLoading(false);
         }
       });
       
-      // Mark loading as complete since we're not using global listener anymore
-      this.loadingService.setProjectsLoading(false);
+      // Don't mark loading as complete here - wait for actual data
     } catch (error) {
       this.loadingService.setProjectsLoading(false);
     }
   }
 
+  private hasProjectsLoaded(): boolean {
+    // Check if we have any projects loaded in any of our signals
+    return this._userProjects().length > 0 || 
+           this._projectsByScope().size > 0 || 
+           this._currentProject() !== null;
+  }
 
+  private updateLoadingState(): void {
+    // Only set loading to false if we actually have projects loaded
+    if (this.hasProjectsLoaded()) {
+      this.loadingService.setProjectsLoading(false);
+    }
+  }
 
   private setupUserProjectsListener(userId: string) {
     this.cleanupUserProjectsListener();
@@ -93,8 +106,13 @@ export class ProjectsService {
       });
 
       this._userProjects.set(processedProjects);
+      
+      // Update loading state based on whether we actually have projects
+      this.updateLoadingState();
     }, (error) => {
       console.error('Error in user projects listener:', error);
+      // Set loading to false even on error
+      this.loadingService.setProjectsLoading(false);
     });
 
     this.listeners.set('user', unsubscribe);
@@ -187,8 +205,13 @@ export class ProjectsService {
         const currentScopeMap = this._projectsByScope();
         currentScopeMap.set(scope, processedProjects);
         this._projectsByScope.set(new Map(currentScopeMap));
+        
+        // Set loading to false only after we receive data
+        this.loadingService.setProjectsLoading(false);
       }, (error) => {
         console.error(`Error in scope ${scope} projects listener:`, error);
+        // Set loading to false even on error
+        this.loadingService.setProjectsLoading(false);
       });
 
       this.listeners.set(`scope_${scope}`, unsubscribe);
@@ -202,6 +225,8 @@ export class ProjectsService {
       const currentScopeMap = this._projectsByScope();
       currentScopeMap.set('grupal', []);
       this._projectsByScope.set(new Map(currentScopeMap));
+      // Set loading to false when no user
+      this.loadingService.setProjectsLoading(false);
       return;
     }
 
@@ -256,16 +281,23 @@ export class ProjectsService {
         currentScopeMap.set('grupal', processedProjects);
         this._projectsByScope.set(new Map(currentScopeMap));
 
+        // Set loading to false only after we receive data
+        this.loadingService.setProjectsLoading(false);
+
         // Clean up collaborator listener
         unsubscribeCollaborator();
       }, (error) => {
         console.error('Error in Groupal collaborator projects listener:', error);
+        // Set loading to false even on error
+        this.loadingService.setProjectsLoading(false);
       });
 
       // Clean up creator listener
       unsubscribeCreator();
     }, (error) => {
       console.error('Error in Groupal creator projects listener:', error);
+      // Set loading to false even on error
+      this.loadingService.setProjectsLoading(false);
     });
 
     this.listeners.set(`scope_grupal`, () => {
@@ -983,12 +1015,19 @@ export class ProjectsService {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return;
 
+    // Set filtered projects loading to true
+    this.loadingService.setFilteredProjectsLoading(true);
+
     if (scope === 'all') {
       try {
         await this.firebaseQueryService.loadAllProjects();
-        this.firebaseQueryService.setupRealTimeListener({ scope: 'all', userId: currentUser.uid });
+        this.firebaseQueryService.setupRealTimeListener(
+          { scope: 'all', userId: currentUser.uid },
+          () => this.loadingService.setFilteredProjectsLoading(false)
+        );
       } catch (error) {
         console.error('Error loading all projects:', error);
+        this.loadingService.setFilteredProjectsLoading(false);
       }
     } else {
       const filterOptions: FilterOptions = {
@@ -998,19 +1037,32 @@ export class ProjectsService {
 
       try {
         await this.firebaseQueryService.queryProjects(filterOptions);
-        this.firebaseQueryService.setupRealTimeListener(filterOptions);
+        this.firebaseQueryService.setupRealTimeListener(
+          filterOptions,
+          () => this.loadingService.setFilteredProjectsLoading(false)
+        );
       } catch (error) {
         console.error('Error setting filtered projects:', error);
+        this.loadingService.setFilteredProjectsLoading(false);
       }
     }
   }
 
   public async loadMoreFilteredProjects(): Promise<boolean> {
     try {
+      // Set filtered projects loading to true when loading more
+      this.loadingService.setFilteredProjectsLoading(true);
+      
       const result = await this.firebaseQueryService.loadMoreProjects();
+      
+      // Set loading to false after operation completes
+      this.loadingService.setFilteredProjectsLoading(false);
+      
       return result.hasMore;
     } catch (error) {
       console.error('Error loading more filtered projects:', error);
+      // Set loading to false even on error
+      this.loadingService.setFilteredProjectsLoading(false);
       return false;
     }
   }
@@ -1019,11 +1071,18 @@ export class ProjectsService {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return;
     
+    // Set filtered projects loading to true
+    this.loadingService.setFilteredProjectsLoading(true);
+    
     try {
       await this.firebaseQueryService.loadAllProjects();
-      this.firebaseQueryService.setupRealTimeListener({ scope: 'all', userId: currentUser.uid });
+      this.firebaseQueryService.setupRealTimeListener(
+        { scope: 'all', userId: currentUser.uid },
+        () => this.loadingService.setFilteredProjectsLoading(false)
+      );
     } catch (error) {
       console.error('Error resetting to all projects:', error);
+      this.loadingService.setFilteredProjectsLoading(false);
     }
   }
 
@@ -1055,6 +1114,9 @@ export class ProjectsService {
     
     const currentScope = this.filterStateService?.getSelectedScope() || 'all';
     if (currentScope !== 'all') {
+      // Set filtered projects loading to true when refreshing
+      this.loadingService.setFilteredProjectsLoading(true);
+      
       this.setFilteredProjects(currentScope);
     }
   }

@@ -210,13 +210,14 @@ export class FirebaseQueryService {
     }
   }
 
-  setupRealTimeListener(filterOptions: FilterOptions): void {
+  setupRealTimeListener(filterOptions: FilterOptions, onLoadingComplete?: () => void): void {
     const listenerKey = this.generateListenerKey(filterOptions);
     
     // Clean up existing listener
     this.cleanupListener(listenerKey);
     
-
+    // Set loading to true when starting to listen
+    this._isLoading.set(true);
 
     const constraints: QueryConstraint[] = [];
     
@@ -227,6 +228,7 @@ export class FirebaseQueryService {
       } else if (filterOptions.scope === 'grupal') {
         constraints.push(where('scope', '==', 'grupal'));
         // Note: We'll handle grupal permissions in post-processing
+        // since we need to check both createdBy and collaborators
       } else {
         constraints.push(where('scope', '==', filterOptions.scope));
       }
@@ -280,8 +282,23 @@ export class FirebaseQueryService {
       if (querySnapshot.docs.length > 0) {
         this._lastDocument.set(querySnapshot.docs[querySnapshot.docs.length - 1]);
       }
+      
+      // Set loading to false only after we receive data
+      this._isLoading.set(false);
+      
+      // Notify that loading is complete
+      if (onLoadingComplete) {
+        onLoadingComplete();
+      }
     }, (error) => {
       console.error('Error in real-time listener:', error);
+      // Set loading to false even on error
+      this._isLoading.set(false);
+      
+      // Notify that loading is complete even on error
+      if (onLoadingComplete) {
+        onLoadingComplete();
+      }
     });
 
     this.listeners.set(listenerKey, unsubscribe);
