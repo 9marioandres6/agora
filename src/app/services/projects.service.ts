@@ -1,7 +1,7 @@
-import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, limit, getDocs, getDoc, DocumentData, arrayUnion, arrayRemove, onSnapshot, Unsubscribe } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
-import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, Need } from './models/project.models';
+import { Project, Collaborator, CollaborationRequest, Comment, Need } from './models/project.models';
 import { MessagesService } from './messages.service';
 import { LoadingService } from './loading.service';
 import { FirebaseQueryService, FilterOptions } from './firebase-query.service';
@@ -38,6 +38,33 @@ export class ProjectsService {
 
   private get projectsCollection() {
     return collection(this.firestore, 'projects');
+  }
+
+  // Helper functions to reduce query duplication
+  private createGrupalQueries(userId: string) {
+    const creatorQuery = query(
+      this.projectsCollection,
+      where('scope.scope', '==', 'grupal'),
+      where('createdBy', '==', userId),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const collaboratorQuery = query(
+      this.projectsCollection,
+      where('scope.scope', '==', 'grupal'),
+      where('collaborators', 'array-contains', userId),
+      orderBy('createdAt', 'desc')
+    );
+    
+    return { creatorQuery, collaboratorQuery };
+  }
+
+  private createScopeQuery(scope: string) {
+    return query(
+      this.projectsCollection,
+      where('scope.scope', '==', scope),
+      orderBy('createdAt', 'desc')
+    );
   }
 
   // Initialize real-time listeners
@@ -179,11 +206,7 @@ export class ProjectsService {
       this.setupGrupalProjectsListener();
     } else {
       // For other scopes, use the standard query
-      const q = query(
-        this.projectsCollection,
-        where('scope.scope', '==', scope),
-        orderBy('createdAt', 'desc')
-      );
+      const q = this.createScopeQuery(scope);
 
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const projects = querySnapshot.docs.map(doc => ({
@@ -230,21 +253,8 @@ export class ProjectsService {
       return;
     }
 
-    // Query 1: Projects where user is creator
-    const creatorQuery = query(
-      this.projectsCollection,
-      where('scope.scope', '==', 'grupal'),
-      where('createdBy', '==', currentUser.uid),
-      orderBy('createdAt', 'desc')
-    );
-
-    // Query 2: Projects where user is collaborator
-    const collaboratorQuery = query(
-      this.projectsCollection,
-      where('scope.scope', '==', 'grupal'),
-      where('collaborators', 'array-contains', currentUser.uid),
-      orderBy('createdAt', 'desc')
-    );
+    // Use helper to create grupal queries
+    const { creatorQuery, collaboratorQuery } = this.createGrupalQueries(currentUser.uid);
 
     // Listen to both queries
     const unsubscribeCreator = onSnapshot(creatorQuery, (creatorSnapshot) => {
@@ -494,11 +504,7 @@ export class ProjectsService {
         return await this.getGrupalProjectsAsync();
       } else {
         // For other scopes, use the standard query
-        const q = query(
-          this.projectsCollection,
-          where('scope.scope', '==', scope),
-          orderBy('createdAt', 'desc')
-        );
+        const q = this.createScopeQuery(scope);
         
         const querySnapshot = await getDocs(q);
         const projects = querySnapshot.docs.map(doc => ({
@@ -532,21 +538,8 @@ export class ProjectsService {
     }
 
     try {
-      // Query 1: Projects where user is creator
-      const creatorQuery = query(
-        this.projectsCollection,
-        where('scope.scope', '==', 'grupal'),
-        where('createdBy', '==', currentUser.uid),
-        orderBy('createdAt', 'desc')
-      );
-
-      // Query 2: Projects where user is collaborator
-      const collaboratorQuery = query(
-        this.projectsCollection,
-        where('scope.scope', '==', 'grupal'),
-        where('collaborators', 'array-contains', currentUser.uid),
-        orderBy('createdAt', 'desc')
-      );
+      // Use helper to create grupal queries
+      const { creatorQuery, collaboratorQuery } = this.createGrupalQueries(currentUser.uid);
 
       // Execute both queries
       const [creatorSnapshot, collaboratorSnapshot] = await Promise.all([

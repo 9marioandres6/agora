@@ -45,6 +45,26 @@ export class FirebaseQueryService {
     return collection(this.firestore, 'projects');
   }
 
+  // Helper function to create grupal query for a specific user
+  private createGrupalUserQuery(userId: string, limitCount?: number) {
+    if (limitCount) {
+      return query(
+        this.projectsCollection,
+        where('scope.scope', '==', 'grupal'),
+        where('createdBy', '==', userId),
+        orderBy('createdAt', 'desc'),
+        limit(limitCount)
+      );
+    } else {
+      return query(
+        this.projectsCollection,
+        where('scope.scope', '==', 'grupal'),
+        where('createdBy', '==', userId),
+        orderBy('createdAt', 'desc')
+      );
+    }
+  }
+
   async queryProjects(filterOptions: FilterOptions): Promise<QueryResult> {
     try {
       this._isLoading.set(true);
@@ -400,13 +420,7 @@ export class FirebaseQueryService {
         const remainingLimit = limitCount - allProjects.length;
         
         // Query for grupal projects where user is creator
-        const creatorQuery = query(
-          this.projectsCollection,
-          where('scope.scope', '==', 'grupal'),
-          where('createdBy', '==', currentUser.uid),
-          orderBy('createdAt', 'desc'),
-          limit(remainingLimit)
-        );
+        const creatorQuery = this.createGrupalUserQuery(currentUser.uid, remainingLimit);
         
         const creatorSnapshot = await getDocs(creatorQuery);
         const creatorProjects = creatorSnapshot.docs.map(doc => ({
