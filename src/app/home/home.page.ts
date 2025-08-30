@@ -8,7 +8,7 @@ import { ConnectionService } from '../services/connection.service';
 import { Router } from '@angular/router';
 import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
-import { LocationFilterService } from '../services/location-filter.service';
+import { FirebaseQueryService } from '../services/firebase-query.service';
 import { FilterStateService } from '../services/filter-state.service';
 
 @Component({
@@ -26,7 +26,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   private router = inject(Router);
   private locationService = inject(LocationService);
   private userSearchService = inject(UserSearchService);
-  private locationFilterService = inject(LocationFilterService);
+  private firebaseQueryService = inject(FirebaseQueryService);
   private filterStateService = inject(FilterStateService);
 
   user = this.authService.user;
@@ -36,6 +36,8 @@ export class HomePage implements OnInit, ViewWillEnter {
   
   allProjects = this.projectsService.projects;
   filteredProjects = this.projectsService.filteredProjects;
+  isLoadingFiltered = this.projectsService.isLoadingFiltered;
+  hasMoreFiltered = this.projectsService.hasMoreFiltered;
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
   userLocation: any = null;
@@ -67,6 +69,9 @@ export class HomePage implements OnInit, ViewWillEnter {
       
       if (projects.length > 0 && scope !== 'all') {
         this.projectsService.setFilteredProjects(scope);
+      } else if (scope === 'all' && projects.length === 0) {
+        // Load all projects if no filter is active and no projects are loaded
+        this.projectsService.resetFilteredProjects();
       }
     });
   }
@@ -102,7 +107,7 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.loadUserLocation();
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     this.checkConnection();
     this.loadUserLocation();
     
@@ -110,9 +115,9 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.currentScope.set(selectedScope);
     
     if (selectedScope !== 'all') {
-      this.projectsService.setFilteredProjects(selectedScope);
+      await this.projectsService.setFilteredProjects(selectedScope);
     } else {
-      this.projectsService.resetFilteredProjects();
+      await this.projectsService.resetFilteredProjects();
     }
   }
 
@@ -192,7 +197,7 @@ export class HomePage implements OnInit, ViewWillEnter {
     
     try {
       if (this.isFilterActive()) {
-        const hasMore = await this.projectsService.loadMoreFilteredProjects(this.currentScope());
+        const hasMore = await this.projectsService.loadMoreFilteredProjects();
         if (!hasMore) {
           event.target.disabled = true;
         }

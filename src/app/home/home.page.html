@@ -45,7 +45,12 @@
       <ion-refresher-content></ion-refresher-content>
     </ion-refresher>
 
-    @if (projects().length === 0) {
+    @if (isLoadingFiltered() && isFilterActive()) {
+      <div class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>{{ 'COMMON.LOADING' | translate }}</p>
+      </div>
+    } @else if (projects().length === 0) {
       <div class="empty-state">
         <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
         @if (isFilterActive()) {
@@ -89,12 +94,14 @@
       </div>
 
       <!-- Infinite Scroll -->
-      <ion-infinite-scroll (ionInfinite)="loadMoreProjects($event)">
-        <ion-infinite-scroll-content
-          loadingSpinner="bubbles"
-          loadingText="Loading more projects...">
-        </ion-infinite-scroll-content>
-      </ion-infinite-scroll>
+      @if (isFilterActive() && hasMoreFiltered()) {
+        <ion-infinite-scroll (ionInfinite)="loadMoreProjects($event)">
+          <ion-infinite-scroll-content
+            loadingSpinner="bubbles"
+            loadingText="Loading more projects...">
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+      }
     }
   } @else {
     <div class="ion-padding">

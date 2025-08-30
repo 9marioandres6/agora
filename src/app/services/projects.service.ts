@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { Project, Chapter, Media, Collaborator, CollaborationRequest, Comment, Need } from './models/project.models';
 import { MessagesService } from './messages.service';
 import { LoadingService } from './loading.service';
-import { LocationFilterService } from './location-filter.service';
+import { FirebaseQueryService, FilterOptions } from './firebase-query.service';
 import { FilterStateService } from './filter-state.service';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class ProjectsService {
   private authService = inject(AuthService);
   private messagesService = inject(MessagesService);
   private loadingService = inject(LoadingService);
-  private locationFilterService = inject(LocationFilterService);
+  private firebaseQueryService = inject(FirebaseQueryService);
   private filterStateService = inject(FilterStateService);
 
   // Reactive signals for real-time data
@@ -23,14 +23,15 @@ export class ProjectsService {
   private _userProjects = signal<Project[]>([]);
   private _projectsByScope = signal<Map<string, Project[]>>(new Map());
   private _currentProject = signal<Project | null>(null);
-  private _filteredProjects = signal<Project[]>([]);
   
   // Public computed signals
   public readonly projects = this._projects.asReadonly();
   public readonly userProjects = this._userProjects.asReadonly();
   public readonly projectsByScope = this._projects.asReadonly();
   public readonly currentProject = this._currentProject.asReadonly();
-  public readonly filteredProjects = this._filteredProjects.asReadonly();
+  public readonly filteredProjects = this.firebaseQueryService.filteredProjects;
+  public readonly isLoadingFiltered = this.firebaseQueryService.isLoading;
+  public readonly hasMoreFiltered = this.firebaseQueryService.hasMore;
 
   // Active listeners to clean up
   private listeners: Map<string, Unsubscribe> = new Map();
@@ -211,37 +212,121 @@ export class ProjectsService {
       existingListener();
     }
 
-    const q = query(
+    if (scope === 'grupal') {
+      // For Groupal projects, we need to query separately for creator and collaborator projects
+      this.setupGrupalProjectsListener();
+    } else {
+      // For other scopes, use the standard query
+      const q = query(
+        this.projectsCollection,
+        where('scope', '==', scope),
+        orderBy('createdAt', 'desc')
+      );
+
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const projects = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Project[];
+
+        // Ensure new fields have default values for existing projects
+        const processedProjects = projects.map(project => {
+          if (project.state === undefined) project.state = 'building';
+          if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
+          if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+          if (project.comments === undefined) project.comments = [];
+          if (project.collaborators === undefined) project.collaborators = [];
+          if (project.collaborationRequests === undefined) project.collaborationRequests = [];
+          return project;
+        });
+
+        const currentScopeMap = this._projectsByScope();
+        currentScopeMap.set(scope, processedProjects);
+        this._projectsByScope.set(new Map(currentScopeMap));
+      }, (error) => {
+        console.error(`Error in scope ${scope} projects listener:`, error);
+      });
+
+      this.listeners.set(`scope_${scope}`, unsubscribe);
+    }
+  }
+
+  private setupGrupalProjectsListener() {
+    const currentUser = this.authService.user();
+    if (!currentUser?.uid) {
+      // No user logged in, set empty projects for Groupal scope
+      const currentScopeMap = this._projectsByScope();
+      currentScopeMap.set('grupal', []);
+      this._projectsByScope.set(new Map(currentScopeMap));
+      return;
+    }
+
+    // Query 1: Projects where user is creator
+    const creatorQuery = query(
       this.projectsCollection,
-      where('scope', '==', scope),
+      where('scope', '==', 'grupal'),
+      where('createdBy', '==', currentUser.uid),
       orderBy('createdAt', 'desc')
     );
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const projects = querySnapshot.docs.map(doc => ({
+    // Query 2: Projects where user is collaborator
+    const collaboratorQuery = query(
+      this.projectsCollection,
+      where('scope', '==', 'grupal'),
+      where('collaborators', 'array-contains', currentUser.uid),
+      orderBy('createdAt', 'desc')
+    );
+
+    // Listen to both queries
+    const unsubscribeCreator = onSnapshot(creatorQuery, (creatorSnapshot) => {
+      const creatorProjects = creatorSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
 
-      // Ensure new fields have default values for existing projects
-      const processedProjects = projects.map(project => {
-        if (project.state === undefined) project.state = 'building';
-        if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
-        if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
-        if (project.comments === undefined) project.comments = [];
-        if (project.collaborators === undefined) project.collaborators = [];
-        if (project.collaborationRequests === undefined) project.collaborationRequests = [];
-        return project;
+      // Listen to collaborator projects
+      const unsubscribeCollaborator = onSnapshot(collaboratorQuery, (collaboratorSnapshot) => {
+        const collaboratorProjects = collaboratorSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Project[];
+
+        // Combine and deduplicate projects
+        const allProjects = [...creatorProjects, ...collaboratorProjects];
+        const uniqueProjects = allProjects.filter((project, index, self) => 
+          index === self.findIndex(p => p.id === project.id)
+        );
+
+        // Ensure new fields have default values for existing projects
+        const processedProjects = uniqueProjects.map(project => {
+          if (project.state === undefined) project.state = 'building';
+          if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
+          if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+          if (project.comments === undefined) project.comments = [];
+          if (project.collaborators === undefined) project.collaborators = [];
+          if (project.collaborationRequests === undefined) project.collaborationRequests = [];
+          return project;
+        });
+
+        const currentScopeMap = this._projectsByScope();
+        currentScopeMap.set('grupal', processedProjects);
+        this._projectsByScope.set(new Map(currentScopeMap));
+
+        // Clean up collaborator listener
+        unsubscribeCollaborator();
+      }, (error) => {
+        console.error('Error in Groupal collaborator projects listener:', error);
       });
 
-      const currentScopeMap = this._projectsByScope();
-      currentScopeMap.set(scope, processedProjects);
-      this._projectsByScope.set(new Map(currentScopeMap));
+      // Clean up creator listener
+      unsubscribeCreator();
     }, (error) => {
-      console.error(`Error in scope ${scope} projects listener:`, error);
+      console.error('Error in Groupal creator projects listener:', error);
     });
 
-    this.listeners.set(`scope_${scope}`, unsubscribe);
+    this.listeners.set(`scope_grupal`, () => {
+      unsubscribeCreator();
+    });
   }
 
   public cleanupScopeProjectsListener(scope: string) {
@@ -419,27 +504,100 @@ export class ProjectsService {
   getProjectsByScope(scope: string): Project[] {
     // Set up listener if not already listening
     this.setupScopeProjectsListener(scope);
-    // For now, return filtered projects by scope from the main projects array
-    return this.projects().filter(project => project.scope === scope);
+    
+    // Return projects from the scope-specific signal
+    const scopeProjects = this._projectsByScope().get(scope) || [];
+    return scopeProjects;
   }
 
   // Legacy async method for backward compatibility
   async getProjectsByScopeAsync(scope: string): Promise<Project[]> {
     try {
-      const q = query(
+      if (scope === 'grupal') {
+        // For Groupal projects, query separately for creator and collaborator projects
+        return await this.getGrupalProjectsAsync();
+      } else {
+        // For other scopes, use the standard query
+        const q = query(
+          this.projectsCollection,
+          where('scope', '==', scope),
+          orderBy('createdAt', 'desc')
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const projects = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Project[];
+
+        // Ensure new fields have default values for existing projects
+        const processedProjects = projects.map(project => {
+          if (project.state === undefined) project.state = 'building';
+          if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
+          if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+          if (project.comments === undefined) project.comments = [];
+          if (project.collaborators === undefined) project.collaborators = [];
+          if (project.collaborationRequests === undefined) project.collaborationRequests = [];
+          return project;
+        });
+
+        return processedProjects;
+      }
+    } catch (error) {
+      console.error('Error getting projects by scope:', error);
+      throw error;
+    }
+  }
+
+  private async getGrupalProjectsAsync(): Promise<Project[]> {
+    const currentUser = this.authService.user();
+    if (!currentUser?.uid) {
+      return []; // No user logged in, return no Groupal projects
+    }
+
+    try {
+      // Query 1: Projects where user is creator
+      const creatorQuery = query(
         this.projectsCollection,
-        where('scope', '==', scope),
+        where('scope', '==', 'grupal'),
+        where('createdBy', '==', currentUser.uid),
         orderBy('createdAt', 'desc')
       );
-      
-      const querySnapshot = await getDocs(q);
-      const projects = querySnapshot.docs.map(doc => ({
+
+      // Query 2: Projects where user is collaborator
+      const collaboratorQuery = query(
+        this.projectsCollection,
+        where('scope', '==', 'grupal'),
+        where('collaborators', 'array-contains', currentUser.uid),
+        orderBy('createdAt', 'desc')
+      );
+
+      // Execute both queries
+      const [creatorSnapshot, collaboratorSnapshot] = await Promise.all([
+        getDocs(creatorQuery),
+        getDocs(collaboratorQuery)
+      ]);
+
+      // Process creator projects
+      const creatorProjects = creatorSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
 
+      // Process collaborator projects
+      const collaboratorProjects = collaboratorSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Project[];
+
+      // Combine and deduplicate projects
+      const allProjects = [...creatorProjects, ...collaboratorProjects];
+      const uniqueProjects = allProjects.filter((project, index, self) => 
+        index === self.findIndex(p => p.id === project.id)
+      );
+
       // Ensure new fields have default values for existing projects
-      return projects.map(project => {
+      const processedProjects = uniqueProjects.map(project => {
         if (project.state === undefined) project.state = 'building';
         if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
         if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
@@ -448,9 +606,11 @@ export class ProjectsService {
         if (project.collaborationRequests === undefined) project.collaborationRequests = [];
         return project;
       });
+
+      return processedProjects;
     } catch (error) {
-      console.error('Error getting projects by scope:', error);
-      throw error;
+      console.error('Error getting Groupal projects:', error);
+      return [];
     }
   }
 
@@ -875,77 +1035,57 @@ export class ProjectsService {
   public refreshScopeProjects(scope: string) {
   }
 
-  public setFilteredProjects(scope: string) {
+  public async setFilteredProjects(scope: string) {
     const currentUser = this.authService.user();
-    if (currentUser?.uid) {
-      // 1. Immediate local filtering from existing projects
-      this.locationFilterService.setInitialProjects(this.projects(), scope, currentUser.uid);
-      const filtered = this.locationFilterService.filteredProjects();
-      this._filteredProjects.set(filtered);
-      
-      // 2. Fetch additional projects from server that match the filter
-      this.fetchFilteredProjectsFromServer(scope, currentUser.uid);
+    if (!currentUser?.uid) return;
+
+    if (scope === 'all') {
+      try {
+        await this.firebaseQueryService.loadAllProjects();
+        this.firebaseQueryService.setupRealTimeListener({ scope: 'all' });
+      } catch (error) {
+        console.error('Error loading all projects:', error);
+      }
+    } else {
+      const filterOptions: FilterOptions = {
+        scope,
+        userId: currentUser.uid
+      };
+
+      try {
+        await this.firebaseQueryService.queryProjects(filterOptions);
+        this.firebaseQueryService.setupRealTimeListener(filterOptions);
+      } catch (error) {
+        console.error('Error setting filtered projects:', error);
+      }
     }
   }
 
-  private async fetchFilteredProjectsFromServer(scope: string, userId: string) {
+  public async loadMoreFilteredProjects(): Promise<boolean> {
     try {
-      const serverProjects = await this.getProjectsByScopeAsync(scope);
-      
-      // Merge server projects with existing filtered projects, avoiding duplicates
-      const existingFilteredIds = new Set(this._filteredProjects().map(p => p.id));
-      const newProjects = serverProjects.filter(project => !existingFilteredIds.has(project.id));
-      
-      if (newProjects.length > 0) {
-        this._filteredProjects.update(current => [...current, ...newProjects]);
-      }
-    } catch (error) {
-      console.error('Error fetching filtered projects from server:', error);
-    }
-  }
-
-  public async loadMoreFilteredProjects(scope: string): Promise<boolean> {
-    const currentUser = this.authService.user();
-    if (!currentUser?.uid) return false;
-
-    try {
-      // Get more projects from server for this scope
-      const serverProjects = await this.getProjectsByScopeAsync(scope);
-      
-      // Get current filtered projects to avoid duplicates
-      const currentFilteredIds = new Set(this._filteredProjects().map(p => p.id));
-      
-      // Filter out projects we already have
-      const newProjects = serverProjects.filter(project => !currentFilteredIds.has(project.id));
-      
-      if (newProjects.length > 0) {
-        // Add new projects to existing filtered projects
-        this._filteredProjects.update(current => [...current, ...newProjects]);
-        return true;
-      } else {
-        return false;
-      }
+      const result = await this.firebaseQueryService.loadMoreProjects();
+      return result.hasMore;
     } catch (error) {
       console.error('Error loading more filtered projects:', error);
       return false;
     }
   }
 
-  public resetFilteredProjects() {
-    this.locationFilterService.resetPagination();
-    this._filteredProjects.set([]);
+  public async resetFilteredProjects() {
+    try {
+      await this.firebaseQueryService.loadAllProjects();
+      this.firebaseQueryService.setupRealTimeListener({ scope: 'all' });
+    } catch (error) {
+      console.error('Error resetting to all projects:', error);
+    }
   }
 
-  public getFilteredProjectsCount(scope: string): number {
-    const currentUser = this.authService.user();
-    if (!currentUser?.uid) return 0;
-    
-    // Return the count of currently filtered projects
-    return this._filteredProjects().length;
+  public getFilteredProjectsCount(): number {
+    return this.firebaseQueryService.filteredProjects().length;
   }
 
   public refreshUserLocation() {
-    this.locationFilterService.refreshUserLocation();
+    // This is now handled by the FirebaseQueryService
   }
 
   public getProjectsByTag(tag: string): Project[] {
@@ -966,83 +1106,17 @@ export class ProjectsService {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return;
     
-    // Get current scope from FilterStateService
     const currentScope = this.filterStateService?.getSelectedScope() || 'all';
     if (currentScope !== 'all') {
-      // Re-apply the current filter to include any new projects
       this.setFilteredProjects(currentScope);
     }
   }
 
   public handleNewProjectsAdded() {
-    // When new projects are added to the main list, refresh filtered projects if a filter is active
     this.refreshFilteredProjects();
   }
 
   public async searchProjectsByName(searchTerm: string): Promise<Project[]> {
-    if (!searchTerm || searchTerm.trim().length === 0) {
-      return [];
-    }
-    
-    try {
-      const term = searchTerm.trim();
-      
-      // Create a query that searches for projects where title or description contains the search term
-      // Note: Firebase doesn't support full-text search, so we'll use a combination of approaches
-      
-      // First, try to find projects by title (case-insensitive search is limited in Firestore)
-      const titleQuery = query(
-        this.projectsCollection,
-        where('title', '>=', term),
-        where('title', '<=', term + '\uf8ff'),
-        orderBy('title'),
-        limit(20)
-      );
-      
-      const titleSnapshot = await getDocs(titleQuery);
-      const titleResults = titleSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Project[];
-      
-      // Filter results to include only projects that actually contain the search term
-      const filteredResults = titleResults.filter(project => 
-        project.title?.toLowerCase().includes(term.toLowerCase()) ||
-        project.description?.toLowerCase().includes(term.toLowerCase())
-      );
-      
-      // Process projects to ensure they have all required fields
-      const processedResults = filteredResults.map(project => {
-        if (!project.creator) {
-          project.creator = {
-            uid: project.createdBy,
-            displayName: 'Anonymous',
-            email: '',
-            photoURL: ''
-          };
-        }
-        if (!project.creator.photoURL) {
-          project.creator.photoURL = '';
-        }
-        if (project.state === undefined) {
-          project.state = 'building';
-        }
-        if (project.supports === undefined || typeof project.supports === 'number') {
-          project.supports = [];
-        }
-        if (project.opposes === undefined || typeof project.opposes === 'number') {
-          project.opposes = [];
-        }
-        if (project.comments === undefined) {
-          project.comments = [];
-        }
-        return project;
-      });
-      
-      return processedResults;
-    } catch (error) {
-      console.error('Error searching projects in Firebase:', error);
-      return [];
-    }
+    return this.firebaseQueryService.searchProjects(searchTerm);
   }
 }

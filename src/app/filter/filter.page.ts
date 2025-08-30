@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 import { ProjectsService } from '../services/projects.service';
-import { LocationFilterService } from '../services/location-filter.service';
+import { FirebaseQueryService } from '../services/firebase-query.service';
 import { FilterStateService } from '../services/filter-state.service';
 import { FormsModule } from '@angular/forms';
 import { Project } from '../services/models/project.models';
@@ -17,7 +17,7 @@ export class FilterPage {
   private navCtrl = inject(NavController);
   private authService = inject(AuthService);
   private projectsService = inject(ProjectsService);
-  private locationFilterService = inject(LocationFilterService);
+  private firebaseQueryService = inject(FirebaseQueryService);
   private filterStateService = inject(FilterStateService);
 
   user = this.authService.user;
@@ -25,8 +25,6 @@ export class FilterPage {
   searchTerm = signal('');
   searchResults = signal<Project[]>([]);
   isSearching = signal(false);
-
-
 
   applyFilter(scope: string) {
     this.filterStateService.setSelectedScope(scope);
@@ -57,7 +55,7 @@ export class FilterPage {
     this.isSearching.set(true);
     
     try {
-      const results = await this.projectsService.searchProjectsByName(term);
+      const results = await this.firebaseQueryService.searchProjects(term);
       this.searchResults.set(results);
     } catch (error) {
       console.error('Error searching projects:', error);

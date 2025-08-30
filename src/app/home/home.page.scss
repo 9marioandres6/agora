@@ -75,6 +75,20 @@ ion-content { --background: var(--app-background); }
   --color: var(--ion-color-primary);
 }
 
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  
+  ion-spinner {
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
 .empty-state {
   text-align: center;
   padding: 2rem;

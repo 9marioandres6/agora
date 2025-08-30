@@ -1,22 +1,7 @@
 {
   "indexes": [
     {
-      "collectionGroup": "posts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "authorId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ],
-      "density": "SPARSE_ALL"
-    },
-    {
-      "collectionGroup": "posts",
+      "collectionGroup": "projects",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -27,8 +12,7 @@
           "fieldPath": "createdAt",
           "order": "DESCENDING"
         }
-      ],
-      "density": "SPARSE_ALL"
+      ]
     },
     {
       "collectionGroup": "projects",
@@ -49,29 +33,10 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "scope",
+          "fieldPath": "title",
           "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "messages",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "recipientUid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
         }
       ]
     }
-  ],
-  "fieldOverrides": []
+  ]
 }

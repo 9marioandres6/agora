@@ -16,7 +16,8 @@ service cloud.firestore {
     
     // Projects collection rules
     match /projects/{projectId} {
-      // Allow read access to all authenticated users
+      // Allow read access to all projects for authenticated users
+      // This enables the filtering system to work properly
       allow read: if request.auth != null;
       
       // Allow create access to authenticated users
@@ -31,9 +32,9 @@ service cloud.firestore {
         request.auth.uid in resource.data.collaborators
       );
       
-          // Allow delete access only to project creator
-    allow delete: if request.auth != null && request.auth.uid == resource.data.createdBy;
-  }
+      // Allow delete access only to project creator
+      allow delete: if request.auth != null && request.auth.uid == resource.data.createdBy;
+    }
   
   // Messages collection rules
   match /messages/{messageId} {
