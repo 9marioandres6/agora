@@ -32,7 +32,7 @@ export class FirebaseQueryService {
   private _isLoading = signal(false);
   private _hasMore = signal(true);
   private _currentFilter = signal<FilterOptions | null>(null);
-  private _lastDocument = signal<QueryDocumentSnapshot<DocumentData> | null>(null);
+  private _lastDocument = signal<QueryDocumentSnapshot<DocumentData> | undefined>(undefined);
 
   filteredProjects = this._filteredProjects.asReadonly();
   isLoading = this._isLoading.asReadonly();
@@ -59,9 +59,8 @@ export class FirebaseQueryService {
           constraints.push(where('createdBy', '==', filterOptions.userId));
         } else if (filterOptions.scope === 'grupal') {
           constraints.push(where('scope', '==', 'grupal'));
-          if (filterOptions.userId) {
-            constraints.push(where('collaborators', 'array-contains', filterOptions.userId));
-          }
+          // Note: We'll handle grupal permissions in post-processing
+          // since we need to check both createdBy and collaborators
         } else {
           constraints.push(where('scope', '==', filterOptions.scope));
         }
@@ -91,14 +90,22 @@ export class FirebaseQueryService {
       const q = query(this.projectsCollection, ...constraints);
       const querySnapshot = await getDocs(q);
 
-      const projects = querySnapshot.docs.map(doc => ({
+      let projects = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
 
+      // Post-process grupal projects to ensure user has access
+      if (filterOptions.scope === 'grupal' && filterOptions.userId) {
+        projects = projects.filter(project => 
+          project.createdBy === filterOptions.userId || 
+          project.collaborators?.some(collab => collab.uid === filterOptions.userId)
+        );
+      }
+
       const processedProjects = this.processProjects(projects);
       const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-      const hasMore = querySnapshot.docs.length === (filterOptions.limitCount || this.DEFAULT_LIMIT);
+      const hasMore = projects.length === (filterOptions.limitCount || this.DEFAULT_LIMIT);
 
       this._filteredProjects.set(processedProjects);
       this._hasMore.set(hasMore);
@@ -136,9 +143,7 @@ export class FirebaseQueryService {
           constraints.push(where('createdBy', '==', currentFilter.userId));
         } else if (currentFilter.scope === 'grupal') {
           constraints.push(where('scope', '==', 'grupal'));
-          if (currentFilter.userId) {
-            constraints.push(where('collaborators', 'array-contains', currentFilter.userId));
-          }
+          // Note: We'll handle grupal permissions in post-processing
         } else {
           constraints.push(where('scope', '==', currentFilter.scope));
         }
@@ -169,10 +174,18 @@ export class FirebaseQueryService {
       const q = query(this.projectsCollection, ...constraints);
       const querySnapshot = await getDocs(q);
 
-      const newProjects = querySnapshot.docs.map(doc => ({
+      let newProjects = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
+
+      // Post-process grupal projects to ensure user has access
+      if (currentFilter.scope === 'grupal' && currentFilter.userId) {
+        newProjects = newProjects.filter(project => 
+          project.createdBy === currentFilter.userId || 
+          project.collaborators?.some(collab => collab.uid === currentFilter.userId)
+        );
+      }
 
       const processedNewProjects = this.processProjects(newProjects);
       const allProjects = [...this._filteredProjects(), ...processedNewProjects];
@@ -202,6 +215,8 @@ export class FirebaseQueryService {
     
     // Clean up existing listener
     this.cleanupListener(listenerKey);
+    
+
 
     const constraints: QueryConstraint[] = [];
     
@@ -211,9 +226,7 @@ export class FirebaseQueryService {
         constraints.push(where('createdBy', '==', filterOptions.userId));
       } else if (filterOptions.scope === 'grupal') {
         constraints.push(where('scope', '==', 'grupal'));
-        if (filterOptions.userId) {
-          constraints.push(where('collaborators', 'array-contains', filterOptions.userId));
-        }
+        // Note: We'll handle grupal permissions in post-processing
       } else {
         constraints.push(where('scope', '==', filterOptions.scope));
       }
@@ -236,10 +249,29 @@ export class FirebaseQueryService {
     const q = query(this.projectsCollection, ...constraints);
     
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const projects = querySnapshot.docs.map(doc => ({
+      let projects = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
+
+      // Post-process grupal projects to ensure user has access
+      if (filterOptions.scope === 'grupal' && filterOptions.userId) {
+        projects = projects.filter(project => 
+          project.createdBy === filterOptions.userId || 
+          project.collaborators?.some(collab => collab.uid === filterOptions.userId)
+        );
+      }
+      
+      // For 'all' scope, also filter grupal projects to ensure user has access
+      if (filterOptions.scope === 'all' && filterOptions.userId) {
+        projects = projects.filter(project => {
+          if (project.scope === 'grupal') {
+            return project.createdBy === filterOptions.userId || 
+                   project.collaborators?.some(collab => collab.uid === filterOptions.userId);
+          }
+          return true; // Keep all public projects
+        });
+      }
 
       const processedProjects = this.processProjects(projects);
       this._filteredProjects.set(processedProjects);
@@ -277,7 +309,7 @@ export class FirebaseQueryService {
     this._isLoading.set(false);
     this._hasMore.set(true);
     this._currentFilter.set(null);
-    this._lastDocument.set(null);
+          this._lastDocument.set(undefined);
     this.cleanupAllListeners();
   }
 
@@ -322,22 +354,95 @@ export class FirebaseQueryService {
     try {
       this._isLoading.set(true);
       
-      const q = query(
+      const currentUser = this.authService.user();
+      if (!currentUser?.uid) {
+        throw new Error('User not authenticated');
+      }
+
+      // For "all" projects, we need to handle grupal projects specially
+      // We'll load public projects first, then add grupal projects where user is creator/collaborator
+      const publicScopes = ['local', 'state', 'national', 'global'];
+      
+      // Query for public projects
+      const publicQuery = query(
         this.projectsCollection,
+        where('scope', 'in', publicScopes),
         orderBy('createdAt', 'desc'),
         limit(limitCount)
       );
       
-      const querySnapshot = await getDocs(q);
-      
-      const projects = querySnapshot.docs.map(doc => ({
+      const publicSnapshot = await getDocs(publicQuery);
+      let allProjects = publicSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
 
-      const processedProjects = this.processProjects(projects);
-      const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-      const hasMore = querySnapshot.docs.length === limitCount;
+      // If we have space, add grupal projects where user is creator or collaborator
+      if (allProjects.length < limitCount) {
+        const remainingLimit = limitCount - allProjects.length;
+        
+        // Query for grupal projects where user is creator
+        const creatorQuery = query(
+          this.projectsCollection,
+          where('scope', '==', 'grupal'),
+          where('createdBy', '==', currentUser.uid),
+          orderBy('createdAt', 'desc'),
+          limit(remainingLimit)
+        );
+        
+        const creatorSnapshot = await getDocs(creatorQuery);
+        const creatorProjects = creatorSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Project[];
+        
+        allProjects = [...allProjects, ...creatorProjects];
+        
+        // If still have space, add grupal projects where user is collaborator
+        if (allProjects.length < limitCount) {
+          const newRemainingLimit = limitCount - allProjects.length;
+          
+          // Note: We can't easily query for array-contains with object properties
+          // So we'll query all grupal projects and filter them
+          const allGrupalQuery = query(
+            this.projectsCollection,
+            where('scope', '==', 'grupal'),
+            orderBy('createdAt', 'desc'),
+            limit(newRemainingLimit * 3) // Get more to account for filtering
+          );
+          
+          const allGrupalSnapshot = await getDocs(allGrupalQuery);
+          const allGrupalProjects = allGrupalSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Project[];
+          
+          // Filter to only include projects where user is collaborator
+          const collaboratorProjects = allGrupalProjects.filter(project => 
+            project.collaborators?.some(collab => collab.uid === currentUser.uid)
+          ).slice(0, newRemainingLimit);
+          
+          allProjects = [...allProjects, ...collaboratorProjects];
+        }
+      }
+
+      // Sort all projects by creation date (newest first)
+      allProjects.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0);
+        const dateB = new Date(b.createdAt || 0);
+        return dateB.getTime() - dateA.getTime();
+      });
+
+      // Limit to requested amount
+      allProjects = allProjects.slice(0, limitCount);
+      
+
+      
+
+      
+      const processedProjects = this.processProjects(allProjects);
+      const lastDoc = allProjects.length > 0 ? publicSnapshot.docs[publicSnapshot.docs.length - 1] : undefined;
+      const hasMore = allProjects.length === limitCount;
 
       this._filteredProjects.set(processedProjects);
       this._hasMore.set(hasMore);

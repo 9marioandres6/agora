@@ -45,9 +45,6 @@ export class ProjectsService {
     try {
       this.loadingService.setProjectsLoading(true);
       
-      // Set up global projects listener
-      this.setupGlobalProjectsListener();
-      
       // Set up user projects listener when user changes
       effect(() => {
         const user = this.authService.user();
@@ -58,68 +55,15 @@ export class ProjectsService {
           this.cleanupUserProjectsListener();
         }
       });
+      
+      // Mark loading as complete since we're not using global listener anymore
+      this.loadingService.setProjectsLoading(false);
     } catch (error) {
       this.loadingService.setProjectsLoading(false);
     }
   }
 
-  private setupGlobalProjectsListener() {
-    const q = query(
-      this.projectsCollection,
-      orderBy('createdAt', 'desc'),
-      limit(50)
-    );
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const projects = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Project[];
-
-      // Ensure all projects have creator info and new fields
-      const processedProjects = projects.map(project => {
-        if (!project.creator) {
-          project.creator = {
-            uid: project.createdBy,
-            displayName: 'Anonymous',
-            email: '',
-            photoURL: ''
-          };
-        }
-        if (!project.creator.photoURL) {
-          project.creator.photoURL = '';
-        }
-        if (project.state === undefined) {
-          project.state = 'building';
-        }
-        if (project.supports === undefined || typeof project.supports === 'number') {
-          project.supports = [];
-        }
-        if (project.opposes === undefined || typeof project.opposes === 'number') {
-          project.opposes = [];
-        }
-        if (project.comments === undefined) {
-          project.comments = [];
-        }
-        if (project.collaborators === undefined) {
-          project.collaborators = [];
-        }
-        if (project.collaborationRequests === undefined) {
-          project.collaborationRequests = [];
-        }
-        
-        return project;
-      });
-
-      this._projects.set(processedProjects);
-      this.loadingService.setProjectsLoading(false);
-    }, (error) => {
-      console.error('Error in global projects listener:', error);
-      this.loadingService.setProjectsLoading(false);
-    });
-
-    this.listeners.set('global', unsubscribe);
-  }
 
   private setupUserProjectsListener(userId: string) {
     this.cleanupUserProjectsListener();
@@ -1042,7 +986,7 @@ export class ProjectsService {
     if (scope === 'all') {
       try {
         await this.firebaseQueryService.loadAllProjects();
-        this.firebaseQueryService.setupRealTimeListener({ scope: 'all' });
+        this.firebaseQueryService.setupRealTimeListener({ scope: 'all', userId: currentUser.uid });
       } catch (error) {
         console.error('Error loading all projects:', error);
       }
@@ -1072,9 +1016,12 @@ export class ProjectsService {
   }
 
   public async resetFilteredProjects() {
+    const currentUser = this.authService.user();
+    if (!currentUser?.uid) return;
+    
     try {
       await this.firebaseQueryService.loadAllProjects();
-      this.firebaseQueryService.setupRealTimeListener({ scope: 'all' });
+      this.firebaseQueryService.setupRealTimeListener({ scope: 'all', userId: currentUser.uid });
     } catch (error) {
       console.error('Error resetting to all projects:', error);
     }

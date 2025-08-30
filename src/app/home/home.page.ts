@@ -47,14 +47,23 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   projects = computed(() => {
     const filteredProjects = this.projectsService.filteredProjects();
+    const allProjects = this.projectsService.projects();
     const isFilterActive = this.currentScope() !== 'all';
+    
+
     
     if (isFilterActive && filteredProjects.length > 0) {
       return filteredProjects;
     } else if (isFilterActive && filteredProjects.length === 0) {
       return []; // Show empty when filter is active but no results
     } else {
-      return this.projectsService.projects(); // Show all when no filter
+      // When no filter is active, use filteredProjects which contains properly filtered "all" projects
+      // This ensures grupal projects are only shown if user has access
+      const result = filteredProjects.length > 0 ? filteredProjects : allProjects;
+      
+
+      
+      return result;
     }
   });
 
