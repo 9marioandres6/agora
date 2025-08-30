@@ -2,7 +2,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { Firestore, collection, query, where, orderBy, limit, getDocs, onSnapshot, Unsubscribe, QueryConstraint, startAfter, QueryDocumentSnapshot, DocumentData } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { Project } from './models/project.models';
-import { LocationService, LocationData } from './location.service';
+import { LocationData } from './location.service';
 
 export interface FilterOptions {
   scope: string;
@@ -26,7 +26,6 @@ export interface QueryResult {
 export class FirebaseQueryService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
-  private locationService = inject(LocationService);
 
   private _filteredProjects = signal<Project[]>([]);
   private _isLoading = signal(false);
@@ -366,6 +365,8 @@ export class FirebaseQueryService {
       return project;
     });
   }
+
+
 
   async loadAllProjects(limitCount: number = 20): Promise<QueryResult> {
     try {
