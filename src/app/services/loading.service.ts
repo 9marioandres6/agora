@@ -37,7 +37,61 @@ export class LoadingService {
         // Stop all loading states when offline
         this._authLoading.set(false);
         this._projectsLoading.set(false);
+        this._filteredProjectsLoading.set(false);
         this._globalLoading.set(false);
+      }
+    });
+
+    // Safety timeout to prevent loading from getting stuck indefinitely
+    this.setupSafetyTimeouts();
+  }
+
+  private setupSafetyTimeouts() {
+    // Auth loading safety timeout (30 seconds)
+    effect(() => {
+      if (this._authLoading()) {
+        setTimeout(() => {
+          if (this._authLoading()) {
+            console.warn('Auth loading timeout - forcing to false');
+            this._authLoading.set(false);
+          }
+        }, 30000);
+      }
+    });
+
+    // Projects loading safety timeout (45 seconds)
+    effect(() => {
+      if (this._projectsLoading()) {
+        setTimeout(() => {
+          if (this._projectsLoading()) {
+            console.warn('Projects loading timeout - forcing to false');
+            this._projectsLoading.set(false);
+          }
+        }, 45000);
+      }
+    });
+
+    // Filtered projects loading safety timeout (30 seconds)
+    effect(() => {
+      if (this._filteredProjectsLoading()) {
+        setTimeout(() => {
+          if (this._filteredProjectsLoading()) {
+            console.warn('Filtered projects loading timeout - forcing to false');
+            this._filteredProjectsLoading.set(false);
+          }
+        }, 30000);
+      }
+    });
+
+    // Global loading safety timeout (60 seconds)
+    effect(() => {
+      if (this._globalLoading()) {
+        setTimeout(() => {
+          if (this._globalLoading()) {
+            console.warn('Global loading timeout - forcing to false');
+            this._globalLoading.set(false);
+          }
+        }, 60000);
       }
     });
   }

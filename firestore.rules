@@ -29,31 +29,31 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supports', 'opposes', 'comments', 'collaborationRequests']) ||
         // Project creators and collaborators can update all fields
         request.auth.uid == resource.data.createdBy ||
-        request.auth.uid in resource.data.collaborators
+        (resource.data.collaborators != null && request.auth.uid in resource.data.collaborators)
       );
       
       // Allow delete access only to project creator
       allow delete: if request.auth != null && request.auth.uid == resource.data.createdBy;
     }
   
-  // Messages collection rules
-  match /messages/{messageId} {
-    // Allow users to read messages sent to them
-    allow read: if request.auth != null && request.auth.uid == resource.data.recipientUid;
+    // Messages collection rules
+    match /messages/{messageId} {
+      // Allow users to read messages sent to them
+      allow read: if request.auth != null && request.auth.uid == resource.data.recipientUid;
+      
+      // Allow users to create messages (send to others)
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.senderUid;
+      
+      // Allow users to update their own messages (mark as read, delete)
+      allow update: if request.auth != null && request.auth.uid == resource.data.recipientUid;
+      
+      // Allow users to delete messages sent to them
+      allow delete: if request.auth != null && request.auth.uid == resource.data.recipientUid;
+    }
     
-    // Allow users to create messages (send to others)
-    allow create: if request.auth != null && request.auth.uid == request.resource.data.senderUid;
-    
-    // Allow users to update their own messages (mark as read, delete)
-    allow update: if request.auth != null && request.auth.uid == resource.data.recipientUid;
-    
-    // Allow users to delete messages sent to them
-    allow delete: if request.auth != null && request.auth.uid == resource.data.recipientUid;
-  }
-  
-  // Deny all other requests
-  match /{document=**} {
-    allow read, write: if false;
-  }
+    // Deny all other requests
+    match /{document=**} {
+      allow read, write: if false;
+    }
   }
 }

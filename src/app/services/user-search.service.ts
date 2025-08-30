@@ -63,36 +63,47 @@ export class UserSearchService {
 
   async createOrUpdateUserProfile(user: any, location?: LocationData | null): Promise<void> {
     try {
-      const userRef = doc(this.usersCollection, user.uid);
-      const userDoc = await getDoc(userRef);
-      
-      if (!userDoc.exists()) {
-        const userProfile: UserProfile = {
-          uid: user.uid,
-          displayName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
-          email: user.email || '',
-          photoURL: user.photoURL || '',
-          location: location,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
+      // Add timeout protection to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('User profile operation timeout')), 15000)
+      );
+
+      const profilePromise = (async () => {
+        const userRef = doc(this.usersCollection, user.uid);
+        const userDoc = await getDoc(userRef);
         
-        await setDoc(userRef, userProfile);
-      } else {
-        const existingData = userDoc.data() as UserProfile;
-        const updatedProfile: UserProfile = {
-          ...existingData,
-          displayName: user.displayName || existingData.displayName,
-          email: user.email || existingData.email,
-          photoURL: user.photoURL || existingData.photoURL,
-          location: location || existingData.location,
-          updatedAt: new Date().toISOString()
-        };
-        
-        await setDoc(userRef, updatedProfile);
-      }
+        if (!userDoc.exists()) {
+          const userProfile: UserProfile = {
+            uid: user.uid,
+            displayName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
+            email: user.email || '',
+            photoURL: user.photoURL || '',
+            location: location,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          
+          await setDoc(userRef, userProfile);
+        } else {
+          const existingData = userDoc.data() as UserProfile;
+          const updatedProfile: UserProfile = {
+            ...existingData,
+            displayName: user.displayName || existingData.displayName,
+            email: user.email || existingData.email,
+            photoURL: user.photoURL || existingData.photoURL,
+            location: location || existingData.location,
+            updatedAt: new Date().toISOString()
+          };
+          
+          await setDoc(userRef, updatedProfile);
+        }
+      })();
+
+      // Race between profile operation and timeout
+      await Promise.race([profilePromise, timeoutPromise]);
     } catch (error) {
       console.error('Error creating/updating user profile:', error);
+      // Don't throw - let the auth flow continue even if profile creation fails
     }
   }
 

@@ -44,18 +44,34 @@ export class AuthService {
 
   private async initializeAuth() {
     onAuthStateChanged(this.auth, async (user) => {
-      if (user) {
-        const location = await this.getUserLocation();
-        await this.userSearchService.createOrUpdateUserProfile(user, location);
+      try {
+        if (user) {
+          // Add timeout to prevent hanging on user profile creation
+          const profilePromise = this.getUserLocation().then(location => 
+            this.userSearchService.createOrUpdateUserProfile(user, location)
+          );
+          
+          // Wait for profile creation with timeout
+          await Promise.race([
+            profilePromise,
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Profile creation timeout')), 10000)
+            )
+          ]);
+        }
+      } catch (error) {
+        console.warn('Error during user profile setup:', error);
+        // Continue with auth even if profile creation fails
+      } finally {
+        // Always update auth state and loading, regardless of profile creation success
+        this.authState.update(state => ({
+          ...state,
+          user,
+          loading: false,
+          error: null
+        }));
+        this.loadingService.setAuthLoading(false);
       }
-      
-      this.authState.update(state => ({
-        ...state,
-        user,
-        loading: false,
-        error: null
-      }));
-      this.loadingService.setAuthLoading(false);
     });
 
     this.handleRedirectResult();
@@ -65,8 +81,23 @@ export class AuthService {
     try {
       const result = await getRedirectResult(this.auth);
       if (result) {
-        const location = await this.getUserLocation();
-        await this.userSearchService.createOrUpdateUserProfile(result.user, location);
+        try {
+          // Add timeout to prevent hanging on user profile creation
+          const profilePromise = this.getUserLocation().then(location => 
+            this.userSearchService.createOrUpdateUserProfile(result.user, location)
+          );
+          
+          // Wait for profile creation with timeout
+          await Promise.race([
+            profilePromise,
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Profile creation timeout')), 10000)
+            )
+          ]);
+        } catch (error) {
+          console.warn('Error during redirect result profile setup:', error);
+          // Continue with auth even if profile creation fails
+        }
         
         this.authState.update(state => ({
           ...state,
@@ -77,6 +108,7 @@ export class AuthService {
         this.loadingService.setAuthLoading(false);
       }
     } catch (error: any) {
+      console.error('Error handling redirect result:', error);
       this.authState.update(state => ({
         ...state,
         error: error.message,
