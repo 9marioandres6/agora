@@ -10,7 +10,7 @@ import { SupabaseService } from '../services/supabase.service';
 import { UserSearchService, UserProfile } from '../services/user-search.service';
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
 import { ScopeOption } from './models/new-item.models';
-import { Need, Media, Collaborator } from '../services/models/project.models';
+import { Need, Media, Collaborator, Scope } from '../services/models/project.models';
 import { LocationService } from '../services/location.service';
 
 @Component({
@@ -279,11 +279,18 @@ export class NewItemComponent implements AfterViewInit {
         console.warn('Could not get user location for project:', error);
       }
 
+      // Create scope object
+      const scopeObject: Scope = {
+        scope: this.scope,
+        place: await this.determinePlaceFromScope(this.scope, userLocation),
+        image: ''
+      };
+
       const projectData = {
         title: this.title.trim(),
         description: this.description.trim() || '',
         needs: this.needs,
-        scope: this.scope,
+        scope: scopeObject,
         createdBy: currentUser.uid,
         collaborators: this.selectedCollaborators,
         collaborationRequests: [],
@@ -304,6 +311,44 @@ export class NewItemComponent implements AfterViewInit {
 
   goBack(): void {
     this.navCtrl.back();
+  }
+
+  private async determinePlaceFromScope(scope: string, userLocation: any): Promise<string> {
+    if (scope === 'grupal') {
+      return '';
+    }
+
+    if (!userLocation?.latitude || !userLocation?.longitude) {
+      return '';
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLocation.latitude}&lon=${userLocation.longitude}&zoom=18&addressdetails=1`
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        const address = data.address;
+        
+        switch (scope) {
+          case 'local':
+            return address?.city || address?.town || address?.village || '';
+          case 'state':
+            return address?.state || address?.province || address?.region || '';
+          case 'national':
+            return address?.country_code?.toUpperCase() || address?.country || '';
+          case 'global':
+            return 'Global';
+          default:
+            return '';
+        }
+      }
+    } catch (error) {
+      console.warn('Could not determine place from location:', error);
+    }
+    
+    return '';
   }
 
   ngAfterViewInit() {

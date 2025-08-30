@@ -58,11 +58,11 @@ export class FirebaseQueryService {
         if (filterOptions.scope === 'my-projects') {
           constraints.push(where('createdBy', '==', filterOptions.userId));
         } else if (filterOptions.scope === 'grupal') {
-          constraints.push(where('scope', '==', 'grupal'));
+          constraints.push(where('scope.scope', '==', 'grupal'));
           // Note: We'll handle grupal permissions in post-processing
           // since we need to check both createdBy and collaborators
         } else {
-          constraints.push(where('scope', '==', filterOptions.scope));
+          constraints.push(where('scope.scope', '==', filterOptions.scope));
         }
       }
 
@@ -142,10 +142,10 @@ export class FirebaseQueryService {
         if (currentFilter.scope === 'my-projects') {
           constraints.push(where('createdBy', '==', currentFilter.userId));
         } else if (currentFilter.scope === 'grupal') {
-          constraints.push(where('scope', '==', 'grupal'));
+          constraints.push(where('scope.scope', '==', 'grupal'));
           // Note: We'll handle grupal permissions in post-processing
         } else {
-          constraints.push(where('scope', '==', currentFilter.scope));
+          constraints.push(where('scope.scope', '==', currentFilter.scope));
         }
       }
 
@@ -226,11 +226,11 @@ export class FirebaseQueryService {
       if (filterOptions.scope === 'my-projects') {
         constraints.push(where('createdBy', '==', filterOptions.userId));
       } else if (filterOptions.scope === 'grupal') {
-        constraints.push(where('scope', '==', 'grupal'));
+        constraints.push(where('scope.scope', '==', 'grupal'));
         // Note: We'll handle grupal permissions in post-processing
         // since we need to check both createdBy and collaborators
       } else {
-        constraints.push(where('scope', '==', filterOptions.scope));
+        constraints.push(where('scope.scope', '==', filterOptions.scope));
       }
     }
 
@@ -267,7 +267,7 @@ export class FirebaseQueryService {
       // For 'all' scope, also filter grupal projects to ensure user has access
       if (filterOptions.scope === 'all' && filterOptions.userId) {
         projects = projects.filter(project => {
-          if (project.scope === 'grupal') {
+          if (typeof project.scope === 'object' && project.scope?.scope === 'grupal') {
             return project.createdBy === filterOptions.userId || 
                    project.collaborators?.some(collab => collab.uid === filterOptions.userId);
           }
@@ -383,7 +383,7 @@ export class FirebaseQueryService {
       // Query for public projects
       const publicQuery = query(
         this.projectsCollection,
-        where('scope', 'in', publicScopes),
+        where('scope.scope', 'in', publicScopes),
         orderBy('createdAt', 'desc'),
         limit(limitCount)
       );
@@ -401,7 +401,7 @@ export class FirebaseQueryService {
         // Query for grupal projects where user is creator
         const creatorQuery = query(
           this.projectsCollection,
-          where('scope', '==', 'grupal'),
+          where('scope.scope', '==', 'grupal'),
           where('createdBy', '==', currentUser.uid),
           orderBy('createdAt', 'desc'),
           limit(remainingLimit)
@@ -423,7 +423,7 @@ export class FirebaseQueryService {
           // So we'll query all grupal projects and filter them
           const allGrupalQuery = query(
             this.projectsCollection,
-            where('scope', '==', 'grupal'),
+            where('scope.scope', '==', 'grupal'),
             orderBy('createdAt', 'desc'),
             limit(newRemainingLimit * 3) // Get more to account for filtering
           );

@@ -5,7 +5,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectsService } from '../services/projects.service';
-import { Project, Need } from '../services/models/project.models';
+import { Project, Need, Scope } from '../services/models/project.models';
 import { AuthService } from '../services/auth.service';
 
 
@@ -69,7 +69,8 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     });
   }
   
-  getScopeIcon(scope: string): string {
+  getScopeIcon(scope: string | Scope): string {
+    const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
     const scopeIcons: { [key: string]: string } = {
       'grupal': 'people',
       'local': 'home',
@@ -77,7 +78,11 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
       'national': 'flag',
       'global': 'globe'
     };
-    return scopeIcons[scope] || 'help-circle';
+    return scopeIcons[scopeValue] || 'help-circle';
+  }
+
+  getScopeValue(scope: string | Scope): string {
+    return typeof scope === 'string' ? scope : scope?.scope || '';
   }
   
   getStateColor(state: string): string {

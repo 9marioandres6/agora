@@ -181,7 +181,7 @@ export class ProjectsService {
       // For other scopes, use the standard query
       const q = query(
         this.projectsCollection,
-        where('scope', '==', scope),
+        where('scope.scope', '==', scope),
         orderBy('createdAt', 'desc')
       );
 
@@ -233,7 +233,7 @@ export class ProjectsService {
     // Query 1: Projects where user is creator
     const creatorQuery = query(
       this.projectsCollection,
-      where('scope', '==', 'grupal'),
+      where('scope.scope', '==', 'grupal'),
       where('createdBy', '==', currentUser.uid),
       orderBy('createdAt', 'desc')
     );
@@ -241,7 +241,7 @@ export class ProjectsService {
     // Query 2: Projects where user is collaborator
     const collaboratorQuery = query(
       this.projectsCollection,
-      where('scope', '==', 'grupal'),
+      where('scope.scope', '==', 'grupal'),
       where('collaborators', 'array-contains', currentUser.uid),
       orderBy('createdAt', 'desc')
     );
@@ -496,7 +496,7 @@ export class ProjectsService {
         // For other scopes, use the standard query
         const q = query(
           this.projectsCollection,
-          where('scope', '==', scope),
+          where('scope.scope', '==', scope),
           orderBy('createdAt', 'desc')
         );
         
@@ -535,7 +535,7 @@ export class ProjectsService {
       // Query 1: Projects where user is creator
       const creatorQuery = query(
         this.projectsCollection,
-        where('scope', '==', 'grupal'),
+        where('scope.scope', '==', 'grupal'),
         where('createdBy', '==', currentUser.uid),
         orderBy('createdAt', 'desc')
       );
@@ -543,7 +543,7 @@ export class ProjectsService {
       // Query 2: Projects where user is collaborator
       const collaboratorQuery = query(
         this.projectsCollection,
-        where('scope', '==', 'grupal'),
+        where('scope.scope', '==', 'grupal'),
         where('collaborators', 'array-contains', currentUser.uid),
         orderBy('createdAt', 'desc')
       );

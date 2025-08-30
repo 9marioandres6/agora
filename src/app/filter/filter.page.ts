@@ -5,7 +5,7 @@ import { ProjectsService } from '../services/projects.service';
 import { FirebaseQueryService } from '../services/firebase-query.service';
 import { FilterStateService } from '../services/filter-state.service';
 import { FormsModule } from '@angular/forms';
-import { Project } from '../services/models/project.models';
+import { Project, Scope } from '../services/models/project.models';
 
 @Component({
   selector: 'app-filter',
@@ -73,5 +73,9 @@ export class FilterPage {
   selectProject(project: Project) {
     this.searchTerm.set(project.title);
     this.searchResults.set([]);
+  }
+
+  getScopeValue(scope: string | Scope): string {
+    return typeof scope === 'string' ? scope : scope?.scope || '';
   }
 }

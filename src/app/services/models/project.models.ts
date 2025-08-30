@@ -1,11 +1,17 @@
 import { LocationData } from '../location.service';
 
+export interface Scope {
+  scope: string;
+  place: string;
+  image: string;
+}
+
 export interface Project {
   id?: string;
   title: string;
   description: string;
   needs: Need[];
-  scope: string;
+  scope: Scope;
   createdBy: string;
   createdAt: string;
   updatedAt?: string;

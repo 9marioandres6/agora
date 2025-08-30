@@ -38,8 +38,8 @@
             <div class="info-content">
               @if (isCreator()) {
                 <ion-select 
-                  [ngModel]="editingProject().scope || project()?.scope || ''" 
-                  (ngModelChange)="updateProjectField('scope', $event)"
+                  [ngModel]="getScopeValue(editingProject().scope || project()?.scope || '')" 
+                  (ngModelChange)="updateScopeField($event)"
                   placeholder="Select scope">
                   <ion-select-option value="grupal">Grupal - Small Group Collaboration</ion-select-option>
                   <ion-select-option value="local">Local - Neighbourhood/Community</ion-select-option>

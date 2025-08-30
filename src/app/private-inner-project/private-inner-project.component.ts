@@ -6,8 +6,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ProjectsService } from '../services/projects.service';
-import { Project, Chapter, Media, Need } from '../services/models/project.models';
+import { Project, Chapter, Media, Need, Scope } from '../services/models/project.models';
 import { SupabaseService } from '../services/supabase.service';
+import { UserSearchService } from '../services/user-search.service';
 import { PendingCollaborator } from './models/private-inner-project.models';
 
 @Component({
@@ -28,6 +29,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   private translateService = inject(TranslateService);
   private alertCtrl = inject(AlertController);
   private cdr = inject(ChangeDetectorRef);
+  private userSearchService = inject(UserSearchService);
   
   projectId = this.route.snapshot.paramMap.get('id');
   
@@ -65,7 +67,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     const opposeCount = (proj.opposes || []).length;
     const netSupport = supportCount - opposeCount;
     
-    return netSupport >= this.getRequiredSupportThreshold(proj.scope);
+    return netSupport >= this.getRequiredSupportThreshold(this.getScopeValue(proj.scope));
   });
   
   constructor() {
@@ -110,11 +112,17 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       const currentUser = this.currentUser();
       if (!currentUser) return;
 
+      const scopeObject: Scope = {
+        scope: 'local',
+        place: '',
+        image: ''
+      };
+
       const projectData = {
         title: this.translateService.instant('PROJECT.NEW_PROJECT'),
         description: this.translateService.instant('PROJECT.PROJECT_DESCRIPTION_PLACEHOLDER'),
         needs: [],
-        scope: 'local',
+        scope: scopeObject,
         createdBy: currentUser.uid,
         collaborators: [],
         collaborationRequests: []
@@ -472,7 +480,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         this.editingProject.update(project => ({ ...project, description: proj.description || '' }));
         break;
       case 'scope':
-        this.editingProject.update(project => ({ ...project, scope: proj.scope || '' }));
+        this.editingProject.update(project => ({ ...project, scope: proj.scope || { scope: '', place: '', image: '' } }));
         break;
       case 'needs':
         this.editingProject.update(project => ({ ...project, needs: [...(proj.needs || [])] }));
@@ -503,7 +511,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           break;
         case 'scope':
           const newScope = this.editingProject().scope;
-          if (newScope && newScope !== proj.scope) {
+          if (newScope && JSON.stringify(newScope) !== JSON.stringify(proj.scope)) {
             updates.scope = newScope;
           }
           break;
@@ -582,7 +590,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           break;
         case 'scope':
           const newScope = this.editingProject().scope;
-          if (newScope && newScope !== proj.scope) {
+          if (newScope && JSON.stringify(newScope) !== JSON.stringify(proj.scope)) {
             updates.scope = newScope;
             hasChanges = true;
           }
@@ -635,9 +643,34 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     this.startProjectFieldAutoSave('needs');
   }
 
-  updateProjectField(field: 'title' | 'description' | 'scope', value: string) {
+  updateProjectField(field: 'title' | 'description', value: string) {
     this.editingProject.update(project => ({ ...project, [field]: value }));
     this.startProjectFieldAutoSave(field);
+  }
+
+  async updateScopeField(value: string) {
+    const currentProject = this.editingProject();
+    if (!currentProject) return;
+
+    let userLocation = null;
+    try {
+      const currentUser = this.authService.user();
+      if (currentUser?.uid) {
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        userLocation = userProfile?.location || null;
+      }
+    } catch (error) {
+      console.warn('Could not get user location for scope update:', error);
+    }
+
+    const newScope: Scope = {
+      scope: value,
+      place: await this.determinePlaceFromScope(value, userLocation),
+      image: currentProject.scope?.image || ''
+    };
+
+    this.editingProject.update(project => ({ ...project, scope: newScope }));
+    this.startProjectFieldAutoSave('scope');
   }
 
   // Chapter auto-save methods
@@ -1027,7 +1060,8 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     // Later this can be enhanced with a modal preview
   }
   
-  getScopeLabel(scope: string): string {
+  getScopeLabel(scope: string | Scope): string {
+    const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
     const scopeLabels: { [key: string]: string } = {
       'grupal': 'Grupal - Small Group Collaboration',
       'local': 'Local - Neighbourhood/Community',
@@ -1035,7 +1069,49 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       'national': 'National - Country level',
       'global': 'Global - International level'
     };
-    return scopeLabels[scope] || scope;
+    return scopeLabels[scopeValue] || scopeValue;
+  }
+
+  getScopeValue(scope: string | Scope): string {
+    return typeof scope === 'string' ? scope : scope?.scope || '';
+  }
+
+  private async determinePlaceFromScope(scope: string, userLocation: any): Promise<string> {
+    if (scope === 'grupal') {
+      return '';
+    }
+
+    if (!userLocation?.latitude || !userLocation?.longitude) {
+      return '';
+    }
+
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLocation.latitude}&lon=${userLocation.longitude}&zoom=18&addressdetails=1`
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        const address = data.address;
+        
+        switch (scope) {
+          case 'local':
+            return address?.city || address?.town || address?.village || '';
+          case 'state':
+            return address?.state || address?.province || address?.region || '';
+          case 'national':
+            return address?.country_code?.toUpperCase() || address?.country || '';
+          case 'global':
+            return 'Global';
+          default:
+            return '';
+        }
+      }
+    } catch (error) {
+      console.warn('Could not determine place from location:', error);
+    }
+    
+    return '';
   }
 
   getNeedIcon(need: Need): string {
@@ -1177,7 +1253,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     const supportCount = (proj.supports || []).length;
     const opposeCount = (proj.opposes || []).length;
     const netSupport = supportCount - opposeCount;
-    const required = this.getRequiredSupportThreshold(proj.scope);
+    const required = this.getRequiredSupportThreshold(this.getScopeValue(proj.scope));
     const progress = Math.min((netSupport / required) * 100, 100);
     const unlocked = netSupport >= required;
     

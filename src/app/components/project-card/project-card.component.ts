@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
-import { Project, Need } from '../../services/models/project.models';
+import { Project, Need, Scope } from '../../services/models/project.models';
 import { AuthService } from '../../services/auth.service';
 import { UserAvatarComponent, UserAvatarData } from '../user-avatar/user-avatar.component';
 
@@ -36,7 +36,8 @@ export class ProjectCardComponent {
     return this.authService.user();
   }
 
-  getScopeIcon(scope: string): string {
+  getScopeIcon(scope: string | Scope): string {
+    const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
     const scopeIcons: { [key: string]: string } = {
       'grupal': 'people',
       'local': 'home',
@@ -44,7 +45,11 @@ export class ProjectCardComponent {
       'national': 'flag',
       'global': 'globe'
     };
-    return scopeIcons[scope] || 'help-circle';
+    return scopeIcons[scopeValue] || 'help-circle';
+  }
+
+  getScopeValue(scope: string | Scope): string {
+    return typeof scope === 'string' ? scope : scope?.scope || '';
   }
 
   getStateColor(state: string): string {
