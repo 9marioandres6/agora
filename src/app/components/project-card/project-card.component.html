@@ -6,14 +6,6 @@
       <ion-chip [color]="getStateColor(project().state || 'building')" class="state-chip-inline">
         {{ getStateLabel(project().state || 'building') | translate }}
       </ion-chip>
-      @if (isUserProject(project())) {
-        <ion-icon 
-          name="person" 
-          class="user-project-indicator" 
-          color="primary"
-          [title]="'HOME.USER_PROJECT' | translate">
-        </ion-icon>
-      }
     </div>
   </ion-card-header>
 
