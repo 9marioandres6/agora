@@ -121,13 +121,28 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.loadUserLocation();
     
     const selectedScope = this.filterStateService.getSelectedScope();
-    this.currentScope.set(selectedScope);
+    const previousScope = this.currentScope();
     
-    if (selectedScope !== 'all') {
-      await this.projectsService.setFilteredProjects(selectedScope);
+    // Only query Firebase if we don't have filtered projects loaded or if the scope changed
+    if (this.shouldQueryFirebase(selectedScope, previousScope)) {
+      this.currentScope.set(selectedScope);
+      
+      if (selectedScope !== 'all') {
+        await this.projectsService.setFilteredProjects(selectedScope);
+      } else {
+        await this.projectsService.resetFilteredProjects();
+      }
     } else {
-      await this.projectsService.resetFilteredProjects();
+      // Just update the current scope without querying Firebase
+      this.currentScope.set(selectedScope);
     }
+  }
+
+  private shouldQueryFirebase(selectedScope: string, previousScope: string): boolean {
+    // Query Firebase if:
+    // 1. No filtered projects are loaded, OR
+    // 2. The scope has changed
+    return !this.projectsService.hasFilteredProjectsLoaded() || previousScope !== selectedScope;
   }
 
   navigateToFilterPage() {
@@ -193,6 +208,16 @@ export class HomePage implements OnInit, ViewWillEnter {
   async refreshProjects(event?: any) {
     if (event) {
       event.target.complete();
+    }
+    
+    // Force refresh by querying Firebase again
+    const selectedScope = this.filterStateService.getSelectedScope();
+    this.currentScope.set(selectedScope);
+    
+    if (selectedScope !== 'all') {
+      await this.projectsService.setFilteredProjects(selectedScope);
+    } else {
+      await this.projectsService.resetFilteredProjects();
     }
   }
 

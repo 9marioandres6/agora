@@ -95,11 +95,16 @@ export class ProjectsService {
     }
   }
 
-  private hasProjectsLoaded(): boolean {
+  public hasProjectsLoaded(): boolean {
     // Check if we have any projects loaded in any of our signals
     return this._userProjects().length > 0 || 
            this._projectsByScope().size > 0 || 
            this._currentProject() !== null;
+  }
+
+  public hasFilteredProjectsLoaded(): boolean {
+    // Check if we have filtered projects loaded
+    return this.filteredProjects().length > 0;
   }
 
   // Lazy load scope listeners only when needed
