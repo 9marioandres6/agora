@@ -63,7 +63,7 @@ export class MessagesService {
 
   async sendMessage(message: Omit<Message, 'id' | 'createdAt' | 'isRead'>): Promise<string> {
     try {
-      console.log('MessagesService: Attempting to send message:', message);
+  
       const messageData: Omit<Message, 'id'> = {
         ...message,
         createdAt: new Date().toISOString(),
@@ -71,7 +71,7 @@ export class MessagesService {
       };
 
       const docRef = await addDoc(this.messagesCollection, messageData);
-      console.log('MessagesService: Message sent successfully with ID:', docRef.id);
+
       return docRef.id;
     } catch (error) {
       console.error('MessagesService: Error sending message:', error);

@@ -216,7 +216,7 @@ export class ConnectionService {
 
   private async showWeakConnectionToast(quality: 'poor' | 'fair') {
     // Toast functionality removed to prevent chunk loading issues when offline
-    console.log(`Connection quality: ${quality}`);
+
   }
 
   // Public method to manually test connection
