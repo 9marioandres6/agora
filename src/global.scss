@@ -60,6 +60,30 @@
   --app-user-project-border: rgba(56, 128, 255, 0.2);
 }
 
+/* Specific scrollbar hiding for common scrollable elements */
+ion-content,
+ion-scroll,
+.scroll-container,
+.scrollable-content,
+.overflow-auto,
+.overflow-scroll,
+ion-content::part(scroll),
+ion-content .inner-scroll {
+  /* Webkit browsers */
+  &::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  
+  /* Firefox */
+  scrollbar-width: none !important;
+  
+  /* IE and Edge */
+  -ms-overflow-style: none !important;
+}
+
+
 .dark {
   --app-background: #1a1a1a;
   --app-text: #ffffff;
