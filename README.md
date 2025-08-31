@@ -89,7 +89,7 @@ interface FilterOptions {
   searchTerm?: string;     // Text search term
   state?: 'building' | 'implementing' | 'done';
   status?: 'active' | 'completed' | 'cancelled';
-  limitCount?: number;     // Default: 20 projects per page
+  limitCount?: number;     // Default: 8 projects per page
 }
 ```
 
@@ -108,7 +108,7 @@ orderBy('title')
 ```
 
 #### Pagination
-- **Initial Load**: `limit(20)` with `orderBy('createdAt', 'desc')`
+- **Initial Load**: `limit(8)` with `orderBy('createdAt', 'desc')`
 - **Load More**: `startAfter(lastDocument)` for cursor-based pagination
 
 ### Permission System

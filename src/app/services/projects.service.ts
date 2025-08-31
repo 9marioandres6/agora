@@ -429,7 +429,7 @@ export class ProjectsService {
   }
 
   // Legacy async method for backward compatibility
-  async getProjectsAsync(limitCount: number = 50): Promise<Project[]> {
+  async getProjectsAsync(limitCount: number = 8): Promise<Project[]> {
     try {
       const q = query(
         this.projectsCollection,

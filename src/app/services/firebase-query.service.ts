@@ -56,7 +56,7 @@ export class FirebaseQueryService {
   hasMore = this._hasMore.asReadonly();
   currentFilter = this._currentFilter.asReadonly();
 
-  private readonly DEFAULT_LIMIT = 20;
+  private readonly DEFAULT_LIMIT = 8;
   private listeners: Map<string, Unsubscribe> = new Map();
 
   private get projectsCollection() {
@@ -525,7 +525,7 @@ export class FirebaseQueryService {
     });
   }
 
-  async loadAllProjects(limitCount: number = 20): Promise<QueryResult> {
+  async loadAllProjects(limitCount: number = 8): Promise<QueryResult> {
     try {
       this._isLoading.set(true);
 
@@ -652,7 +652,7 @@ export class FirebaseQueryService {
 
   async searchProjects(
     searchTerm: string,
-    limitCount: number = 20
+    limitCount: number = 8
   ): Promise<Project[]> {
     if (!searchTerm || searchTerm.trim().length === 0) {
       return [];
