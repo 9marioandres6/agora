@@ -1102,6 +1102,50 @@ export class ProjectsService {
     }
   }
 
+  public async loadMoreAllProjects(): Promise<boolean> {
+    try {
+      // Set filtered projects loading to true when loading more
+      this.loadingService.setFilteredProjectsLoading(true);
+      
+      // For 'all' scope, we need to ensure the filter is set up correctly
+      const currentUser = this.authService.user();
+      if (!currentUser?.uid) {
+        return false;
+      }
+      
+      // Get user's location for filtering
+      let userLocation: LocationData | undefined;
+      try {
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        userLocation = userProfile?.location || undefined;
+      } catch (error) {
+        console.warn('Could not get user location for filtering:', error);
+      }
+      
+      // Set up the filter for 'all' scope if not already set
+      const currentFilter = this.firebaseQueryService.currentFilter();
+      if (!currentFilter || currentFilter.scope !== 'all') {
+        // Set the current filter for 'all' scope
+        this.firebaseQueryService.setCurrentFilter({
+          scope: 'all',
+          userId: currentUser.uid,
+          location: userLocation
+        });
+      }
+      
+      const result = await this.firebaseQueryService.loadMoreProjects();
+      
+      // Set loading to false after operation completes
+      this.loadingService.setFilteredProjectsLoading(false);
+      
+      return result.hasMore;
+    } catch (error) {
+      // Set loading to false even on error
+      this.loadingService.setFilteredProjectsLoading(false);
+      return false;
+    }
+  }
+
   public async resetFilteredProjects() {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return;

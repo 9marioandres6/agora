@@ -230,14 +230,17 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.isLoadingMore = true;
     
     try {
+      let hasMore = false;
+      
       if (this.isFilterActive()) {
-        const hasMore = await this.projectsService.loadMoreFilteredProjects();
-        if (!hasMore) {
-          event.target.disabled = true;
-        }
+        hasMore = await this.projectsService.loadMoreFilteredProjects();
       } else {
-        event.target.complete();
-        return;
+        // For 'all' scope, also load more projects
+        hasMore = await this.projectsService.loadMoreAllProjects();
+      }
+      
+      if (!hasMore) {
+        event.target.disabled = true;
       }
     } catch (error) {
       console.error('Error loading more projects:', error);

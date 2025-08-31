@@ -94,7 +94,7 @@
       </div>
 
       <!-- Infinite Scroll -->
-      @if (isFilterActive() && hasMoreFiltered()) {
+      @if (hasMoreFiltered()) {
         <ion-infinite-scroll (ionInfinite)="loadMoreProjects($event)">
           <ion-infinite-scroll-content
             loadingSpinner="bubbles"

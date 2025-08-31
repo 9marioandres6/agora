@@ -453,6 +453,10 @@ export class FirebaseQueryService {
     this.cleanupAllListeners();
   }
 
+  setCurrentFilter(filter: FilterOptions): void {
+    this._currentFilter.set(filter);
+  }
+
   private processProjects(projects: Project[]): Project[] {
     return projects.map((project) => {
       // Ensure all required fields have default values
