@@ -103,6 +103,10 @@ export class ProjectCardComponent {
     return this.isProjectCreator(project) || this.isProjectCollaborator(project);
   }
 
+  isUserProject(project: Project): boolean {
+    return this.isProjectCreator(project) || this.isProjectCollaborator(project);
+  }
+
   getCreatorData(): UserAvatarData {
     const project = this.project();
     if (project.creator) {

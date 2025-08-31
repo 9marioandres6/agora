@@ -56,6 +56,8 @@
   --app-primary-hover: #3171e0;
   --app-border: #e0e0e0;
   --app-primary-light: rgba(56, 128, 255, 0.1);
+  --app-user-project-background: rgba(56, 128, 255, 0.05);
+  --app-user-project-border: rgba(56, 128, 255, 0.2);
 }
 
 .dark {
@@ -79,6 +81,8 @@
   --app-primary-hover: #3171e0;
   --app-border: #404040;
   --app-primary-light: rgba(56, 128, 255, 0.2);
+  --app-user-project-background: rgba(56, 128, 255, 0.15);
+  --app-user-project-border: rgba(56, 128, 255, 0.3);
   
   /* Spinner Theme Variables */
   --spinner-overlay-bg: rgba(0, 0, 0, 0.7);
@@ -104,6 +108,8 @@
   --app-text-secondary: #6c757d;
   --app-card-hover-background: rgba(0,0,0,0.05);
   --app-primary: #3880ff;
+  --app-user-project-background: rgba(56, 128, 255, 0.05);
+  --app-user-project-border: rgba(56, 128, 255, 0.2);
   
   /* Spinner Theme Variables */
   --spinner-overlay-bg: rgba(0, 0, 0, 0.5);

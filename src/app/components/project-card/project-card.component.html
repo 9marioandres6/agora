@@ -1,4 +1,4 @@
-<ion-card class="project-card">
+<ion-card class="project-card" [class.user-project]="isUserProject(project())">
   <ion-card-header class="project-header">
     <div class="project-title-line">
       <ion-icon [name]="getScopeIcon(project().scope || '')" class="scope-icon-inline"></ion-icon>
@@ -6,6 +6,14 @@
       <ion-chip [color]="getStateColor(project().state || 'building')" class="state-chip-inline">
         {{ getStateLabel(project().state || 'building') | translate }}
       </ion-chip>
+      @if (isUserProject(project())) {
+        <ion-icon 
+          name="person" 
+          class="user-project-indicator" 
+          color="primary"
+          [title]="'HOME.USER_PROJECT' | translate">
+        </ion-icon>
+      }
     </div>
   </ion-card-header>
 

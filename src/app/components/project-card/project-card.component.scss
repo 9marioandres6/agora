@@ -4,6 +4,20 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: var(--app-card-background);
   border: 1px solid var(--app-border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
+  &.user-project {
+    background: var(--app-user-project-background) !important;
+    border-color: var(--app-user-project-border) !important;
+    box-shadow: 0 4px 12px rgba(56, 128, 255, 0.15) !important;
+    
+    &:hover {
+      box-shadow: 0 6px 16px rgba(56, 128, 255, 0.25) !important;
+      transform: translateY(-1px);
+    }
+  }
+
+
 
   .project-header {
     display: flex;
@@ -39,6 +53,13 @@
         font-weight: 500;
         flex-shrink: 0;
         margin: 0;
+      }
+
+      .user-project-indicator {
+        font-size: 16px;
+        color: var(--app-primary);
+        flex-shrink: 0;
+        margin-left: 8px;
       }
     }
   }
