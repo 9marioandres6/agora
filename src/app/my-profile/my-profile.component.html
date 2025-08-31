@@ -89,6 +89,15 @@
                 <p><strong>{{ 'PROFILE.LONGITUDE' | translate }}:</strong> {{ userLocation.longitude | number:'1.6-6' }}</p>
                 <p><strong>{{ 'PROFILE.ACCURACY' | translate }}:</strong> {{ userLocation.accuracy | number:'1.0-0' }}m</p>
                 <p><strong>{{ 'PROFILE.LAST_UPDATED' | translate }}:</strong> {{ userLocation.timestamp | date:'medium' }}</p>
+                @if (userLocation.city) {
+                  <p><strong>{{ 'PROFILE.CITY' | translate }}:</strong> {{ userLocation.city }}</p>
+                }
+                @if (userLocation.state) {
+                  <p><strong>{{ 'PROFILE.STATE' | translate }}:</strong> {{ userLocation.state }}</p>
+                }
+                @if (userLocation.country) {
+                  <p><strong>{{ 'PROFILE.COUNTRY' | translate }}:</strong> {{ userLocation.country }}</p>
+                }
               </div>
             </ion-item>
           }

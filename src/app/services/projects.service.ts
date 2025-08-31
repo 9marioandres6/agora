@@ -6,6 +6,8 @@ import { MessagesService } from './messages.service';
 import { LoadingService } from './loading.service';
 import { FirebaseQueryService, FilterOptions } from './firebase-query.service';
 import { FilterStateService } from './filter-state.service';
+import { UserSearchService } from './user-search.service';
+import { LocationData } from './location.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +19,7 @@ export class ProjectsService {
   private loadingService = inject(LoadingService);
   private firebaseQueryService = inject(FirebaseQueryService);
   private filterStateService = inject(FilterStateService);
+  private userSearchService = inject(UserSearchService);
 
   // Reactive signals for real-time data
   private _projects = signal<Project[]>([]);
@@ -1049,9 +1052,19 @@ export class ProjectsService {
     // Clean up unused scope listeners to free up resources
     this.cleanupUnusedScopeListeners([scope]);
 
+    // Get user's location for filtering
+    let userLocation: LocationData | undefined;
+    try {
+      const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+      userLocation = userProfile?.location || undefined;
+    } catch (error) {
+      console.warn('Could not get user location for filtering:', error);
+    }
+
     const filterOptions: FilterOptions = {
       scope,
-      userId: currentUser.uid
+      userId: currentUser.uid,
+      location: userLocation
     };
 
     try {
@@ -1101,9 +1114,18 @@ export class ProjectsService {
       // Clean up any unused scope listeners
       this.cleanupUnusedScopeListeners(publicScopes);
       
+      // Get user's location for filtering
+      let userLocation: LocationData | undefined;
+      try {
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        userLocation = userProfile?.location || undefined;
+      } catch (error) {
+        console.warn('Could not get user location for filtering:', error);
+      }
+      
       await this.firebaseQueryService.loadAllProjects();
       this.firebaseQueryService.setupRealTimeListener(
-        { scope: 'all', userId: currentUser.uid },
+        { scope: 'all', userId: currentUser.uid, location: userLocation },
         () => this.loadingService.setFilteredProjectsLoading(false)
       );
       

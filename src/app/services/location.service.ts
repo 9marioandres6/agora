@@ -6,6 +6,9 @@ export interface LocationData {
   accuracy: number;
   timestamp: number;
   address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
 }
 
 export interface LocationState {
@@ -188,10 +191,14 @@ export class LocationService {
         if (response.ok) {
           const data = await response.json();
           const address = data.display_name;
+          const addressDetails = data.address;
           
           const locationWithAddress: LocationData = {
             ...location,
-            address
+            address,
+            city: addressDetails?.city || addressDetails?.town || addressDetails?.village || '',
+            state: addressDetails?.state || addressDetails?.province || addressDetails?.region || '',
+            country: addressDetails?.country_code?.toUpperCase() || addressDetails?.country || ''
           };
 
           this.locationState.update(state => ({

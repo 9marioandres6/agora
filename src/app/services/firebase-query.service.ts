@@ -17,6 +17,7 @@ import {
 import { AuthService } from './auth.service';
 import { Project } from './models/project.models';
 import { LocationData } from './location.service';
+import { UserSearchService } from './user-search.service';
 
 export interface FilterOptions {
   scope: string;
@@ -40,6 +41,7 @@ export interface QueryResult {
 export class FirebaseQueryService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
+  private userSearchService = inject(UserSearchService);
 
   private _filteredProjects = signal<Project[]>([]);
   private _isLoading = signal(false);
@@ -156,6 +158,9 @@ export class FirebaseQueryService {
         );
       }
 
+      // Apply location-based filtering
+      projects = this.filterProjectsByLocation(projects, filterOptions.location);
+
       const processedProjects = this.processProjects(projects);
       const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
       const hasMore =
@@ -258,6 +263,9 @@ export class FirebaseQueryService {
             )
         );
       }
+
+      // Apply location-based filtering
+      newProjects = this.filterProjectsByLocation(newProjects, currentFilter.location);
 
       const processedNewProjects = this.processProjects(newProjects);
       const allProjects = [
@@ -379,6 +387,9 @@ export class FirebaseQueryService {
           });
         }
 
+        // Apply location-based filtering
+        projects = this.filterProjectsByLocation(projects, filterOptions.location);
+
         const processedProjects = this.processProjects(projects);
         this._filteredProjects.set(processedProjects);
         this._hasMore.set(
@@ -485,6 +496,35 @@ export class FirebaseQueryService {
     });
   }
 
+  private filterProjectsByLocation(projects: Project[], userLocation?: LocationData): Project[] {
+    if (!userLocation) {
+      return projects;
+    }
+
+    return projects.filter(project => {
+      if (project.scope?.scope === 'grupal' || project.scope?.scope === 'global') {
+        return true;
+      }
+
+      if (!project.scope?.place) {
+        return true;
+      }
+
+      const projectPlace = project.scope.place.toLowerCase();
+
+      switch (project.scope.scope) {
+        case 'local':
+          return userLocation.city && userLocation.city.toLowerCase() === projectPlace;
+        case 'state':
+          return userLocation.state && userLocation.state.toLowerCase() === projectPlace;
+        case 'national':
+          return userLocation.country && userLocation.country.toLowerCase() === projectPlace;
+        default:
+          return true;
+      }
+    });
+  }
+
   async loadAllProjects(limitCount: number = 20): Promise<QueryResult> {
     try {
       this._isLoading.set(true);
@@ -568,6 +608,19 @@ export class FirebaseQueryService {
         const dateB = new Date(b.createdAt || 0);
         return dateB.getTime() - dateA.getTime();
       });
+
+      // Apply location-based filtering - get user location from profile
+      const currentUserForLocation = this.authService.user();
+      let userLocation: LocationData | undefined;
+      if (currentUserForLocation?.uid) {
+        try {
+          const userProfile = await this.userSearchService.getUserProfile(currentUserForLocation.uid);
+          userLocation = userProfile?.location || undefined;
+        } catch (error) {
+          console.warn('Could not get user location for filtering:', error);
+        }
+      }
+      allProjects = this.filterProjectsByLocation(allProjects, userLocation);
 
       // Limit to requested amount
       allProjects = allProjects.slice(0, limitCount);

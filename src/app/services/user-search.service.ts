@@ -8,6 +8,9 @@ export interface UserProfile {
   email: string;
   photoURL?: string;
   location?: LocationData | null;
+  city?: string;
+  state?: string;
+  country?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -79,6 +82,9 @@ export class UserSearchService {
             email: user.email || '',
             photoURL: user.photoURL || '',
             location: location,
+            city: location?.city || '',
+            state: location?.state || '',
+            country: location?.country || '',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           };
@@ -92,6 +98,9 @@ export class UserSearchService {
             email: user.email || existingData.email,
             photoURL: user.photoURL || existingData.photoURL,
             location: location || existingData.location,
+            city: location?.city || existingData.city || '',
+            state: location?.state || existingData.state || '',
+            country: location?.country || existingData.country || '',
             updatedAt: new Date().toISOString()
           };
           

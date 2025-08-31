@@ -322,33 +322,18 @@ export class NewItemComponent implements AfterViewInit {
       return '';
     }
 
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLocation.latitude}&lon=${userLocation.longitude}&zoom=18&addressdetails=1`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        const address = data.address;
-        
-        switch (scope) {
-          case 'local':
-            return address?.city || address?.town || address?.village || '';
-          case 'state':
-            return address?.state || address?.province || address?.region || '';
-          case 'national':
-            return address?.country_code?.toUpperCase() || address?.country || '';
-          case 'global':
-            return 'Global';
-          default:
-            return '';
-        }
-      }
-    } catch (error) {
-      console.warn('Could not determine place from location:', error);
+    switch (scope) {
+      case 'local':
+        return userLocation.city || '';
+      case 'state':
+        return userLocation.state || '';
+      case 'national':
+        return userLocation.country || '';
+      case 'global':
+        return 'Global';
+      default:
+        return '';
     }
-    
-    return '';
   }
 
   ngAfterViewInit() {
