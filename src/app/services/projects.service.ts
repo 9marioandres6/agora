@@ -77,6 +77,7 @@ export class ProjectsService {
         const user = this.authService.user();
         
         if (user?.uid) {
+          // Only set up user projects listener, not scope listeners
           this.setupUserProjectsListener(user.uid);
         } else {
           this.cleanupUserProjectsListener();
@@ -96,6 +97,45 @@ export class ProjectsService {
     return this._userProjects().length > 0 || 
            this._projectsByScope().size > 0 || 
            this._currentProject() !== null;
+  }
+
+  // Lazy load scope listeners only when needed
+  private ensureScopeListener(scope: string): void {
+    const listenerKey = `scope_${scope}`;
+    if (!this.listeners.has(listenerKey)) {
+      this.setupScopeProjectsListener(scope);
+    }
+  }
+
+  // Get projects for a specific scope, setting up listener if needed
+  public getProjectsForScope(scope: string): Project[] {
+    this.ensureScopeListener(scope);
+    const projects = this._projectsByScope().get(scope) || [];
+    return projects;
+  }
+
+  // Get all active scope listeners
+  private getActiveScopeListeners(): string[] {
+    return Array.from(this.listeners.keys())
+      .filter(key => key.startsWith('scope_'))
+      .map(key => key.replace('scope_', ''));
+  }
+
+  // Check if a scope listener is active
+  public isScopeListenerActive(scope: string): boolean {
+    return this.listeners.has(`scope_${scope}`);
+  }
+
+  // Get current loading state
+  public getLoadingState(): { projects: boolean; filtered: boolean } {
+    return {
+      projects: this.loadingService.projectsLoading(),
+      filtered: this.loadingService.filteredProjectsLoading()
+    };
+  }
+
+  public getListenerCount(): number {
+    return this.listeners.size;
   }
 
   private updateLoadingState(): void {
@@ -136,11 +176,10 @@ export class ProjectsService {
       
       // Update loading state based on whether we actually have projects
       this.updateLoadingState();
-    }, (error) => {
-      console.error('Error in user projects listener:', error);
-      // Set loading to false even on error
-      this.loadingService.setProjectsLoading(false);
-    });
+          }, (error) => {
+        // Set loading to false even on error
+        this.loadingService.setProjectsLoading(false);
+      });
 
     this.listeners.set('user', unsubscribe);
   }
@@ -195,8 +234,10 @@ export class ProjectsService {
   }
 
   public setupScopeProjectsListener(scope: string) {
+    const listenerKey = `scope_${scope}`;
+    
     // Clean up existing listener for this scope
-    const existingListener = this.listeners.get(`scope_${scope}`);
+    const existingListener = this.listeners.get(listenerKey);
     if (existingListener) {
       existingListener();
     }
@@ -231,17 +272,18 @@ export class ProjectsService {
         
         // Set loading to false only after we receive data
         this.loadingService.setProjectsLoading(false);
-      }, (error) => {
-        console.error(`Error in scope ${scope} projects listener:`, error);
-        // Set loading to false even on error
-        this.loadingService.setProjectsLoading(false);
-      });
+              }, (error) => {
+          // Set loading to false even on error
+          this.loadingService.setProjectsLoading(false);
+        });
 
-      this.listeners.set(`scope_${scope}`, unsubscribe);
+      this.listeners.set(listenerKey, unsubscribe);
     }
   }
 
   private setupGrupalProjectsListener() {
+    const listenerKey = 'scope_grupal';
+    
     const currentUser = this.authService.user();
     if (!currentUser?.uid) {
       // No user logged in, set empty projects for Groupal scope
@@ -297,7 +339,6 @@ export class ProjectsService {
         // Clean up collaborator listener
         unsubscribeCollaborator();
       }, (error) => {
-        console.error('Error in Groupal collaborator projects listener:', error);
         // Set loading to false even on error
         this.loadingService.setProjectsLoading(false);
       });
@@ -305,22 +346,35 @@ export class ProjectsService {
       // Clean up creator listener
       unsubscribeCreator();
     }, (error) => {
-      console.error('Error in Groupal creator projects listener:', error);
       // Set loading to false even on error
       this.loadingService.setProjectsLoading(false);
     });
 
-    this.listeners.set(`scope_grupal`, () => {
+    // Store cleanup function for both listeners
+    this.listeners.set(listenerKey, () => {
       unsubscribeCreator();
     });
   }
 
   public cleanupScopeProjectsListener(scope: string) {
-    const listener = this.listeners.get(`scope_${scope}`);
+    const listenerKey = `scope_${scope}`;
+    const listener = this.listeners.get(listenerKey);
     if (listener) {
       listener();
-      this.listeners.delete(`scope_${scope}`);
+      this.listeners.delete(listenerKey);
     }
+  }
+
+  // Clean up unused scope listeners to free up resources
+  public cleanupUnusedScopeListeners(activeScopes: string[]): void {
+    const scopeListeners = Array.from(this.listeners.keys()).filter(key => key.startsWith('scope_'));
+    
+    scopeListeners.forEach(listenerKey => {
+      const scope = listenerKey.replace('scope_', '');
+      if (!activeScopes.includes(scope)) {
+        this.cleanupScopeProjectsListener(scope);
+      }
+    });
   }
 
   // Clean up all listeners when service is destroyed
@@ -357,7 +411,6 @@ export class ProjectsService {
       const docRef = await addDoc(this.projectsCollection, project);
       return docRef.id;
     } catch (error) {
-      console.error('Error creating project:', error);
       throw error;
     }
   }
@@ -418,7 +471,6 @@ export class ProjectsService {
         return project;
       });
     } catch (error) {
-      console.error('Error getting projects:', error);
       throw error;
     }
   }
@@ -446,7 +498,6 @@ export class ProjectsService {
         id: projectId
       };
     } catch (error) {
-      console.error('Error getting project:', error);
       throw error;
     }
   }
@@ -481,7 +532,6 @@ export class ProjectsService {
         return project;
       });
     } catch (error) {
-      console.error('Error getting user projects:', error);
       throw error;
     }
   }
@@ -526,7 +576,6 @@ export class ProjectsService {
         return processedProjects;
       }
     } catch (error) {
-      console.error('Error getting projects by scope:', error);
       throw error;
     }
   }
@@ -578,7 +627,6 @@ export class ProjectsService {
 
       return processedProjects;
     } catch (error) {
-      console.error('Error getting Groupal projects:', error);
       return [];
     }
   }
@@ -591,7 +639,6 @@ export class ProjectsService {
         updatedAt: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Error updating project:', error);
       throw error;
     }
   }
@@ -601,7 +648,6 @@ export class ProjectsService {
       const projectRef = doc(this.firestore, 'projects', projectId);
       await deleteDoc(projectRef);
     } catch (error) {
-      console.error('Error deleting project:', error);
       throw error;
     }
   }
@@ -613,7 +659,6 @@ export class ProjectsService {
         participants: arrayUnion(userId)
       });
     } catch (error) {
-      console.error('Error joining project:', error);
       throw error;
     }
   }
@@ -625,7 +670,6 @@ export class ProjectsService {
         participants: arrayRemove(userId)
       });
     } catch (error) {
-      console.error('Error leaving project:', error);
       throw error;
     }
   }
@@ -638,7 +682,6 @@ export class ProjectsService {
         updatedAt: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Error updating project state:', error);
       throw error;
     }
   }
@@ -657,7 +700,6 @@ export class ProjectsService {
         supports: arrayUnion(userId)
       });
     } catch (error) {
-      console.error('Error supporting project:', error);
       throw error;
     }
   }
@@ -676,7 +718,6 @@ export class ProjectsService {
         opposes: arrayUnion(userId)
       });
     } catch (error) {
-      console.error('Error opposing project:', error);
       throw error;
     }
   }
@@ -688,7 +729,6 @@ export class ProjectsService {
         supports: arrayRemove(userId)
       });
     } catch (error) {
-      console.error('Error removing support:', error);
       throw error;
     }
   }
@@ -700,7 +740,6 @@ export class ProjectsService {
         opposes: arrayRemove(userId)
       });
     } catch (error) {
-      console.error('Error removing oppose:', error);
       throw error;
     }
   }
@@ -734,7 +773,6 @@ export class ProjectsService {
         return { action: 'added' };
       }
     } catch (error) {
-      console.error('Error toggling support:', error);
       throw error;
     }
   }
@@ -769,7 +807,6 @@ export class ProjectsService {
         return { action: 'added' };
       }
     } catch (error) {
-      console.error('Error toggling oppose:', error);
       throw error;
     }
   }
@@ -796,7 +833,6 @@ export class ProjectsService {
 
       return comment;
     } catch (error) {
-      console.error('Error adding comment:', error);
       throw error;
     }
   }
@@ -843,7 +879,6 @@ export class ProjectsService {
 
       return request;
     } catch (error) {
-      console.error('Error requesting collaboration:', error);
       throw error;
     }
   }
@@ -896,7 +931,6 @@ export class ProjectsService {
 
       return { request, collaborator };
     } catch (error) {
-      console.error('Error accepting collaboration:', error);
       throw error;
     }
   }
@@ -938,7 +972,6 @@ export class ProjectsService {
 
       return request;
     } catch (error) {
-      console.error('Error rejecting collaboration:', error);
       throw error;
     }
   }
@@ -967,7 +1000,6 @@ export class ProjectsService {
 
       return collaborator;
     } catch (error) {
-      console.error('Error removing collaborator:', error);
       throw error;
     }
   }
@@ -1011,33 +1043,26 @@ export class ProjectsService {
     // Set filtered projects loading to true
     this.loadingService.setFilteredProjectsLoading(true);
 
-    if (scope === 'all') {
-      try {
-        await this.firebaseQueryService.loadAllProjects();
-        this.firebaseQueryService.setupRealTimeListener(
-          { scope: 'all', userId: currentUser.uid },
-          () => this.loadingService.setFilteredProjectsLoading(false)
-        );
-      } catch (error) {
-        console.error('Error loading all projects:', error);
-        this.loadingService.setFilteredProjectsLoading(false);
-      }
-    } else {
-      const filterOptions: FilterOptions = {
-        scope,
-        userId: currentUser.uid
-      };
+    // Ensure the scope listener is set up for this scope
+    this.ensureScopeListener(scope);
 
-      try {
-        await this.firebaseQueryService.queryProjects(filterOptions);
-        this.firebaseQueryService.setupRealTimeListener(
-          filterOptions,
-          () => this.loadingService.setFilteredProjectsLoading(false)
-        );
-      } catch (error) {
-        console.error('Error setting filtered projects:', error);
-        this.loadingService.setFilteredProjectsLoading(false);
-      }
+    // Clean up unused scope listeners to free up resources
+    this.cleanupUnusedScopeListeners([scope]);
+
+    const filterOptions: FilterOptions = {
+      scope,
+      userId: currentUser.uid
+    };
+
+    try {
+      await this.firebaseQueryService.queryProjects(filterOptions);
+      this.firebaseQueryService.setupRealTimeListener(
+        filterOptions,
+        () => this.loadingService.setFilteredProjectsLoading(false)
+      );
+      
+    } catch (error) {
+      this.loadingService.setFilteredProjectsLoading(false);
     }
   }
 
@@ -1053,7 +1078,6 @@ export class ProjectsService {
       
       return result.hasMore;
     } catch (error) {
-      console.error('Error loading more filtered projects:', error);
       // Set loading to false even on error
       this.loadingService.setFilteredProjectsLoading(false);
       return false;
@@ -1068,13 +1092,22 @@ export class ProjectsService {
     this.loadingService.setFilteredProjectsLoading(true);
     
     try {
+      // For 'all' scope, we need to set up listeners for all public scopes
+      const publicScopes = ['local', 'state', 'national', 'global', 'grupal'];
+      
+      // Ensure all public scope listeners are set up
+      publicScopes.forEach(scope => this.ensureScopeListener(scope));
+      
+      // Clean up any unused scope listeners
+      this.cleanupUnusedScopeListeners(publicScopes);
+      
       await this.firebaseQueryService.loadAllProjects();
       this.firebaseQueryService.setupRealTimeListener(
         { scope: 'all', userId: currentUser.uid },
         () => this.loadingService.setFilteredProjectsLoading(false)
       );
+      
     } catch (error) {
-      console.error('Error resetting to all projects:', error);
       this.loadingService.setFilteredProjectsLoading(false);
     }
   }
