@@ -1,5 +1,5 @@
 <ion-card class="project-card" [class.user-project]="isUserProject(project())">
-  <ion-card-header class="project-header">
+  <ion-card-header class="project-header" (click)="onProjectCardClick()">
     <div class="project-title-line">
       <ion-icon [name]="getScopeIcon(project().scope || '')" class="scope-icon-inline"></ion-icon>
       <span class="project-title-text">{{ project().title }}</span>
