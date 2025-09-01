@@ -207,13 +207,12 @@
   }
 
   .project-footer {
-    padding: 6px 0;
+    padding: 6px;
 
     .footer-actions {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-left: 6px;
 
       > div {
         display: flex;
@@ -229,8 +228,8 @@
       .collaborators-button,
       .comments-button {
         font-size: 12px;
-        --padding-start: 8px;
-        --padding-end: 8px;
+        --padding-start: 4px;
+        --padding-end: 4px;
       }
     }
   }

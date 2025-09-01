@@ -90,9 +90,7 @@
           }
         </ion-button>
       </div>
-      }
-
-      @if (project().state === 'done') {
+      } @if (project().state === 'done') {
       <div>
         <ion-button
           [fill]="isUserVerified(project()) ? 'solid' : 'clear'"
@@ -109,17 +107,6 @@
       }
 
       <div>
-        <ion-button
-          [fill]="isUserFollowing(project()) ? 'solid' : 'clear'"
-          size="small"
-          (click)="onFollowButtonClick($event)"
-          class="vote-button"
-        >
-          {{ "HOME.FOLLOW" | translate }}
-          @if ((project().followers || []).length > 0) {
-          {{ (project().followers || []).length }}
-          }
-        </ion-button>
         <ion-button
           fill="clear"
           size="small"
@@ -140,6 +127,17 @@
           <ion-icon name="chatbubble-outline"></ion-icon>
           @if ((project().comments || []).length > 0) {
           {{ (project().comments || []).length }}
+          }
+        </ion-button>
+        <ion-button
+          [fill]="isUserFollowing(project()) ? 'solid' : 'clear'"
+          size="small"
+          (click)="onFollowButtonClick($event)"
+          class="vote-button"
+        >
+          {{ "HOME.FOLLOW" | translate }}
+          @if ((project().followers || []).length > 0) {
+          {{ (project().followers || []).length }}
           }
         </ion-button>
       </div>
