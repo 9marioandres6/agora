@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController, ToastController, AlertController, IonInput } from '@ionic/angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { ProjectsService } from '../services/projects.service';
 import { Project, Chapter, Media, Need, Scope } from '../services/models/project.models';
@@ -21,6 +21,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   @ViewChildren('chapterTitleInput') chapterTitleInputs!: QueryList<IonInput>;
 
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private authService = inject(AuthService);
   private projectsService = inject(ProjectsService);
   private modalCtrl = inject(ModalController);
@@ -85,6 +86,12 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       if (project) {
         this.project.set(project);
         this.isLoading.set(false);
+        
+        // Redirect to public page if project is done
+        if (project.state === 'done') {
+          this.router.navigate([`/project/${project.id}/public`]);
+          return;
+        }
         
         // Load pending collaborators if creator
         if (this.isCreator()) {

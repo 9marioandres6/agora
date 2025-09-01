@@ -84,16 +84,18 @@
         </ion-button>
       </div>
       <div>
-        <ion-button 
-          fill="clear" 
-          size="small"
-          (click)="onCollaboratorsButtonClick($event)"
-          class="collaborators-button">
-          <ion-icon name="people-outline"></ion-icon>
-          @if ((project().collaborators || []).length > 0) {
-            {{ (project().collaborators || []).length }}
-          }
-        </ion-button>
+        @if (project().state !== 'done') {
+          <ion-button 
+            fill="clear" 
+            size="small"
+            (click)="onCollaboratorsButtonClick($event)"
+            class="collaborators-button">
+            <ion-icon name="people-outline"></ion-icon>
+            @if ((project().collaborators || []).length > 0) {
+              {{ (project().collaborators || []).length }}
+            }
+          </ion-button>
+        }
         <ion-button 
           fill="clear" 
           size="small"
@@ -184,7 +186,7 @@
 
 
       <!-- Request Collaboration Button (for non-creators and non-collaborators) -->
-      @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) && !hasCollaborationRequest(project())) {
+      @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) && !hasCollaborationRequest(project()) && project().state !== 'done') {
         <div class="request-collaboration-section">
           <ion-item>
             <ion-textarea

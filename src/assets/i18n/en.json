@@ -281,7 +281,8 @@
     "STATE_ADVANCEMENT_TITLE": "Advance Project State",
     "STATE_ADVANCEMENT_MESSAGE": "Do you want to change the project state from \"{{currentState}}\" to \"{{nextState}}\"? This action cannot be undone.",
     "STATE_ADVANCED_SUCCESS": "Project state successfully changed to {{state}}",
-    "STATE_ADVANCED_ERROR": "Error advancing project state"
+    "STATE_ADVANCED_ERROR": "Error advancing project state",
+    "COMPLETED_MESSAGE": "This project has been completed."
   },
   "PUBLIC": {
     "PUBLIC_PROJECT": "Public Project",

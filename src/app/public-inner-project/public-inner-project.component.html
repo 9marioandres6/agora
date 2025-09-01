@@ -5,14 +5,16 @@
     </ion-buttons>
     <ion-title>{{ 'PUBLIC.PUBLIC_PROJECT' | translate }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button 
-        fill="clear" 
-        size="small" 
-        color="primary"
-        (click)="showCollaborationModal()"
-        class="collaborate-button">
-        {{ 'HOME.COLLABORATE' | translate }}
-      </ion-button>
+      @if (project()?.state !== 'done') {
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          color="primary"
+          (click)="showCollaborationModal()"
+          class="collaborate-button">
+          {{ 'HOME.COLLABORATE' | translate }}
+        </ion-button>
+      }
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -38,6 +40,13 @@
 
         <ion-card-content class="project-body">
           <p class="project-description">{{ project()?.description }}</p>
+          
+          @if (project()?.state === 'done') {
+            <div class="project-completed-message">
+              <ion-icon name="checkmark-circle" color="success" size="large"></ion-icon>
+              <p>{{ 'PROJECT.COMPLETED_MESSAGE' | translate }}</p>
+            </div>
+          }
           
           @if (project()?.media?.length) {
             <div class="project-media">

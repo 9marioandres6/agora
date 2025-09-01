@@ -281,7 +281,8 @@
     "STATE_ADVANCEMENT_TITLE": "Avanzar Estado del Proyecto",
     "STATE_ADVANCEMENT_MESSAGE": "¿Quieres cambiar el estado del proyecto de \"{{currentState}}\" a \"{{nextState}}\"? Esta acción no se puede deshacer.",
     "STATE_ADVANCED_SUCCESS": "Estado del proyecto cambiado exitosamente a {{state}}",
-    "STATE_ADVANCED_ERROR": "Error al avanzar el estado del proyecto"
+    "STATE_ADVANCED_ERROR": "Error al avanzar el estado del proyecto",
+    "COMPLETED_MESSAGE": "Este proyecto ha sido completado."
   },
   "PUBLIC": {
     "PUBLIC_PROJECT": "Proyecto Público",

@@ -102,6 +102,12 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   navigateToProject(project: Project) {
+    // If project is done, always navigate to public page
+    if (project.state === 'done') {
+      this.navCtrl.navigateForward(`/project/${project.id}/public`);
+      return;
+    }
+    
     const currentUser = this.user();
     if (currentUser && (project.creator?.uid === currentUser.uid || 
         (project.collaborators || []).some(c => c.uid === currentUser.uid))) {
