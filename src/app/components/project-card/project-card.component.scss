@@ -10,7 +10,7 @@
     background: var(--app-user-project-background) !important;
     border-color: var(--app-user-project-border) !important;
     box-shadow: 0 4px 12px rgba(56, 128, 255, 0.15) !important;
-    
+
     &:hover {
       box-shadow: 0 6px 16px rgba(56, 128, 255, 0.25) !important;
       transform: translateY(-1px);
@@ -39,7 +39,6 @@
 
       .scope-icon-inline {
         font-size: 20px;
-        color: var(--app-primary-color);
         flex-shrink: 0;
       }
 
@@ -53,6 +52,10 @@
         font-weight: 500;
         flex-shrink: 0;
         margin: 0;
+        --background: var(--app-background-secondary);
+        --color: var(--app-text);
+        border: 1px solid var(--app-border-color);
+        border-radius: 8px;
       }
     }
   }
@@ -89,7 +92,6 @@
             align-items: center;
             justify-content: center;
             min-height: 200px;
-            background: var(--app-media-background);
             overflow: hidden;
 
             .media-image {

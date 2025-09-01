@@ -3,7 +3,7 @@
     <div class="project-title-line">
       <ion-icon [name]="getScopeIcon(project().scope || '')" class="scope-icon-inline"></ion-icon>
       <span class="project-title-text">{{ project().title }}</span>
-      <ion-chip [color]="getStateColor(project().state || 'building')" class="state-chip-inline">
+      <ion-chip class="state-chip-inline">
         {{ getStateLabel(project().state || 'building') | translate }}
       </ion-chip>
     </div>
@@ -44,7 +44,6 @@
                   <li>
                     <ion-icon 
                       [name]="getNeedIcon(need)" 
-                      [color]="getNeedIconColor(need)"
                       class="need-icon">
                     </ion-icon>
                     {{ need.name }}
@@ -62,8 +61,7 @@
       <div>
         <ion-button 
           [fill]="isUserSupported(project()) ? 'solid' : 'clear'"
-          size="small" 
-          color="success"
+          size="small"
           (click)="onSupportButtonClick($event)"
           class="vote-button">
           {{ 'HOME.SUPPORT' | translate }}
@@ -74,8 +72,7 @@
         
         <ion-button 
           [fill]="isUserOpposed(project()) ? 'solid' : 'clear'"
-          size="small" 
-          color="danger"
+          size="small"
           (click)="onOpposeButtonClick($event)"
           class="vote-button">
           {{ 'HOME.OPPOSE' | translate }}
@@ -87,8 +84,7 @@
       <div>
         <ion-button 
           fill="clear" 
-          size="small" 
-          color="primary"
+          size="small"
           (click)="onCollaboratorsButtonClick($event)"
           class="collaborators-button">
           <ion-icon name="people-outline"></ion-icon>
@@ -98,8 +94,7 @@
         </ion-button>
         <ion-button 
           fill="clear" 
-          size="small" 
-          color="medium"
+          size="small"
           (click)="onCommentsButtonClick($event)"
           class="comments-button">
           <ion-icon name="chatbubble-outline"></ion-icon>
@@ -212,7 +207,7 @@
       @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) && hasCollaborationRequest(project())) {
         <div class="pending-request-section">
           <div class="pending-request-message">
-            <ion-icon name="time-outline" color="warning"></ion-icon>
+            <ion-icon name="time-outline"></ion-icon>
             <span>{{ 'HOME.COLLABORATION_REQUEST_PENDING' | translate }}</span>
           </div>
         </div>
@@ -220,7 +215,4 @@
     </div>
   }
 </ion-card>
-
-<!-- Divider between project cards -->
-<ion-item-divider class="project-card-divider"></ion-item-divider>
 
