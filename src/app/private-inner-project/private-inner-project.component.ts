@@ -10,12 +10,13 @@ import { Project, Chapter, Media, Need, Scope } from '../services/models/project
 import { SupabaseService } from '../services/supabase.service';
 import { UserSearchService } from '../services/user-search.service';
 import { PendingCollaborator } from './models/private-inner-project.models';
+import { UserAvatarComponent, UserAvatarData } from '../components/user-avatar/user-avatar.component';
 
 @Component({
   selector: 'app-private-inner-project',
   templateUrl: './private-inner-project.component.html',
   styleUrls: ['./private-inner-project.component.scss'],
-  imports: [CommonModule, IonicModule, TranslateModule, FormsModule]
+  imports: [CommonModule, IonicModule, TranslateModule, FormsModule, UserAvatarComponent]
 })
 export class PrivateInnerProjectComponent implements OnDestroy {
   @ViewChildren('chapterTitleInput') chapterTitleInputs!: QueryList<IonInput>;
@@ -1224,6 +1225,37 @@ export class PrivateInnerProjectComponent implements OnDestroy {
 
   toggleMembers() {
     this.membersExpanded.update(expanded => !expanded);
+  }
+
+  getCreatorData(): UserAvatarData {
+    const project = this.project();
+    if (!project?.creator) {
+      return {
+        uid: '',
+        displayName: 'Anonymous',
+        email: '',
+        photoURL: '',
+        role: 'creator'
+      };
+    }
+
+    return {
+      uid: project.creator.uid,
+      displayName: project.creator.displayName || 'Anonymous',
+      email: project.creator.email || '',
+      photoURL: project.creator.photoURL || '',
+      role: 'creator'
+    };
+  }
+
+  getCollaboratorData(collaborator: any): UserAvatarData {
+    return {
+      uid: collaborator.uid,
+      displayName: collaborator.displayName || 'Anonymous',
+      email: collaborator.email || '',
+      photoURL: collaborator.photoURL || '',
+      role: 'collaborator'
+    };
   }
 
   ngOnDestroy() {

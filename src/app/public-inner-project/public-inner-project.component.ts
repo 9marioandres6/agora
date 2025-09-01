@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ProjectsService } from '../services/projects.service';
 import { Project, Need, Scope } from '../services/models/project.models';
 import { AuthService } from '../services/auth.service';
+import { UserAvatarComponent, UserAvatarData } from '../components/user-avatar/user-avatar.component';
 
 
 @Component({
@@ -14,7 +15,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './public-inner-project.component.html',
   styleUrls: ['./public-inner-project.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule, FormsModule]
+  imports: [CommonModule, IonicModule, TranslateModule, FormsModule, UserAvatarComponent]
 })
 export class PublicInnerProjectComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -29,6 +30,7 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
   project = signal<Project | null>(null);
   isLoading = signal(true);
   collaborationMessage = '';
+  membersExpanded = signal(false);
   
   ngOnInit() {
     if (this.projectId) {
@@ -198,7 +200,48 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     await toast.present();
   }
 
+  getMembersSummary(): string {
+    const project = this.project();
+    if (!project) return '';
+    
+    const collaboratorsCount = (project.collaborators || []).length;
+    return `1 Creator - ${collaboratorsCount} Collaborator${collaboratorsCount > 1 ? 's' : ''}`;
+  }
 
+  toggleMembers() {
+    this.membersExpanded.update(expanded => !expanded);
+  }
+
+  getCreatorData(): UserAvatarData {
+    const project = this.project();
+    if (!project?.creator) {
+      return {
+        uid: '',
+        displayName: 'Anonymous',
+        email: '',
+        photoURL: '',
+        role: 'creator'
+      };
+    }
+
+    return {
+      uid: project.creator.uid,
+      displayName: project.creator.displayName || 'Anonymous',
+      email: project.creator.email || '',
+      photoURL: project.creator.photoURL || '',
+      role: 'creator'
+    };
+  }
+
+  getCollaboratorData(collaborator: any): UserAvatarData {
+    return {
+      uid: collaborator.uid,
+      displayName: collaborator.displayName || 'Anonymous',
+      email: collaborator.email || '',
+      photoURL: collaborator.photoURL || '',
+      role: 'collaborator'
+    };
+  }
 
   ngOnDestroy() {
     // Clean up the project listener

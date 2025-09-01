@@ -272,33 +272,27 @@
           <ion-card-content>
             <!-- Creator -->
             <div class="member-item creator">
-              <ion-avatar class="avatar-small">
-                @if (project()?.creator?.photoURL) {
-                  <img [src]="project()?.creator?.photoURL" [alt]="project()?.creator?.displayName">
-                } @else {
-                  <ion-icon name="person"></ion-icon>
-                }
-              </ion-avatar>
-              <div class="member-info">
-                <h4>{{ project()?.creator?.displayName || 'Anonymous' }}</h4>
-                                  <p class="member-role">{{ 'PROJECT.CREATOR' | translate }}</p>
-              </div>
+              <app-user-avatar
+                [user]="getCreatorData()"
+                [variant]="'creator'"
+                [avatarSize]="'small'"
+                [showRole]="true"
+                [clickable]="true"
+                [showProjectSummary]="true">
+              </app-user-avatar>
             </div>
 
             <!-- Accepted Collaborators -->
             @for (collaborator of project()?.collaborators || []; track collaborator.uid) {
               <div class="member-item collaborator">
-                <ion-avatar class="avatar-small">
-                  @if (collaborator.photoURL) {
-                    <img [src]="collaborator.photoURL" [alt]="collaborator.displayName">
-                  } @else {
-                    <ion-icon name="person"></ion-icon>
-                  }
-                </ion-avatar>
-                <div class="member-info">
-                  <h4>{{ collaborator.displayName || 'Anonymous' }}</h4>
-                  <p class="member-role">{{ 'PROJECT.COLLABORATOR' | translate }}</p>
-                </div>
+                <app-user-avatar
+                  [user]="getCollaboratorData(collaborator)"
+                  [variant]="'collaborator'"
+                  [avatarSize]="'small'"
+                  [showRole]="true"
+                  [clickable]="true"
+                  [showProjectSummary]="true">
+                </app-user-avatar>
               </div>
             }
 
