@@ -61,6 +61,41 @@
             </div>
           </div>
 
+          @if (project()?.state === 'implementing') {
+          <div class="info-row">
+            <div class="info-content">
+              <div class="implementation-progress">
+                <div class="progress-header">
+                  <span class="progress-label">{{ "HOME.IMPLEMENTATION_PROGRESS" | translate }}</span>
+                  @if (isCreator()) {
+                    <div class="progress-controls">
+                      <ion-range
+                        [ngModel]="editingProject().implementationPercentage || project()?.implementationPercentage || 0"
+                        (ngModelChange)="updateProjectField('implementationPercentage', $event)"
+                        min="0"
+                        max="100"
+                        step="1"
+                        color="primary"
+                        class="progress-range">
+                        <ion-label slot="start">0%</ion-label>
+                        <ion-label slot="end">100%</ion-label>
+                      </ion-range>
+                      <span class="progress-percentage">{{ editingProject().implementationPercentage || project()?.implementationPercentage || 0 }}%</span>
+                    </div>
+                  } @else {
+                    <span class="progress-percentage">{{ project()?.implementationPercentage || 0 }}%</span>
+                  }
+                </div>
+                <ion-progress-bar 
+                  [value]="(editingProject().implementationPercentage || project()?.implementationPercentage || 0) / 100" 
+                  color="primary"
+                  class="progress-bar">
+                </ion-progress-bar>
+              </div>
+            </div>
+          </div>
+          }
+
           <div class="info-row">
             <div class="info-content">
               @if (isCreator()) {

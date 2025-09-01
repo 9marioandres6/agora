@@ -474,6 +474,9 @@ export class FirebaseQueryService {
       if (project.state === undefined) {
         project.state = 'building';
       }
+      if (project.implementationPercentage === undefined) {
+        project.implementationPercentage = 0;
+      }
       if (
         project.supports === undefined ||
         typeof project.supports === 'number'

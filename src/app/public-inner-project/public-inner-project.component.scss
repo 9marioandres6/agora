@@ -95,6 +95,40 @@ ion-header {
       font-size: 15px;
     }
 
+    .implementation-progress {
+      margin: 0 0 16px 0;
+      padding: 12px;
+      background: var(--app-background-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--app-border-color);
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+
+        .progress-label {
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--app-text-secondary);
+        }
+
+        .progress-percentage {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--app-text);
+        }
+      }
+
+      .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+        --background: var(--app-border-color);
+        --progress-background: var(--ion-color-primary);
+      }
+    }
+
     .project-completed-message {
       display: flex;
       align-items: center;

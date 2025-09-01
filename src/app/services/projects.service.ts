@@ -171,6 +171,7 @@ export class ProjectsService {
       // Ensure new fields have default values for existing projects
       const processedProjects = projects.map(project => {
         if (project.state === undefined) project.state = 'building';
+        if (project.implementationPercentage === undefined) project.implementationPercentage = 0;
         if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
         if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
         if (project.verifies === undefined) project.verifies = [];
@@ -395,7 +396,7 @@ export class ProjectsService {
     this.listeners.clear();
   }
 
-  async createProject(projectData: Omit<Project, 'id' | 'createdAt' | 'state' | 'supports' | 'opposes' | 'verifies' | 'followers' | 'comments'>): Promise<string> {
+  async createProject(projectData: Omit<Project, 'id' | 'createdAt' | 'state' | 'implementationPercentage' | 'supports' | 'opposes' | 'verifies' | 'followers' | 'comments'>): Promise<string> {
     try {
       const currentUser = this.authService.user();
       if (!currentUser?.uid) {
@@ -407,6 +408,7 @@ export class ProjectsService {
         createdAt: new Date().toISOString(),
         status: 'active',
         state: 'building',
+        implementationPercentage: 0,
         supports: [],
         opposes: [],
         verifies: [],
@@ -466,6 +468,9 @@ export class ProjectsService {
         // Ensure new fields have default values for existing projects
         if (project.state === undefined) {
           project.state = 'building';
+        }
+        if (project.implementationPercentage === undefined) {
+          project.implementationPercentage = 0;
         }
         if (project.supports === undefined || typeof project.supports === 'number') {
           project.supports = [];

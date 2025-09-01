@@ -180,6 +180,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         title: proj.title,
         description: proj.description,
         scope: proj.scope,
+        implementationPercentage: proj.implementationPercentage,
         needs: [...(proj.needs || [])]
       });
       this.isEditingProject.set(true);
@@ -482,7 +483,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
 
   // Project field editing methods
-  startEditingProjectField(field: 'title' | 'description' | 'needs') {
+  startEditingProjectField(field: 'title' | 'description' | 'implementationPercentage' | 'needs') {
     const proj = this.project();
     if (!proj) return;
 
@@ -493,13 +494,16 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       case 'description':
         this.editingProject.update(project => ({ ...project, description: proj.description || '' }));
         break;
+      case 'implementationPercentage':
+        this.editingProject.update(project => ({ ...project, implementationPercentage: proj.implementationPercentage || 0 }));
+        break;
       case 'needs':
         this.editingProject.update(project => ({ ...project, needs: [...(proj.needs || [])] }));
         break;
     }
   }
 
-  async saveProjectField(field: 'title' | 'description' | 'needs') {
+  async saveProjectField(field: 'title' | 'description' | 'implementationPercentage' | 'needs') {
     if (!this.projectId) return;
 
     const proj = this.project();
@@ -518,6 +522,12 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           const newDescription = this.editingProject().description?.trim();
           if (newDescription !== proj.description) {
             updates.description = newDescription;
+          }
+          break;
+        case 'implementationPercentage':
+          const newPercentage = this.editingProject().implementationPercentage;
+          if (newPercentage !== undefined && newPercentage !== proj.implementationPercentage) {
+            updates.implementationPercentage = newPercentage;
           }
           break;
         case 'needs':
@@ -551,12 +561,12 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     }
   }
 
-  cancelProjectFieldEdit(field: 'title' | 'description' | 'needs') {
+  cancelProjectFieldEdit(field: 'title' | 'description' | 'implementationPercentage' | 'needs') {
     this.startEditingProjectField(field);
   }
 
   // Auto-save for project fields
-  private startProjectFieldAutoSave(field: 'title' | 'description' | 'needs') {
+  private startProjectFieldAutoSave(field: 'title' | 'description' | 'implementationPercentage' | 'needs') {
     this.stopProjectFieldAutoSave();
     
     this.projectAutoSaveTimer = setInterval(() => {
@@ -571,7 +581,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     }
   }
 
-  private async autoSaveProjectField(field: 'title' | 'description' | 'needs') {
+  private async autoSaveProjectField(field: 'title' | 'description' | 'implementationPercentage' | 'needs') {
     const proj = this.project();
     if (!proj) return;
 
@@ -590,6 +600,13 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           const newDescription = this.editingProject().description?.trim();
           if (newDescription !== proj.description) {
             updates.description = newDescription;
+            hasChanges = true;
+          }
+          break;
+        case 'implementationPercentage':
+          const newPercentage = this.editingProject().implementationPercentage;
+          if (newPercentage !== undefined && newPercentage !== proj.implementationPercentage) {
+            updates.implementationPercentage = newPercentage;
             hasChanges = true;
           }
           break;
@@ -641,9 +658,9 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     this.startProjectFieldAutoSave('needs');
   }
 
-  updateProjectField(field: 'title' | 'description', value: string) {
+  updateProjectField(field: 'title' | 'description' | 'implementationPercentage', value: string | number) {
     this.editingProject.update(project => ({ ...project, [field]: value }));
-    this.startProjectFieldAutoSave(field);
+    this.startProjectFieldAutoSave(field as any);
   }
 
   // Chapter auto-save methods

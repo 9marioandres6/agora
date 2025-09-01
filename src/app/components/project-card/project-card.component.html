@@ -15,6 +15,18 @@
   <ion-card-content class="project-body" (click)="onProjectCardClick()">
     @if (project().description.trim() !== '') {
     <p class="project-description">{{ project().description }}</p>
+    } @if (project().state === 'implementing') {
+    <div class="implementation-progress">
+      <div class="progress-header">
+        <span class="progress-label">{{ "HOME.IMPLEMENTATION_PROGRESS" | translate }}</span>
+        <span class="progress-percentage">{{ project().implementationPercentage || 0 }}%</span>
+      </div>
+      <ion-progress-bar 
+        [value]="(project().implementationPercentage || 0) / 100" 
+        color="primary"
+        class="progress-bar">
+      </ion-progress-bar>
+    </div>
     } @if (project().state === 'done') {
     <div class="project-stats">
       <div class="stat-item">

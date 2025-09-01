@@ -19,6 +19,7 @@ export interface Project {
   participants?: string[];
   tags?: string[];
   state: 'building' | 'implementing' | 'done';
+  implementationPercentage: number;
   supports: string[];
   opposes: string[];
   verifies: string[];
