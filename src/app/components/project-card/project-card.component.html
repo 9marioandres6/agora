@@ -1,109 +1,104 @@
 <ion-card class="project-card" [class.user-project]="isUserProject(project())">
   <ion-card-header class="project-header" (click)="onProjectCardClick()">
     <div class="project-title-line">
-      <ion-icon [name]="getScopeIcon(project().scope || '')" class="scope-icon-inline"></ion-icon>
+      <ion-icon
+        [name]="getScopeIcon(project().scope || '')"
+        class="scope-icon-inline"
+      ></ion-icon>
       <span class="project-title-text">{{ project().title }}</span>
       <ion-chip class="state-chip-inline">
-        {{ getStateLabel(project().state || 'building') | translate }}
+        {{ getStateLabel(project().state || "building") | translate }}
       </ion-chip>
     </div>
   </ion-card-header>
 
   <ion-card-content class="project-body" (click)="onProjectCardClick()">
     @if (project().description.trim() !== '') {
-      <p class="project-description">{{ project().description }}</p>
-    }
-    
-    @if (project().media?.length) {
-      <div class="project-media">
-        <div class="media-grid">
-          @for (media of project().media; track media.id) {
-            <div class="media-item">
-              <div class="media-preview">
-                @if (media.type === 'image') {
-                  <img [src]="media.url" [alt]="media.caption" class="media-image">
-                } @else if (media.type === 'video') {
-                  <div class="video-thumbnail">
-                    <video [src]="media.url" class="media-video"></video>
-                    <div class="play-overlay">
-                      <ion-icon name="play-circle" size="large"></ion-icon>
-                    </div>
-                  </div>
-                }
-              </div>
-              <div class="media-info">
+    <p class="project-description">{{ project().description }}</p>
+    } @if (project().media?.length) {
+    <div class="project-media">
+      <div class="media-grid">
+        @for (media of project().media; track media.id) {
+        <div class="media-item">
+          <div class="media-preview">
+            @if (media.type === 'image') {
+            <img [src]="media.url" [alt]="media.caption" class="media-image" />
+            } @else if (media.type === 'video') {
+            <div class="video-thumbnail">
+              <video [src]="media.url" class="media-video"></video>
+              <div class="play-overlay">
+                <ion-icon name="play-circle" size="large"></ion-icon>
               </div>
             </div>
-          }
+            }
+          </div>
+          <div class="media-info"></div>
         </div>
+        }
       </div>
+    </div>
+    } @if (project().needs && project().needs.length > 0) {
+    <div class="project-needs">
+      <ul class="needs-list">
+        @for (need of project().needs; track need.name) {
+        <li>
+          <ion-icon [name]="getNeedIcon(need)" class="need-icon"> </ion-icon>
+          {{ need.name }}
+        </li>
+        }
+      </ul>
+    </div>
     }
-    
-    @if (project().needs && project().needs.length > 0) {
-      <div class="project-needs">
-        <ul class="needs-list">
-                          @for (need of project().needs; track need.name) {
-                  <li>
-                    <ion-icon 
-                      [name]="getNeedIcon(need)" 
-                      class="need-icon">
-                    </ion-icon>
-                    {{ need.name }}
-                  </li>
-                }
-        </ul>
-      </div>
-    }
-
-
   </ion-card-content>
 
   <div class="project-footer">
     <div class="footer-actions">
       <div>
-        <ion-button 
+        <ion-button
           [fill]="isUserSupported(project()) ? 'solid' : 'clear'"
           size="small"
           (click)="onSupportButtonClick($event)"
-          class="vote-button">
-          {{ 'HOME.SUPPORT' | translate }}
+          class="vote-button"
+        >
+          {{ "HOME.SUPPORT" | translate }}
           @if ((project().supports || []).length > 0) {
-            {{ (project().supports || []).length }}
+          {{ (project().supports || []).length }}
           }
         </ion-button>
-        
-        <ion-button 
+
+        <ion-button
           [fill]="isUserOpposed(project()) ? 'solid' : 'clear'"
           size="small"
           (click)="onOpposeButtonClick($event)"
-          class="vote-button">
-          {{ 'HOME.OPPOSE' | translate }}
+          class="vote-button"
+        >
+          {{ "HOME.OPPOSE" | translate }}
           @if ((project().opposes || []).length > 0) {
-            {{ (project().opposes || []).length }}
+          {{ (project().opposes || []).length }}
           }
         </ion-button>
       </div>
       <div>
-        @if (project().state !== 'done') {
-          <ion-button 
-            fill="clear" 
-            size="small"
-            (click)="onCollaboratorsButtonClick($event)"
-            class="collaborators-button">
-            <ion-icon name="people-outline"></ion-icon>
-            @if ((project().collaborators || []).length > 0) {
-              {{ (project().collaborators || []).length }}
-            }
-          </ion-button>
-        }
-        <ion-button 
-          fill="clear" 
+        <ion-button
+          fill="clear"
+          size="small"
+          (click)="onCollaboratorsButtonClick($event)"
+          class="collaborators-button"
+        >
+          <ion-icon name="people-outline"></ion-icon>
+          @if ((project().collaborators || []).length > 0) {
+          {{ (project().collaborators || []).length }}
+          }
+        </ion-button>
+        <ion-button
+          fill="clear"
           size="small"
           (click)="onCommentsButtonClick($event)"
-          class="comments-button">
+          class="comments-button"
+        >
           <ion-icon name="chatbubble-outline"></ion-icon>
           @if ((project().comments || []).length > 0) {
-            {{ (project().comments || []).length }}
+          {{ (project().comments || []).length }}
           }
         </ion-button>
       </div>
@@ -112,111 +107,114 @@
 
   <!-- Comments Section -->
   @if (expandedComments()) {
-    <div class="comments-container">
-      <div class="comments-header">
-        <h4>{{ 'HOME.COMMENTS' | translate }}</h4>
-      </div>
-      @if (project().comments && project().comments.length > 0) {
-        <div class="comments-list">
-          @for (comment of project().comments; track comment.id) {
-            <div class="comment-item">
-              <div class="comment-header">
-                <div class="comment-author">
-                  <strong>{{ comment.creatorName }}</strong>
-                </div>
-                <div class="comment-date">
-                  <small>{{ comment.createdAt | date:'short' }}</small>
-                </div>
-              </div>
-              <div class="comment-body">
-                <p class="comment-text">{{ comment.text }}</p>
-              </div>
-            </div>
-          }
+  <div class="comments-container">
+    <div class="comments-header">
+      <h4>{{ "HOME.COMMENTS" | translate }}</h4>
+    </div>
+    @if (project().comments && project().comments.length > 0) {
+    <div class="comments-list">
+      @for (comment of project().comments; track comment.id) {
+      <div class="comment-item">
+        <div class="comment-header">
+          <div class="comment-author">
+            <strong>{{ comment.creatorName }}</strong>
+          </div>
+          <div class="comment-date">
+            <small>{{ comment.createdAt | date : "short" }}</small>
+          </div>
         </div>
-      }
-      
-      <!-- Only show comment input for creators and collaborators -->
-      @if (canInteractWithProject(project())) {
-        <ion-item class="add-comment-section">
-          <ion-textarea
-            [(ngModel)]="newCommentText"
-            [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
-            rows="2"
-            class="comment-textarea"
-            (keydown.enter)="onCommentKeydown($event)">
-          </ion-textarea>
-        </ion-item>
+        <div class="comment-body">
+          <p class="comment-text">{{ comment.text }}</p>
+        </div>
+      </div>
       }
     </div>
+    }
+
+    <!-- Only show comment input for creators and collaborators -->
+    @if (canInteractWithProject(project())) {
+    <ion-item class="add-comment-section">
+      <ion-textarea
+        [(ngModel)]="newCommentText"
+        [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
+        rows="2"
+        class="comment-textarea"
+        (keydown.enter)="onCommentKeydown($event)"
+      >
+      </ion-textarea>
+    </ion-item>
+    }
+  </div>
   }
 
   <!-- Collaborators Section -->
   @if (expandedCollaborators()) {
-    <div class="collaborators-container">
-      <!-- Creator Section -->
-      <div class="creator-section">
-        <h4>{{ 'HOME.CREATOR' | translate }}</h4>
-        <app-user-avatar 
-          [user]="getCreatorData()"
-          [variant]="'creator'"
-          [avatarSize]="'small'"
-          [showRole]="true">
-        </app-user-avatar>
-      </div>
+  <div class="collaborators-container">
+    <!-- Creator Section -->
+    <div class="creator-section">
+      <h4>{{ "HOME.CREATOR" | translate }}</h4>
+      <app-user-avatar
+        [user]="getCreatorData()"
+        [variant]="'creator'"
+        [avatarSize]="'small'"
+        [showRole]="true"
+      >
+      </app-user-avatar>
+    </div>
 
-      <!-- Current Collaborators -->
-      <div class="collaborators-list">
-        <h4>{{ 'HOME.COLLABORATORS' | translate }}</h4>
-        @if (project().collaborators && project().collaborators.length > 0) {
-          @for (collaborator of project().collaborators; track collaborator.uid) {
-            <app-user-avatar 
-              [user]="getCollaboratorData(collaborator)"
-              [variant]="'collaborator'"
-              [avatarSize]="'small'"
-              [showRole]="true"
-              [showJoinedDate]="true">
-            </app-user-avatar>
-          }
-        } @else {
-          <p class="no-data">{{ 'HOME.NO_COLLABORATORS' | translate }}</p>
-        }
-      </div>
-
-
-
-      <!-- Request Collaboration Button (for non-creators and non-collaborators) -->
-      @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) && !hasCollaborationRequest(project()) && project().state !== 'done') {
-        <div class="request-collaboration-section">
-          <ion-item>
-            <ion-textarea
-              [(ngModel)]="collaborationMessage"
-              [placeholder]="'HOME.COLLABORATION_MESSAGE_PLACEHOLDER' | translate"
-              rows="2"
-              class="collaboration-textarea">
-            </ion-textarea>
-          </ion-item>
-          <ion-button 
-            fill="clear" 
-            size="small" 
-            color="primary"
-            (click)="submitCollaborationRequest()"
-            class="request-collaboration-button">
-            {{ 'HOME.REQUEST_COLLABORATION' | translate }}
-          </ion-button>
-        </div>
-      }
-
-      <!-- Show pending request status for users who have already requested -->
-      @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) && hasCollaborationRequest(project())) {
-        <div class="pending-request-section">
-          <div class="pending-request-message">
-            <ion-icon name="time-outline"></ion-icon>
-            <span>{{ 'HOME.COLLABORATION_REQUEST_PENDING' | translate }}</span>
-          </div>
-        </div>
+    <!-- Current Collaborators -->
+    <div class="collaborators-list">
+      <h4>{{ "HOME.COLLABORATORS" | translate }}</h4>
+      @if (project().collaborators && project().collaborators.length > 0) { @for
+      (collaborator of project().collaborators; track collaborator.uid) {
+      <app-user-avatar
+        [user]="getCollaboratorData(collaborator)"
+        [variant]="'collaborator'"
+        [avatarSize]="'small'"
+        [showRole]="true"
+        [showJoinedDate]="true"
+      >
+      </app-user-avatar>
+      } } @else {
+      <p class="no-data">{{ "HOME.NO_COLLABORATORS" | translate }}</p>
       }
     </div>
+
+    <!-- Request Collaboration Button (for non-creators and non-collaborators) -->
+    @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) &&
+    !hasCollaborationRequest(project()) && project().state !== 'done') {
+    <div class="request-collaboration-section">
+      <ion-item>
+        <ion-textarea
+          [(ngModel)]="collaborationMessage"
+          [placeholder]="'HOME.COLLABORATION_MESSAGE_PLACEHOLDER' | translate"
+          rows="2"
+          class="collaboration-textarea"
+        >
+        </ion-textarea>
+      </ion-item>
+      <ion-button
+        fill="clear"
+        size="small"
+        color="primary"
+        (click)="submitCollaborationRequest()"
+        class="request-collaboration-button"
+      >
+        {{ "HOME.REQUEST_COLLABORATION" | translate }}
+      </ion-button>
+    </div>
+    }
+
+    <!-- Show pending request status for users who have already requested -->
+    @if (!isProjectCreator(project()) && !isProjectCollaborator(project()) &&
+    hasCollaborationRequest(project())) {
+    <div class="pending-request-section">
+      <div class="pending-request-message">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ "HOME.COLLABORATION_REQUEST_PENDING" | translate }}</span>
+      </div>
+    </div>
+    }
+  </div>
   }
 </ion-card>
-
