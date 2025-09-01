@@ -173,6 +173,8 @@ export class ProjectsService {
         if (project.state === undefined) project.state = 'building';
         if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
         if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+        if (project.verifies === undefined) project.verifies = [];
+        if (project.followers === undefined) project.followers = [];
         if (project.comments === undefined) project.comments = [];
         if (project.collaborators === undefined) project.collaborators = [];
         if (project.collaborationRequests === undefined) project.collaborationRequests = [];
@@ -268,6 +270,8 @@ export class ProjectsService {
           if (project.state === undefined) project.state = 'building';
           if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
           if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+          if (project.verifies === undefined) project.verifies = [];
+          if (project.followers === undefined) project.followers = [];
           if (project.comments === undefined) project.comments = [];
           if (project.collaborators === undefined) project.collaborators = [];
           if (project.collaborationRequests === undefined) project.collaborationRequests = [];
@@ -391,7 +395,7 @@ export class ProjectsService {
     this.listeners.clear();
   }
 
-  async createProject(projectData: Omit<Project, 'id' | 'createdAt' | 'state' | 'supports' | 'opposes' | 'comments'>): Promise<string> {
+  async createProject(projectData: Omit<Project, 'id' | 'createdAt' | 'state' | 'supports' | 'opposes' | 'verifies' | 'followers' | 'comments'>): Promise<string> {
     try {
       const currentUser = this.authService.user();
       if (!currentUser?.uid) {
@@ -405,6 +409,8 @@ export class ProjectsService {
         state: 'building',
         supports: [],
         opposes: [],
+        verifies: [],
+        followers: [],
         comments: [],
         participants: [projectData.createdBy],
         tags: this.generateTags(projectData.title, projectData.description, projectData.needs),
@@ -466,6 +472,12 @@ export class ProjectsService {
         }
         if (project.opposes === undefined || typeof project.opposes === 'number') {
           project.opposes = [];
+        }
+        if (project.verifies === undefined) {
+          project.verifies = [];
+        }
+        if (project.followers === undefined) {
+          project.followers = [];
         }
         if (project.comments === undefined) {
           project.comments = [];
@@ -534,6 +546,8 @@ export class ProjectsService {
       return projects.map(project => {
         if (project.state === undefined) project.state = 'building';
         if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+        if (project.verifies === undefined) project.verifies = [];
+        if (project.followers === undefined) project.followers = [];
         if (project.comments === undefined) project.comments = [];
         if (project.collaborators === undefined) project.collaborators = [];
         if (project.collaborationRequests === undefined) project.collaborationRequests = [];
@@ -575,6 +589,8 @@ export class ProjectsService {
           if (project.state === undefined) project.state = 'building';
           if (project.supports === undefined || typeof project.supports === 'number') project.supports = [];
           if (project.opposes === undefined || typeof project.opposes === 'number') project.opposes = [];
+          if (project.verifies === undefined) project.verifies = [];
+          if (project.followers === undefined) project.followers = [];
           if (project.comments === undefined) project.comments = [];
           if (project.collaborators === undefined) project.collaborators = [];
           if (project.collaborationRequests === undefined) project.collaborationRequests = [];
@@ -752,6 +768,108 @@ export class ProjectsService {
     }
   }
 
+  async verifyProject(projectId: string, userId: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // Get the current project to check if verifies field exists
+      const projectDoc = await getDoc(projectRef);
+      if (!projectDoc.exists()) {
+        throw new Error('Project not found');
+      }
+      
+      const projectData = projectDoc.data() as Project;
+      
+      // If verifies field doesn't exist, initialize it
+      if (!projectData.verifies) {
+        await updateDoc(projectRef, {
+          verifies: [userId]
+        });
+      } else {
+        // Use arrayUnion if field exists
+        await updateDoc(projectRef, {
+          verifies: arrayUnion(userId)
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeVerify(projectId: string, userId: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // Get the current project to check if verifies field exists
+      const projectDoc = await getDoc(projectRef);
+      if (!projectDoc.exists()) {
+        throw new Error('Project not found');
+      }
+      
+      const projectData = projectDoc.data() as Project;
+      
+      // Only try to remove if the field exists and contains the user
+      if (projectData.verifies && projectData.verifies.includes(userId)) {
+        await updateDoc(projectRef, {
+          verifies: arrayRemove(userId)
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async followProject(projectId: string, userId: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // Get the current project to check if followers field exists
+      const projectDoc = await getDoc(projectRef);
+      if (!projectDoc.exists()) {
+        throw new Error('Project not found');
+      }
+      
+      const projectData = projectDoc.data() as Project;
+      
+      // If followers field doesn't exist, initialize it
+      if (!projectData.followers) {
+        await updateDoc(projectRef, {
+          followers: [userId]
+        });
+      } else {
+        // Use arrayUnion if field exists
+        await updateDoc(projectRef, {
+          followers: arrayUnion(userId)
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeFollow(projectId: string, userId: string): Promise<void> {
+    try {
+      const projectRef = doc(this.firestore, 'projects', projectId);
+      
+      // Get the current project to check if followers field exists
+      const projectDoc = await getDoc(projectRef);
+      if (!projectDoc.exists()) {
+        throw new Error('Project not found');
+      }
+      
+      const projectData = projectDoc.data() as Project;
+      
+      // Only try to remove if the field exists and contains the user
+      if (projectData.followers && projectData.followers.includes(userId)) {
+        await updateDoc(projectRef, {
+          followers: arrayRemove(userId)
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async toggleSupport(projectId: string, userId: string): Promise<{ action: 'added' | 'removed' }> {
     try {
       const projectRef = doc(this.firestore, 'projects', projectId);
@@ -812,6 +930,64 @@ export class ProjectsService {
         return { action: 'removed' };
       } else {
         await this.opposeProject(projectId, userId);
+        return { action: 'added' };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async toggleVerify(projectId: string, userId: string): Promise<{ action: 'added' | 'removed' }> {
+    try {
+      const projectDocSnap = await getDocs(query(this.projectsCollection, where('__name__', '==', projectId)));
+      
+      if (projectDocSnap.empty) {
+        throw new Error('Project not found');
+      }
+      
+      const project = projectDocSnap.docs[0].data() as Project;
+      
+      // Ensure verifies is an array
+      if (!Array.isArray(project.verifies)) {
+        project.verifies = [];
+      }
+      
+      const hasVerified = project.verifies.includes(userId);
+      
+      if (hasVerified) {
+        await this.removeVerify(projectId, userId);
+        return { action: 'removed' };
+      } else {
+        await this.verifyProject(projectId, userId);
+        return { action: 'added' };
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async toggleFollow(projectId: string, userId: string): Promise<{ action: 'added' | 'removed' }> {
+    try {
+      const projectDocSnap = await getDocs(query(this.projectsCollection, where('__name__', '==', projectId)));
+      
+      if (projectDocSnap.empty) {
+        throw new Error('Project not found');
+      }
+      
+      const project = projectDocSnap.docs[0].data() as Project;
+      
+      // Ensure followers is an array
+      if (!Array.isArray(project.followers)) {
+        project.followers = [];
+      }
+      
+      const hasFollowed = project.followers.includes(userId);
+      
+      if (hasFollowed) {
+        await this.removeFollow(projectId, userId);
+        return { action: 'removed' };
+      } else {
+        await this.followProject(projectId, userId);
         return { action: 'added' };
       }
     } catch (error) {

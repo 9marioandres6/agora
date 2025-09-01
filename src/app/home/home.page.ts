@@ -288,6 +288,34 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
+  async verifyProject(projectId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    try {
+      const currentUser = this.user();
+      if (!currentUser?.uid) return;
+
+      await this.projectsService.toggleVerify(projectId, currentUser.uid);
+    } catch (error) {
+      console.error('Error verifying project:', error);
+    }
+  }
+
+  async followProject(projectId: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    try {
+      const currentUser = this.user();
+      if (!currentUser?.uid) return;
+
+      await this.projectsService.toggleFollow(projectId, currentUser.uid);
+    } catch (error) {
+      console.error('Error following project:', error);
+    }
+  }
+
   toggleComments(projectId: string, event?: Event) {
     if (event) {
       event.stopPropagation();

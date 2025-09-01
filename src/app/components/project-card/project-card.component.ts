@@ -24,6 +24,8 @@ export class ProjectCardComponent {
   onProjectClick = output<Project>();
   onSupportClick = output<{ projectId: string, event: Event }>();
   onOpposeClick = output<{ projectId: string, event: Event }>();
+  onVerifyClick = output<{ projectId: string, event: Event }>();
+  onFollowClick = output<{ projectId: string, event: Event }>();
   onCommentsToggle = output<{ projectId: string, event: Event }>();
   onCollaboratorsToggle = output<{ projectId: string, event: Event }>();
   onCommentSubmit = output<{ projectId: string, comment: string }>();
@@ -152,6 +154,18 @@ export class ProjectCardComponent {
     return project.opposes?.includes(currentUser.uid) || false;
   }
 
+  isUserVerified(project: Project): boolean {
+    const currentUser = this.user;
+    if (!currentUser?.uid) return false;
+    return project.verifies?.includes(currentUser.uid) || false;
+  }
+
+  isUserFollowing(project: Project): boolean {
+    const currentUser = this.user;
+    if (!currentUser?.uid) return false;
+    return project.followers?.includes(currentUser.uid) || false;
+  }
+
   onProjectCardClick() {
     this.onProjectClick.emit(this.project());
   }
@@ -162,6 +176,14 @@ export class ProjectCardComponent {
 
   onOpposeButtonClick(event: Event) {
     this.onOpposeClick.emit({ projectId: this.project().id!, event });
+  }
+
+  onVerifyButtonClick(event: Event) {
+    this.onVerifyClick.emit({ projectId: this.project().id!, event });
+  }
+
+  onFollowButtonClick(event: Event) {
+    this.onFollowClick.emit({ projectId: this.project().id!, event });
   }
 
   onCommentsButtonClick(event: Event) {

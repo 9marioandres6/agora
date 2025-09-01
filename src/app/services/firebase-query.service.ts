@@ -486,6 +486,12 @@ export class FirebaseQueryService {
       ) {
         project.opposes = [];
       }
+      if (project.verifies === undefined) {
+        project.verifies = [];
+      }
+      if (project.followers === undefined) {
+        project.followers = [];
+      }
       if (project.comments === undefined) {
         project.comments = [];
       }

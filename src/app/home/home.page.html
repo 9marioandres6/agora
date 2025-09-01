@@ -85,6 +85,8 @@
             (onProjectClick)="navigateToProject($event)"
             (onSupportClick)="supportProject($event.projectId, $event.event)"
             (onOpposeClick)="opposeProject($event.projectId, $event.event)"
+            (onVerifyClick)="verifyProject($event.projectId, $event.event)"
+            (onFollowClick)="followProject($event.projectId, $event.event)"
             (onCommentsToggle)="toggleComments($event.projectId, $event.event)"
             (onCollaboratorsToggle)="toggleCollaborators($event.projectId, $event.event)"
             (onCommentSubmit)="addComment($event.projectId, $event.comment)"

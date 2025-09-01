@@ -77,6 +77,30 @@
           {{ (project().opposes || []).length }}
           }
         </ion-button>
+
+        <ion-button
+          [fill]="isUserVerified(project()) ? 'solid' : 'clear'"
+          size="small"
+          (click)="onVerifyButtonClick($event)"
+          class="vote-button"
+        >
+          {{ "HOME.VERIFY" | translate }}
+          @if ((project().verifies || []).length > 0) {
+          {{ (project().verifies || []).length }}
+          }
+        </ion-button>
+
+        <ion-button
+          [fill]="isUserFollowing(project()) ? 'solid' : 'clear'"
+          size="small"
+          (click)="onFollowButtonClick($event)"
+          class="vote-button"
+        >
+          {{ "HOME.FOLLOW" | translate }}
+          @if ((project().followers || []).length > 0) {
+          {{ (project().followers || []).length }}
+          }
+        </ion-button>
       </div>
       <div>
         <ion-button

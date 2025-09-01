@@ -79,6 +79,8 @@
     "STATE_DONE": "Done",
     "SUPPORT": "Support",
     "OPPOSE": "Oppose",
+    "VERIFY": "Verify",
+    "FOLLOW": "Follow",
     "COMMENTS": "Comments",
     "ADD_COMMENT": "Add Comment",
     "COMMENT_PLACEHENTER": "Write your comment and press Enter to submit...",

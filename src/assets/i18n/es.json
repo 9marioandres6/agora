@@ -79,6 +79,8 @@
     "STATE_DONE": "Completado",
     "SUPPORT": "Apoyar",
     "OPPOSE": "Oponer",
+    "VERIFY": "Verificar",
+    "FOLLOW": "Seguir",
     "COMMENTS": "Comentarios",
     "ADD_COMMENT": "Agregar Comentario",
     "COMMENT_PLACEHENTER": "Escribe tu comentario y presiona Enter para enviar...",

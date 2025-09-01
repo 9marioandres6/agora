@@ -21,6 +21,8 @@ export interface Project {
   state: 'building' | 'implementing' | 'done';
   supports: string[];
   opposes: string[];
+  verifies: string[];
+  followers: string[];
   comments: Comment[];
   collaborators: Collaborator[];
   collaborationRequests: CollaborationRequest[];
