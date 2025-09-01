@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { HomePage } from './home.page';
 import { ThemeToggleComponent } from '../components/theme-toggle/theme-toggle.component';
-import { SettingsModalComponent } from '../components/settings-modal/settings-modal.component';
 import { SettingsButtonComponent } from '../components/settings-button/settings-button.component';
 import { ProjectCardComponent } from '../components/project-card/project-card.component';
 import { MessagesButtonComponent } from '../components/messages-button/messages-button.component';
@@ -20,7 +19,6 @@ import { HomePageRoutingModule } from './home-routing.module';
     HomePageRoutingModule,
     TranslateModule,
     ThemeToggleComponent,
-    SettingsModalComponent,
     SettingsButtonComponent,
     ProjectCardComponent,
     MessagesButtonComponent

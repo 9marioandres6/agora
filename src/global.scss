@@ -371,28 +371,7 @@ ion-toolbar app-theme-toggle ion-button {
   --color-hover: var(--ion-color-primary);
 }
 
-/* Settings modal styling */
-.settings-modal {
-  --background: var(--app-background);
-  --color: var(--app-text);
-  
-  ion-content {
-    --background: var(--app-background);
-  }
-  
-  ion-list {
-    background: var(--app-background);
-    padding: 0;
-  }
-  
-  ion-item {
-    --background: var(--app-card-background);
-    --color: var(--app-text);
-    --border-color: var(--app-divider);
-    margin: 8px 16px;
-    border-radius: 8px;
-  }
-}
+/* (removed) Settings modal styling */
 
 /* Language selector popover theme styling */
 .light-theme-popover {
