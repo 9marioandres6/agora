@@ -52,8 +52,10 @@
       margin-bottom: 16px;
       
       ion-label {
-        font-weight: 500;
-        color: var(--ion-color-dark);
+        font-weight: 600;
+        color: var(--app-text);
+        margin-bottom: 8px;
+        font-size: 16px;
       }
       
       ion-input {
@@ -61,16 +63,18 @@
         --padding-end: 12px;
         --padding-top: 12px;
         --padding-bottom: 12px;
-        border: 1px solid var(--ion-color-light);
+        border: none;
         border-radius: 8px;
         margin-top: 8px;
-        --background: var(--ion-color-light);
+        --background: transparent;
         --border-radius: 8px;
-        --color: var(--ion-color-dark);
+        --color: var(--app-text);
+        --border-style: none;
+        --border-width: 0;
         
         &:focus-within {
-          border-color: var(--ion-color-primary);
-          box-shadow: 0 0 0 2px rgba(var(--ion-color-primary-rgb), 0.2);
+          border: 1px solid var(--app-primary);
+          box-shadow: 0 0 0 2px var(--app-primary-light);
         }
       }
       
@@ -84,17 +88,16 @@
 
 .location-details {
   padding: 12px;
-  background: var(--ion-color-light);
   border-radius: 8px;
   margin-top: 8px;
   
   p {
     margin: 4px 0;
     font-size: 14px;
-    color: var(--ion-color-dark);
+    color: var(--app-text);
     
     strong {
-      color: var(--ion-color-primary);
+      color: var(--app-primary);
     }
   }
 }
