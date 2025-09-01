@@ -468,7 +468,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
 
   // Project field editing methods
-  startEditingProjectField(field: 'title' | 'description' | 'scope' | 'needs') {
+  startEditingProjectField(field: 'title' | 'description' | 'needs') {
     const proj = this.project();
     if (!proj) return;
 
@@ -479,16 +479,13 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       case 'description':
         this.editingProject.update(project => ({ ...project, description: proj.description || '' }));
         break;
-      case 'scope':
-        this.editingProject.update(project => ({ ...project, scope: proj.scope || { scope: '', place: '', image: '' } }));
-        break;
       case 'needs':
         this.editingProject.update(project => ({ ...project, needs: [...(proj.needs || [])] }));
         break;
     }
   }
 
-  async saveProjectField(field: 'title' | 'description' | 'scope' | 'needs') {
+  async saveProjectField(field: 'title' | 'description' | 'needs') {
     if (!this.projectId) return;
 
     const proj = this.project();
@@ -507,12 +504,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           const newDescription = this.editingProject().description?.trim();
           if (newDescription !== proj.description) {
             updates.description = newDescription;
-          }
-          break;
-        case 'scope':
-          const newScope = this.editingProject().scope;
-          if (newScope && JSON.stringify(newScope) !== JSON.stringify(proj.scope)) {
-            updates.scope = newScope;
           }
           break;
         case 'needs':
@@ -546,12 +537,12 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     }
   }
 
-  cancelProjectFieldEdit(field: 'title' | 'description' | 'scope' | 'needs') {
+  cancelProjectFieldEdit(field: 'title' | 'description' | 'needs') {
     this.startEditingProjectField(field);
   }
 
   // Auto-save for project fields
-  private startProjectFieldAutoSave(field: 'title' | 'description' | 'scope' | 'needs') {
+  private startProjectFieldAutoSave(field: 'title' | 'description' | 'needs') {
     this.stopProjectFieldAutoSave();
     
     this.projectAutoSaveTimer = setInterval(() => {
@@ -566,7 +557,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     }
   }
 
-  private async autoSaveProjectField(field: 'title' | 'description' | 'scope' | 'needs') {
+  private async autoSaveProjectField(field: 'title' | 'description' | 'needs') {
     const proj = this.project();
     if (!proj) return;
 
@@ -585,13 +576,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           const newDescription = this.editingProject().description?.trim();
           if (newDescription !== proj.description) {
             updates.description = newDescription;
-            hasChanges = true;
-          }
-          break;
-        case 'scope':
-          const newScope = this.editingProject().scope;
-          if (newScope && JSON.stringify(newScope) !== JSON.stringify(proj.scope)) {
-            updates.scope = newScope;
             hasChanges = true;
           }
           break;
@@ -646,31 +630,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   updateProjectField(field: 'title' | 'description', value: string) {
     this.editingProject.update(project => ({ ...project, [field]: value }));
     this.startProjectFieldAutoSave(field);
-  }
-
-  async updateScopeField(value: string) {
-    const currentProject = this.editingProject();
-    if (!currentProject) return;
-
-    let userLocation = null;
-    try {
-      const currentUser = this.authService.user();
-      if (currentUser?.uid) {
-        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-        userLocation = userProfile?.location || null;
-      }
-    } catch (error) {
-      console.warn('Could not get user location for scope update:', error);
-    }
-
-    const newScope: Scope = {
-      scope: value,
-      place: await this.determinePlaceFromScope(value, userLocation),
-      image: currentProject.scope?.image || ''
-    };
-
-    this.editingProject.update(project => ({ ...project, scope: newScope }));
-    this.startProjectFieldAutoSave('scope');
   }
 
   // Chapter auto-save methods
@@ -1076,43 +1035,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     return typeof scope === 'string' ? scope : scope?.scope || '';
   }
 
-  private async determinePlaceFromScope(scope: string, userLocation: any): Promise<string> {
-    if (scope === 'grupal') {
-      return '';
-    }
 
-    if (!userLocation?.latitude || !userLocation?.longitude) {
-      return '';
-    }
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${userLocation.latitude}&lon=${userLocation.longitude}&zoom=18&addressdetails=1`
-      );
-      
-      if (response.ok) {
-        const data = await response.json();
-        const address = data.address;
-        
-        switch (scope) {
-          case 'local':
-            return address?.city || address?.town || address?.village || '';
-          case 'state':
-            return address?.state || address?.province || address?.region || '';
-          case 'national':
-            return address?.country_code?.toUpperCase() || address?.country || '';
-          case 'global':
-            return 'Global';
-          default:
-            return '';
-        }
-      }
-    } catch (error) {
-      console.warn('Could not determine place from location:', error);
-    }
-    
-    return '';
-  }
 
   getNeedIcon(need: Need): string {
     return need.state === 'obtained' ? 'checkmark-circle' : 'time';
