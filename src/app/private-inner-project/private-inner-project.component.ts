@@ -69,6 +69,13 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     
     return netSupport >= this.getRequiredSupportThreshold(this.getScopeValue(proj.scope));
   });
+
+  readonly canAdvanceState = computed(() => {
+    const proj = this.project();
+    if (!proj) return false;
+    
+    return proj.state === 'building' || proj.state === 'implementing';
+  });
   
   constructor() {
     // Subscribe to project changes in constructor (injection context)
@@ -699,6 +706,68 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     });
     
     await alert.present();
+  }
+
+  async showStateAdvancementModal() {
+    const currentState = this.project()?.state || 'building';
+    const nextState = this.getNextState(currentState);
+    
+    if (!nextState) return;
+    
+    const alert = await this.alertCtrl.create({
+      header: this.translateService.instant('PROJECT.STATE_ADVANCEMENT_TITLE'),
+      message: this.translateService.instant('PROJECT.STATE_ADVANCEMENT_MESSAGE', { 
+        currentState: this.translateService.instant(this.getStateLabel(currentState)),
+        nextState: this.translateService.instant(this.getStateLabel(nextState))
+      }),
+      buttons: [
+        {
+          text: this.translateService.instant('COMMON.CANCEL'),
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: this.translateService.instant('COMMON.ACCEPT'),
+          handler: () => {
+            this.advanceProjectState(nextState);
+          }
+        }
+      ]
+    });
+    
+    await alert.present();
+  }
+
+  private getNextState(currentState: string): 'building' | 'implementing' | 'done' | null {
+    switch (currentState) {
+      case 'building':
+        return 'implementing';
+      case 'implementing':
+        return 'done';
+      default:
+        return null;
+    }
+  }
+
+  private async advanceProjectState(newState: 'building' | 'implementing' | 'done') {
+    if (!this.projectId) return;
+    
+    try {
+      await this.projectsService.updateProject(this.projectId, { state: newState });
+      
+      await this.showToast(
+        this.translateService.instant('PROJECT.STATE_ADVANCED_SUCCESS', { 
+          state: this.translateService.instant(this.getStateLabel(newState))
+        }),
+        'success'
+      );
+    } catch (error) {
+      console.error('Error advancing project state:', error);
+      await this.showToast(
+        this.translateService.instant('PROJECT.STATE_ADVANCED_ERROR'),
+        'danger'
+      );
+    }
   }
   
   canEditChapter(chapter: Chapter): boolean {

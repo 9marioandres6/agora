@@ -25,7 +25,8 @@
     "WARNING": "Advertencia",
     "INFO": "Información",
     "PROJECT_NOT_FOUND": "Proyecto no encontrado",
-    "OPTIONAL": "Opcional"
+    "OPTIONAL": "Opcional",
+    "ACCEPT": "Aceptar"
   },
   "AUTH": {
     "LOGIN_TITLE": "Bienvenido de Vuelta",
@@ -264,7 +265,7 @@
     "PROJECT_NOT_FOUND_MESSAGE": "El proyecto que buscas no existe o no tienes acceso a él.",
     "NEW_PROJECT": "Nuevo Proyecto",
     "PROJECT_DESCRIPTION_PLACEHOLDER": "La descripción del proyecto va aquí.",
-        "CREATOR": "Creador",
+    "CREATOR": "Creador",
     "COLLABORATOR": "Colaborador",
     "ACCEPT": "Aceptar",
     "REJECT": "Rechazar",
@@ -276,7 +277,11 @@
     "ERROR_REMOVING_COLLABORATOR": "Error al remover colaborador",
     "NEEDS_LOCKED_TITLE": "Sección de Necesidades Bloqueada",
     "NEEDS_LOCKED_MESSAGE": "Esta sección se desbloquea cuando tu proyecto recibe suficiente apoyo de la comunidad. El apoyo requerido varía según el alcance del proyecto.",
-    "SUPPORT_VOTES": "votos de apoyo"
+    "SUPPORT_VOTES": "votos de apoyo",
+    "STATE_ADVANCEMENT_TITLE": "Avanzar Estado del Proyecto",
+    "STATE_ADVANCEMENT_MESSAGE": "¿Quieres cambiar el estado del proyecto de \"{{currentState}}\" a \"{{nextState}}\"? Esta acción no se puede deshacer.",
+    "STATE_ADVANCED_SUCCESS": "Estado del proyecto cambiado exitosamente a {{state}}",
+    "STATE_ADVANCED_ERROR": "Error al avanzar el estado del proyecto"
   },
   "PUBLIC": {
     "PUBLIC_PROJECT": "Proyecto Público",

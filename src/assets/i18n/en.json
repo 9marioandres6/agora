@@ -25,7 +25,8 @@
     "WARNING": "Warning",
     "INFO": "Information",
     "PROJECT_NOT_FOUND": "Project not found",
-    "OPTIONAL": "Optional"
+    "OPTIONAL": "Optional",
+    "ACCEPT": "Accept"
   },
   "AUTH": {
     "LOGIN_TITLE": "Welcome Back",
@@ -276,7 +277,11 @@
     "ERROR_REMOVING_COLLABORATOR": "Error removing collaborator",
     "NEEDS_LOCKED_TITLE": "Needs Section Locked",
     "NEEDS_LOCKED_MESSAGE": "This section unlocks when your project receives enough community support. The required support varies by project scope.",
-    "SUPPORT_VOTES": "support votes"
+    "SUPPORT_VOTES": "support votes",
+    "STATE_ADVANCEMENT_TITLE": "Advance Project State",
+    "STATE_ADVANCEMENT_MESSAGE": "Do you want to change the project state from \"{{currentState}}\" to \"{{nextState}}\"? This action cannot be undone.",
+    "STATE_ADVANCED_SUCCESS": "Project state successfully changed to {{state}}",
+    "STATE_ADVANCED_ERROR": "Error advancing project state"
   },
   "PUBLIC": {
     "PUBLIC_PROJECT": "Public Project",
