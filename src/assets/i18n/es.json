@@ -153,7 +153,10 @@
     "LAST_UPDATED": "Última Actualización",
     "LOADING": "Cargando perfil...",
     "ERROR_TITLE": "Perfil No Encontrado",
-    "ERROR_MESSAGE": "El perfil que buscas no existe o no tienes acceso a él."
+    "ERROR_MESSAGE": "El perfil que buscas no existe o no tienes acceso a él.",
+    "USER_PROJECTS": "Proyectos del Usuario",
+    "ROLE": "Rol",
+    "LOADING_PROJECTS": "Cargando proyectos..."
   },
   "NEW_ITEM": {
     "CREATE_NEW": "Propone",

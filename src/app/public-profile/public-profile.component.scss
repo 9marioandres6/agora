@@ -122,8 +122,131 @@
   }
 }
 
+.projects-card {
+  max-width: 600px;
+  margin: 0 auto;
+  
+  ion-card-content {
+    padding: 20px !important;
+  }
+  
+  .projects-table {
+    overflow-x: auto;
+    
+    .projects-table-content {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      
+      thead {
+        th {
+          padding: 12px 8px;
+          text-align: center;
+          font-weight: 600;
+          color: var(--app-text);
+          border-bottom: 2px solid var(--app-divider);
+          
+          &.role-header {
+            text-align: left;
+            min-width: 100px;
+          }
+          
+          &.state-header {
+            min-width: 120px;
+          }
+        }
+      }
+      
+      tbody {
+        tr.role-row {
+          border-bottom: 1px solid var(--app-divider);
+          
+          &:last-child {
+            border-bottom: none;
+          }
+          
+          td {
+            padding: 12px 8px;
+            vertical-align: top;
+            
+            &.role-cell {
+              font-weight: 600;
+              text-align: left;
+              
+              &.creator-role {
+                color: var(--app-primary);
+              }
+              
+              &.collaborator-role {
+                color: var(--app-success-color, #28a745);
+              }
+            }
+            
+            &.state-cell {
+              text-align: center;
+              
+              .project-count {
+                display: inline-block;
+                padding: 8px 16px;
+                background: var(--app-input-background);
+                border-radius: 20px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-size: 16px;
+                font-weight: 600;
+                color: var(--app-text);
+                min-width: 40px;
+                text-align: center;
+                
+                &:hover {
+                  background: var(--app-primary-light);
+                  color: var(--app-primary);
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                }
+                
+                &:active {
+                  transform: translateY(0);
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.projects-loading-card {
+  max-width: 400px;
+  margin: 0 auto;
+  
+  ion-card-content {
+    padding: 20px !important;
+  }
+}
+
 @media (max-width: 576px) {
-  .profile-card {
+  .profile-card,
+  .projects-card {
     margin: 4px;
+  }
+  
+  .projects-table {
+    .projects-table-content {
+      font-size: 12px;
+      
+      thead th,
+      tbody td {
+        padding: 8px 4px;
+      }
+      
+      .project-count {
+        font-size: 14px;
+        padding: 6px 12px;
+        min-width: 30px;
+      }
+    }
   }
 }
