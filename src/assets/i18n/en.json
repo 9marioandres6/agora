@@ -133,6 +133,7 @@
   },
   "PROFILE": {
     "EDIT_PROFILE": "Edit Profile",
+    "PUBLIC_PROFILE": "Public Profile",
     "DISPLAY_NAME": "Display Name",
     "DISPLAY_NAME_PLACEHOLDER": "Enter your display name",
     "EMAIL": "Email",
@@ -149,7 +150,10 @@
     "LATITUDE": "Latitude",
     "LONGITUDE": "Longitude",
     "ACCURACY": "Accuracy",
-    "LAST_UPDATED": "Last Updated"
+    "LAST_UPDATED": "Last Updated",
+    "LOADING": "Loading profile...",
+    "ERROR_TITLE": "Profile Not Found",
+    "ERROR_MESSAGE": "The profile you're looking for doesn't exist or you don't have access to it."
   },
   "NEW_ITEM": {
     "CREATE_NEW": "Propose",

@@ -133,6 +133,7 @@
   },
   "PROFILE": {
     "EDIT_PROFILE": "Editar Perfil",
+    "PUBLIC_PROFILE": "Perfil Público",
     "DISPLAY_NAME": "Nombre de Usuario",
     "DISPLAY_NAME_PLACEHOLDER": "Ingresa tu nombre de usuario",
     "EMAIL": "Correo Electrónico",
@@ -149,7 +150,10 @@
     "LATITUDE": "Latitud",
     "LONGITUDE": "Longitud",
     "ACCURACY": "Precisión",
-    "LAST_UPDATED": "Última Actualización"
+    "LAST_UPDATED": "Última Actualización",
+    "LOADING": "Cargando perfil...",
+    "ERROR_TITLE": "Perfil No Encontrado",
+    "ERROR_MESSAGE": "El perfil que buscas no existe o no tienes acceso a él."
   },
   "NEW_ITEM": {
     "CREATE_NEW": "Propone",

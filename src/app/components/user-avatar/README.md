@@ -11,7 +11,8 @@ A reusable component for displaying user information with avatar, name, and opti
   [avatarSize]="'small'"
   [showEmail]="true"
   [showRole]="false"
-  [showJoinedDate]="false">
+  [showJoinedDate]="false"
+  [clickable]="true">
 </app-user-avatar>
 ```
 
@@ -23,6 +24,7 @@ A reusable component for displaying user information with avatar, name, and opti
 - `showEmail`: boolean - whether to display email
 - `showRole`: boolean - whether to display role
 - `showJoinedDate`: boolean - whether to display join date
+- `clickable`: boolean - whether the avatar is clickable (default: true)
 
 ## UserAvatarData Interface
 
@@ -61,6 +63,10 @@ interface UserAvatarData {
 </app-user-avatar>
 ```
 
+## Clickable Navigation
+
+When `clickable` is set to `true` (default), clicking on the avatar will navigate to the user's public profile page (`/profile/{userId}`). The edit functionality is only available when viewing your own profile.
+
 ## Benefits
 
 - **Reusable**: Single component for all user avatar displays
@@ -68,3 +74,4 @@ interface UserAvatarData {
 - **Flexible**: Configurable display options
 - **Maintainable**: Centralized styling and logic
 - **Theme-aware**: Uses CSS custom properties for theming
+- **Interactive**: Clickable avatars with hover effects and navigation

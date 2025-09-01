@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" fill="clear">
+        <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ 'PROFILE.PUBLIC_PROFILE' | translate }}</ion-title>
+    @if (isCurrentUserProfile()) {
+      <ion-buttons slot="end">
+        <ion-button (click)="editProfile()" fill="clear">
+          <ion-icon name="pencil" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (loading()) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+      <p>{{ 'PROFILE.LOADING' | translate }}</p>
+    </div>
+  } @else if (error()) {
+    <ion-card class="error-card">
+      <ion-card-content>
+        <div class="error-content">
+          <ion-icon name="alert-circle" size="large" color="danger"></ion-icon>
+          <h2>{{ 'PROFILE.ERROR_TITLE' | translate }}</h2>
+          <p>{{ 'PROFILE.ERROR_MESSAGE' | translate }}</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  } @else if (userProfile) {
+    <ion-card class="profile-card">
+      <ion-card-content>
+        <div class="avatar-section">
+          <ion-avatar class="profile-avatar avatar-large">
+            @if (userProfile.photoURL) {
+              <img [src]="userProfile.photoURL" [alt]="userProfile.displayName || 'User'">
+            } @else {
+              <ion-icon name="person" size="large"></ion-icon>
+            }
+          </ion-avatar>
+        </div>
+
+        <div class="profile-info">
+          <div class="info-item">
+            <ion-label class="info-label">{{ 'PROFILE.DISPLAY_NAME' | translate }}</ion-label>
+            <div class="info-value">{{ userProfile.displayName || 'N/A' }}</div>
+          </div>
+
+          <div class="info-item">
+            <ion-label class="info-label">{{ 'PROFILE.EMAIL' | translate }}</ion-label>
+            <div class="info-value">{{ userProfile.email || 'N/A' }}</div>
+          </div>
+
+          @if (userProfile.location) {
+            <div class="info-item">
+              <ion-label class="info-label">{{ 'PROFILE.LOCATION' | translate }}</ion-label>
+              <div class="info-value">{{ userProfile.location.address || 'No location set' }}</div>
+            </div>
+
+            <div class="info-item">
+              <ion-label class="info-label">{{ 'PROFILE.LOCATION_DETAILS' | translate }}</ion-label>
+              <div class="location-details">
+                <p><strong>{{ 'PROFILE.LATITUDE' | translate }}:</strong> {{ userProfile.location.latitude | number:'1.6-6' }}</p>
+                <p><strong>{{ 'PROFILE.LONGITUDE' | translate }}:</strong> {{ userProfile.location.longitude | number:'1.6-6' }}</p>
+                <p><strong>{{ 'PROFILE.ACCURACY' | translate }}:</strong> {{ userProfile.location.accuracy | number:'1.0-0' }}m</p>
+                <p><strong>{{ 'PROFILE.LAST_UPDATED' | translate }}:</strong> {{ userProfile.location.timestamp | date:'medium' }}</p>
+                @if (userProfile.location.city) {
+                  <p><strong>{{ 'PROFILE.CITY' | translate }}:</strong> {{ userProfile.location.city }}</p>
+                }
+                @if (userProfile.location.state) {
+                  <p><strong>{{ 'PROFILE.STATE' | translate }}:</strong> {{ userProfile.location.state }}</p>
+                }
+                @if (userProfile.location.country) {
+                  <p><strong>{{ 'PROFILE.COUNTRY' | translate }}:</strong> {{ userProfile.location.country }}</p>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>

@@ -27,6 +27,19 @@ ion-header {
   margin: 1rem;
   background: var(--app-card-background);
   border: 1px solid var(--app-card-border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var(--app-card-hover-background);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
   
   .user-profile {
     display: flex;
@@ -62,19 +75,6 @@ ion-header {
         margin: 0;
         color: var(--app-text-secondary);
         font-size: 0.9rem;
-      }
-    }
-    
-    .edit-profile-btn {
-      --color: var(--app-primary);
-      --background: transparent;
-      
-      &:hover {
-        --background: var(--app-button-hover);
-      }
-      
-      &:active {
-        --background: var(--app-button-active);
       }
     }
   }

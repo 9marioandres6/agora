@@ -12,7 +12,7 @@
 <ion-content [fullscreen]="true">
   <!-- User Profile Card -->
   @if (isAuthenticated()) {
-    <ion-card class="profile-card">
+    <ion-card class="profile-card" (click)="viewProfile()">
       <ion-card-content>
         <div class="user-profile">
           <ion-avatar class="profile-avatar avatar-large">
@@ -26,13 +26,6 @@
             <h2>{{ user()?.displayName || 'User' }}</h2>
             <p>{{ user()?.email }}</p>
           </div>
-          <ion-button 
-            fill="clear" 
-            size="small" 
-            (click)="editProfile()"
-            class="edit-profile-btn">
-            <ion-icon name="pencil" slot="icon-only"></ion-icon>
-          </ion-button>
         </div>
       </ion-card-content>
     </ion-card>

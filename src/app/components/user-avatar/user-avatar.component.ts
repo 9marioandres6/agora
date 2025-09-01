@@ -1,6 +1,6 @@
-import { Component, input } from '@angular/core';
+import { Component, input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 
 export interface UserAvatarData {
@@ -20,9 +20,18 @@ export interface UserAvatarData {
   imports: [CommonModule, IonicModule, TranslateModule]
 })
 export class UserAvatarComponent {
+  private navCtrl = inject(NavController);
+
   user = input.required<UserAvatarData>();
   showRole = input<boolean>(true);
   showJoinedDate = input<boolean>(false);
   avatarSize = input<'small' | 'large'>('small');
   variant = input<'default' | 'creator' | 'collaborator'>('default');
+  clickable = input<boolean>(true);
+
+  onAvatarClick(): void {
+    if (this.clickable() && this.user().uid) {
+      this.navCtrl.navigateForward(`/profile/${this.user().uid}`);
+    }
+  }
 }

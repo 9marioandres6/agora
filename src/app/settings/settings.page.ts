@@ -47,8 +47,11 @@ export class SettingsPage {
     }
   }
 
-  editProfile() {
-    this.navCtrl.navigateForward('/my-profile');
+  viewProfile() {
+    const currentUser = this.user();
+    if (currentUser) {
+      this.navCtrl.navigateForward(`/profile/${currentUser.uid}`);
+    }
   }
 
   goBack() {

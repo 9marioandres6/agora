@@ -1,4 +1,8 @@
-<div class="user-avatar-item" [class]="'variant-' + variant()">
+<div 
+  class="user-avatar-item" 
+  [class]="'variant-' + variant()"
+  [class.clickable]="clickable()"
+  (click)="onAvatarClick()">
   <ion-avatar [class]="(avatarSize() === 'small' ? 'avatar-small' : 'avatar-large') + ' variant-' + variant()">
     @if (user().photoURL) {
       <img [src]="user().photoURL" [alt]="user().displayName || 'User'">
