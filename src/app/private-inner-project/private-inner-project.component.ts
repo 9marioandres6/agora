@@ -1035,6 +1035,15 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     return typeof scope === 'string' ? scope : scope?.scope || '';
   }
 
+  getStateLabel(state: string): string {
+    const stateLabels: { [key: string]: string } = {
+      'building': 'HOME.STATE_BUILDING',
+      'implementing': 'HOME.STATE_IMPLEMENTING',
+      'done': 'HOME.STATE_DONE'
+    };
+    return stateLabels[state] || 'HOME.STATE_BUILDING';
+  }
+
 
 
   getNeedIcon(need: Need): string {

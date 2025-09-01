@@ -172,7 +172,21 @@
 
   .info-content {
     width: 100%;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
   }
+}
+
+.state-chip {
+  --background: var(--app-background-secondary);
+  --color: var(--app-text);
+  border: 1px solid var(--app-border-color);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0;
 }
 
 .project-media-editor {

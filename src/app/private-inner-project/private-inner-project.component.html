@@ -37,6 +37,7 @@
           <div class="info-row">
             <div class="info-content">
               <ion-chip color="primary">{{ getScopeLabel(project()?.scope || '') }}</ion-chip>
+              <ion-chip class="state-chip">{{ getStateLabel(project()?.state || 'building') | translate }}</ion-chip>
             </div>
           </div>
 
