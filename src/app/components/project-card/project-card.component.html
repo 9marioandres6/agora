@@ -10,7 +10,9 @@
   </ion-card-header>
 
   <ion-card-content class="project-body" (click)="onProjectCardClick()">
-    <p class="project-description">{{ project().description }}</p>
+    @if (project().description.trim() !== '') {
+      <p class="project-description">{{ project().description }}</p>
+    }
     
     @if (project().media?.length) {
       <div class="project-media">
