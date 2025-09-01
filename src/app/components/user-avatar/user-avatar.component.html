@@ -14,11 +14,17 @@
   <div class="user-details">
     <strong class="user-name">{{ user().displayName || 'Anonymous' }}</strong>
     
-    @if (showRole() && user().role) {
-      <span class="user-role">{{ user().role | translate }}</span>
-    }
+    <div class="user-second-line">
+      @if (showRole() && user().role) {
+        <span class="user-role">{{ user().role | translate }}</span>
+      }
+      
+      @if (showProjectSummary() && projectSummary()) {
+        <span class="user-project-summary">{{ projectSummary() }}</span>
+      }
+    </div>
     
-    @if (showJoinedDate() && user().joinedAt) {
+    @if (showJoinedDate() && user().joinedAt && variant() !== 'collaborator') {
       <span class="user-joined-date">{{ 'HOME.JOINED' | translate }}: {{ user().joinedAt | date:'short' }}</span>
     }
   </div>

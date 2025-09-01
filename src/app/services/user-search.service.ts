@@ -13,6 +13,14 @@ export interface UserProfile {
   country?: string;
   createdAt: string;
   updatedAt: string;
+  projectCounts?: {
+    createdBuilding: number;
+    createdImplementing: number;
+    createdDone: number;
+    collaboratedBuilding: number;
+    collaboratedImplementing: number;
+    collaboratedDone: number;
+  };
 }
 
 @Injectable({
@@ -135,5 +143,67 @@ export class UserSearchService {
     this._searchResults.set([]);
   }
 
+  async updateUserProjectCounts(uid: string, projectCounts: {
+    createdBuilding: number;
+    createdImplementing: number;
+    createdDone: number;
+    collaboratedBuilding: number;
+    collaboratedImplementing: number;
+    collaboratedDone: number;
+  }): Promise<void> {
+    try {
+      const userRef = doc(this.usersCollection, uid);
+      await setDoc(userRef, {
+        projectCounts: projectCounts,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+    } catch (error) {
+      console.error('Error updating user project counts:', error);
+      throw error;
+    }
+  }
+
+  async recalculateAndUpdateUserProjectCounts(uid: string): Promise<void> {
+    try {
+      // Use the already injected firestore instance
+      const { collection, query, where, getDocs } = await import('@angular/fire/firestore');
+      const projectsCollection = collection(this.firestore, 'projects');
+      
+      // Get created projects
+      const createdQuery = query(
+        projectsCollection,
+        where('createdBy', '==', uid)
+      );
+      const createdSnapshot = await getDocs(createdQuery);
+      const createdProjects = createdSnapshot.docs.map(doc => doc.data());
+      
+      // Get collaborated projects - need to query for the full collaborator object
+      // Since we can't query nested fields in array-contains, we'll get all projects and filter
+      const allProjectsQuery = query(projectsCollection);
+      const allProjectsSnapshot = await getDocs(allProjectsQuery);
+      const collaboratedProjects = allProjectsSnapshot.docs
+        .map(doc => doc.data())
+        .filter(project => 
+          project['collaborators'] && 
+          project['collaborators'].some((collab: any) => collab.uid === uid)
+        );
+      
+      // Calculate counts
+      const projectCounts = {
+        createdBuilding: createdProjects.filter(p => p['state'] === 'building').length,
+        createdImplementing: createdProjects.filter(p => p['state'] === 'implementing').length,
+        createdDone: createdProjects.filter(p => p['state'] === 'done').length,
+        collaboratedBuilding: collaboratedProjects.filter(p => p['state'] === 'building').length,
+        collaboratedImplementing: collaboratedProjects.filter(p => p['state'] === 'implementing').length,
+        collaboratedDone: collaboratedProjects.filter(p => p['state'] === 'done').length
+      };
+      
+      // Update in Firebase
+      await this.updateUserProjectCounts(uid, projectCounts);
+    } catch (error) {
+      console.error('Error recalculating user project counts:', error);
+      throw error;
+    }
+  }
 
 }

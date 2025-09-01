@@ -425,6 +425,15 @@ export class ProjectsService {
       };
       
       const docRef = await addDoc(this.projectsCollection, project);
+      
+      // Update project counts for the creator
+      try {
+        await this.userSearchService.recalculateAndUpdateUserProjectCounts(currentUser.uid);
+      } catch (countError) {
+        console.error('Error updating project counts after creation:', countError);
+        // Don't throw - project creation should succeed even if count update fails
+      }
+      
       return docRef.id;
     } catch (error) {
       throw error;
@@ -710,6 +719,27 @@ export class ProjectsService {
         state: newState,
         updatedAt: new Date().toISOString()
       });
+      
+      // Update project counts for creator and all collaborators
+      try {
+        const projectDoc = await getDoc(projectRef);
+        if (projectDoc.exists()) {
+          const projectData = projectDoc.data() as Project;
+          
+          // Update creator's counts
+          await this.userSearchService.recalculateAndUpdateUserProjectCounts(projectData.createdBy);
+          
+          // Update collaborators' counts
+          if (projectData.collaborators) {
+            for (const collaborator of projectData.collaborators) {
+              await this.userSearchService.recalculateAndUpdateUserProjectCounts(collaborator.uid);
+            }
+          }
+        }
+      } catch (countError) {
+        console.error('Error updating project counts after state change:', countError);
+        // Don't throw - state update should succeed even if count update fails
+      }
     } catch (error) {
       throw error;
     }
@@ -1118,6 +1148,14 @@ export class ProjectsService {
         content: `Your collaboration request for "${project.title}" has been accepted!`
       });
 
+      // Update project counts for the new collaborator
+      try {
+        await this.userSearchService.recalculateAndUpdateUserProjectCounts(request.uid);
+      } catch (countError) {
+        console.error('Error updating project counts after collaboration acceptance:', countError);
+        // Don't throw - collaboration should succeed even if count update fails
+      }
+
       return { request, collaborator };
     } catch (error) {
       throw error;
@@ -1186,6 +1224,14 @@ export class ProjectsService {
       await updateDoc(projectRef, {
         collaborators: arrayRemove(collaborator)
       });
+
+      // Update project counts for the removed collaborator
+      try {
+        await this.userSearchService.recalculateAndUpdateUserProjectCounts(collaboratorUid);
+      } catch (countError) {
+        console.error('Error updating project counts after collaborator removal:', countError);
+        // Don't throw - removal should succeed even if count update fails
+      }
 
       return collaborator;
     } catch (error) {

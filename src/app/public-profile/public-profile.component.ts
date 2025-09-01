@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, NavController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { Firestore } from '@angular/fire/firestore';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { UserSearchService, UserProfile } from '../services/user-search.service';
@@ -23,6 +24,7 @@ export class PublicProfileComponent implements OnInit {
   private themeService = inject(ThemeService);
   private userSearchService = inject(UserSearchService);
   private projectsService = inject(ProjectsService);
+  private firestore = inject(Firestore);
 
   isAuthenticated = this.authService.isAuthenticated;
   isDark = signal(this.themeService.isDarkMode());
@@ -73,7 +75,7 @@ export class PublicProfileComponent implements OnInit {
     }
   }
 
-  private async loadUserProjects(): Promise<void> {
+  private   async loadUserProjects(): Promise<void> {
     if (!this.userId) return;
     
     try {
@@ -87,6 +89,9 @@ export class PublicProfileComponent implements OnInit {
       const collaboratedProjects = await this.getCollaboratedProjects(this.userId);
       this.collaboratedProjects.set(collaboratedProjects);
       
+      // Save project counts to Firebase
+      await this.saveProjectCountsToFirebase();
+      
     } catch (error) {
       console.error('Error loading user projects:', error);
     } finally {
@@ -94,22 +99,70 @@ export class PublicProfileComponent implements OnInit {
     }
   }
 
+  // Method to manually recalculate and save project counts
+  async recalculateProjectCounts(): Promise<void> {
+    if (!this.userId) return;
+    
+    // Only allow recalculation for the current user
+    const currentUser = this.authService.user();
+    if (!currentUser || currentUser.uid !== this.userId) {
+      return;
+    }
+    
+    try {
+      await this.userSearchService.recalculateAndUpdateUserProjectCounts(this.userId);
+      
+      // Reload the projects to refresh the display
+      await this.loadUserProjects();
+    } catch (error) {
+      console.error('Error recalculating project counts:', error);
+    }
+  }
+
+  private async saveProjectCountsToFirebase(): Promise<void> {
+    if (!this.userId) return;
+    
+    // Only update project counts for the current user (for performance)
+    const currentUser = this.authService.user();
+    if (!currentUser || currentUser.uid !== this.userId) {
+      return;
+    }
+    
+    try {
+      const projectCounts = {
+        createdBuilding: this.getCreatedProjectsByState('building').length,
+        createdImplementing: this.getCreatedProjectsByState('implementing').length,
+        createdDone: this.getCreatedProjectsByState('done').length,
+        collaboratedBuilding: this.getCollaboratedProjectsByState('building').length,
+        collaboratedImplementing: this.getCollaboratedProjectsByState('implementing').length,
+        collaboratedDone: this.getCollaboratedProjectsByState('done').length
+      };
+      
+      await this.userSearchService.updateUserProjectCounts(this.userId, projectCounts);
+    } catch (error) {
+      console.error('❌ Error saving project counts to Firebase:', error);
+    }
+  }
+
   private async getCollaboratedProjects(userId: string): Promise<Project[]> {
     try {
-      const { Firestore, collection, query, where, getDocs } = await import('@angular/fire/firestore');
-      const firestore = inject(Firestore);
-      const projectsCollection = collection(firestore, 'projects');
+      const { collection, query, getDocs } = await import('@angular/fire/firestore');
+      const projectsCollection = collection(this.firestore, 'projects');
       
-      const q = query(
-        projectsCollection,
-        where('collaborators', 'array-contains-any', [{ uid: userId }])
-      );
-      
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
+      // Get all projects and filter for collaborations
+      // Since collaborators are stored as objects with uid property, we need to filter manually
+      const allProjectsQuery = query(projectsCollection);
+      const querySnapshot = await getDocs(allProjectsQuery);
+      const allProjects = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Project[];
+      
+      // Filter projects where user is a collaborator
+      return allProjects.filter(project => 
+        project.collaborators && 
+        project.collaborators.some(collab => collab.uid === userId)
+      );
     } catch (error) {
       console.error('Error getting collaborated projects:', error);
       return [];
@@ -139,6 +192,12 @@ export class PublicProfileComponent implements OnInit {
 
   getCollaboratedProjectsByState(state: 'building' | 'implementing' | 'done'): Project[] {
     return this.getProjectsByState(this.collaboratedProjects(), state);
+  }
+
+  getTotalProjectsByState(state: 'building' | 'implementing' | 'done'): number {
+    const createdCount = this.getCreatedProjectsByState(state).length;
+    const collaboratedCount = this.getCollaboratedProjectsByState(state).length;
+    return createdCount + collaboratedCount;
   }
 
   navigateToProject(projectId: string): void {

@@ -12,6 +12,7 @@ A reusable component for displaying user information with avatar, name, and opti
   [showEmail]="true"
   [showRole]="false"
   [showJoinedDate]="false"
+  [showProjectSummary]="true"
   [clickable]="true">
 </app-user-avatar>
 ```
@@ -24,6 +25,7 @@ A reusable component for displaying user information with avatar, name, and opti
 - `showEmail`: boolean - whether to display email
 - `showRole`: boolean - whether to display role
 - `showJoinedDate`: boolean - whether to display join date
+- `showProjectSummary`: boolean - whether to display project summary (default: true)
 - `clickable`: boolean - whether the avatar is clickable (default: true)
 
 ## UserAvatarData Interface
@@ -62,6 +64,10 @@ interface UserAvatarData {
   [showJoinedDate]="true">
 </app-user-avatar>
 ```
+
+## Project Summary
+
+When `showProjectSummary` is set to `true` (default), the component automatically loads the user's projects and displays a summary in the format "Building·Implementing·Done" (e.g., "4·4·1"). This gives users a quick overview of someone's project involvement.
 
 ## Clickable Navigation
 

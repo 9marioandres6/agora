@@ -45,6 +45,24 @@
       font-weight: 600;
     }
 
+    .user-second-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2px 0;
+    }
+
+    .user-project-summary {
+      color: var(--app-primary);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 6px;
+      background: var(--app-primary-light);
+      border-radius: 10px;
+      text-align: center;
+      min-width: 40px;
+    }
+
     .user-email {
       display: block;
       color: var(--app-text-secondary);
@@ -53,11 +71,10 @@
     }
 
     .user-role {
-      display: block;
       color: var(--app-text-secondary);
-      margin-bottom: 4px;
       font-size: 12px;
       text-transform: capitalize;
+      flex: 1;
     }
 
     .user-joined-date {

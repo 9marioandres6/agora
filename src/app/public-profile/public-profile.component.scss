@@ -130,6 +130,17 @@
     padding: 20px !important;
   }
   
+  ion-card-header {
+    ion-card-title {
+      .projects-summary {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--app-text-secondary);
+        margin-left: 8px;
+      }
+    }
+  }
+  
   .projects-table {
     overflow-x: auto;
     
