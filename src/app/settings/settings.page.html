@@ -60,12 +60,6 @@
           <ion-badge slot="end" [color]="isDark() ? 'warning' : 'primary'" class="theme-badge">
             {{ isDark() ? ('SETTINGS.DARK_THEME' | translate) : ('SETTINGS.LIGHT_THEME' | translate) }}
           </ion-badge>
-          <ion-icon 
-            [name]="isDark() ? 'sunny' : 'moon'" 
-            slot="end" 
-            [color]="isDark() ? 'warning' : 'primary'"
-            class="theme-indicator">
-          </ion-icon>
         </ion-item>
 
         <!-- Language Selector -->
@@ -94,17 +88,4 @@
       </ion-card-content>
     </ion-card>
   }
-
-  <!-- App Info -->
-  <ion-card class="info-card">
-    <ion-card-content>
-      <ion-list lines="none">
-        <ion-item class="info-item">
-          <ion-icon name="information-circle-outline" slot="start" color="primary"></ion-icon>
-          <ion-label>{{ 'SETTINGS.ABOUT_APP' | translate }}</ion-label>
-          <ion-note slot="end">MiApp20 v1.0.0</ion-note>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
 </ion-content>
