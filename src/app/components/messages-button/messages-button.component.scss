@@ -10,8 +10,8 @@
   
   .unread-badge {
     position: absolute;
-    top: 2px;
-    right: 2px;
+    top: -2px;
+    right: -2px;
     font-size: 9px;
     font-weight: 600;
     min-width: 14px;
@@ -24,21 +24,3 @@
   }
 }
 
-@media (max-width: 576px) {
-  .messages-button {
-    --padding-start: 6px;
-    --padding-end: 6px;
-    
-    ion-icon {
-      font-size: 18px;
-    }
-    
-    .unread-badge {
-      top: 1px;
-      right: 1px;
-      min-width: 12px;
-      height: 12px;
-      font-size: 8px;
-    }
-  }
-}
