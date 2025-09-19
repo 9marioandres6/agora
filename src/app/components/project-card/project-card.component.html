@@ -203,7 +203,6 @@
   <div class="collaborators-container">
     <!-- Creator Section -->
     <div class="creator-section">
-      <h4>{{ "HOME.CREATOR" | translate }}</h4>
       <app-user-avatar
         [user]="getCreatorData()"
         [variant]="'creator'"
@@ -215,7 +214,6 @@
 
     <!-- Current Collaborators -->
     <div class="collaborators-list">
-      <h4>{{ "HOME.COLLABORATORS" | translate }}</h4>
       @if (project().collaborators && project().collaborators.length > 0) { @for
       (collaborator of project().collaborators; track collaborator.uid) {
       <app-user-avatar

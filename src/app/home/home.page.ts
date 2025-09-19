@@ -328,6 +328,11 @@ export class HomePage implements OnInit, ViewWillEnter {
     if (event) {
       event.stopPropagation();
     }
+    // Close collaborators if it's open for the same project
+    if (this.expandedCollaborators() === projectId) {
+      this.expandedCollaborators.set(null);
+    }
+    // Toggle comments
     if (this.expandedComments() === projectId) {
       this.expandedComments.set(null);
     } else {
@@ -350,6 +355,11 @@ export class HomePage implements OnInit, ViewWillEnter {
     if (event) {
       event.stopPropagation();
     }
+    // Close comments if it's open for the same project
+    if (this.expandedComments() === projectId) {
+      this.expandedComments.set(null);
+    }
+    // Toggle collaborators
     if (this.expandedCollaborators() === projectId) {
       this.expandedCollaborators.set(null);
     } else {
