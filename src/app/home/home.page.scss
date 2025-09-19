@@ -26,10 +26,12 @@ ion-content { --background: var(--app-background); }
   .location-text {
     font-size: 14px;
     color: var(--ion-color-medium);
-    white-space: nowrap;
+    white-space: normal;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    line-height: 1.2;
+    max-height: 2.4em; /* Allow for 2 lines with line-height 1.2 */
   }
 }
 
@@ -65,10 +67,6 @@ ion-content { --background: var(--app-background); }
   50% {
     opacity: 1;
   }
-}
-
-.new-button {
-  /* No custom color - using default */
 }
 
 .filter-button {
