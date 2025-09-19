@@ -177,6 +177,14 @@ export class HomePage implements OnInit, ViewWillEnter {
         const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
         if (userProfile?.location) {
           this.userLocation = userProfile.location;
+          
+          // If we have coordinates but no address, get the address using the existing service
+          if (this.userLocation.latitude && this.userLocation.longitude && !this.userLocation.address) {
+            const locationWithAddress = await this.locationService.getLocationWithAddress();
+            if (locationWithAddress) {
+              this.userLocation = locationWithAddress;
+            }
+          }
         } else {
           await this.requestLocationAccess();
         }
