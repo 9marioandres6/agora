@@ -205,6 +205,9 @@ export class ProjectsService {
 
   public setupProjectListener(projectId: string) {
     try {
+      // Clear current project immediately to prevent showing old data
+      this._currentProject.set(null);
+      
       // Clean up existing listener for this project
       const existingListener = this.listeners.get(`project_${projectId}`);
       if (existingListener) {
