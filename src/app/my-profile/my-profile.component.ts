@@ -7,13 +7,14 @@ import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
 import { LocationService, LocationData } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
+import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
 @Component({
   selector: 'app-my-profile',
   templateUrl: './my-profile.component.html',
   styleUrls: ['./my-profile.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, TranslateModule]
+  imports: [IonicModule, CommonModule, FormsModule, TranslateModule, ImageFallbackDirective]
 })
 export class MyProfileComponent {
   private authService = inject(AuthService);

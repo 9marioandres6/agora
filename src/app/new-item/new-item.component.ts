@@ -12,13 +12,14 @@ import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selec
 import { ScopeOption } from './models/new-item.models';
 import { Need, Media, Collaborator, Scope } from '../services/models/project.models';
 import { LocationService } from '../services/location.service';
+import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
 @Component({
   selector: 'app-new-item',
   templateUrl: './new-item.component.html',
   styleUrls: ['./new-item.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, TranslateModule]
+  imports: [IonicModule, CommonModule, FormsModule, TranslateModule, ImageFallbackDirective]
 })
 export class NewItemComponent implements AfterViewInit {
   @ViewChild('titleInput', { static: false }) titleInput!: IonInput;

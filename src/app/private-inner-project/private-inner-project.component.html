@@ -305,7 +305,11 @@
                     <div class="request-info">
                       <ion-avatar class="avatar-small">
                         @if (request.photoURL) {
-                          <img [src]="request.photoURL" [alt]="request.displayName">
+                          <img 
+                            [src]="request.photoURL" 
+                            appImageFallback
+                            [fallbackIcon]="'person'"
+                            [fallbackSize]="'small'">
                         } @else {
                           <ion-icon name="person"></ion-icon>
                         }

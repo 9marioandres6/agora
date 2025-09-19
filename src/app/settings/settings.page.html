@@ -17,9 +17,13 @@
         <div class="user-profile">
           <ion-avatar class="profile-avatar avatar-small">
             @if (user()?.photoURL) {
-              <img [src]="user()?.photoURL" [alt]="user()?.displayName || 'User'">
+              <img 
+                [src]="user()?.photoURL" 
+                appImageFallback
+                [fallbackIcon]="'person'"
+                [fallbackSize]="'small'">
             } @else {
-              <ion-icon name="person" size="large"></ion-icon>
+              <ion-icon name="person" size="small"></ion-icon>
             }
           </ion-avatar>
           <div class="profile-info">

@@ -39,7 +39,11 @@
           button>
           
           <ion-avatar slot="start" *ngIf="message.senderPhotoURL">
-            <img [src]="message.senderPhotoURL" [alt]="message.senderName">
+            <img 
+              [src]="message.senderPhotoURL" 
+              appImageFallback
+              [fallbackIcon]="'person'"
+              [fallbackSize]="'small'">
           </ion-avatar>
           
           <ion-avatar slot="start" *ngIf="!message.senderPhotoURL">

@@ -11,12 +11,13 @@ import { SupabaseService } from '../services/supabase.service';
 import { UserSearchService } from '../services/user-search.service';
 import { PendingCollaborator } from './models/private-inner-project.models';
 import { UserAvatarComponent, UserAvatarData } from '../components/user-avatar/user-avatar.component';
+import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
 @Component({
   selector: 'app-private-inner-project',
   templateUrl: './private-inner-project.component.html',
   styleUrls: ['./private-inner-project.component.scss'],
-  imports: [CommonModule, IonicModule, TranslateModule, FormsModule, UserAvatarComponent]
+  imports: [CommonModule, IonicModule, TranslateModule, FormsModule, UserAvatarComponent, ImageFallbackDirective]
 })
 export class PrivateInnerProjectComponent implements OnDestroy {
   @ViewChildren('chapterTitleInput') chapterTitleInputs!: QueryList<IonInput>;

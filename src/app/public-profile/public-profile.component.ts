@@ -9,13 +9,14 @@ import { ThemeService } from '../services/theme.service';
 import { UserSearchService, UserProfile } from '../services/user-search.service';
 import { ProjectsService } from '../services/projects.service';
 import { Project } from '../services/models/project.models';
+import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
 @Component({
   selector: 'app-public-profile',
   templateUrl: './public-profile.component.html',
   styleUrls: ['./public-profile.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, TranslateModule]
+  imports: [IonicModule, CommonModule, TranslateModule, ImageFallbackDirective]
 })
 export class PublicProfileComponent implements OnInit {
   private authService = inject(AuthService);

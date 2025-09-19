@@ -92,7 +92,12 @@
                       <div class="user-result" (click)="addCollaborator(user)">
                         <div class="user-info">
                           @if (user.photoURL) {
-                            <img [src]="user.photoURL" [alt]="user.displayName" class="user-avatar">
+                            <img 
+                              [src]="user.photoURL" 
+                              class="user-avatar"
+                              appImageFallback
+                              [fallbackIcon]="'person'"
+                              [fallbackSize]="'small'">
                           } @else {
                             <ion-icon name="person" class="user-avatar-placeholder"></ion-icon>
                           }
@@ -127,7 +132,12 @@
                       <div class="collaborator-item">
                         <div class="collaborator-info">
                           @if (collaborator.photoURL) {
-                            <img [src]="collaborator.photoURL" [alt]="collaborator.displayName" class="collaborator-avatar">
+                            <img 
+                              [src]="collaborator.photoURL" 
+                              class="collaborator-avatar"
+                              appImageFallback
+                              [fallbackIcon]="'person'"
+                              [fallbackSize]="'small'">
                           } @else {
                             <ion-icon name="person" class="collaborator-avatar-placeholder"></ion-icon>
                           }

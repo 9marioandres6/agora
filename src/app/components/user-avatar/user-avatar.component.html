@@ -5,9 +5,13 @@
   (click)="onAvatarClick()">
   <ion-avatar [class]="(avatarSize() === 'small' ? 'avatar-small' : 'avatar-large') + ' variant-' + variant()">
     @if (user().photoURL) {
-      <img [src]="user().photoURL" [alt]="user().displayName || 'User'">
+      <img 
+        [src]="user().photoURL" 
+        appImageFallback
+        [fallbackIcon]="'person'"
+        [fallbackSize]="avatarSize() === 'small' ? 'small' : 'large'">
     } @else {
-      <ion-icon name="person" size="large"></ion-icon>
+      <ion-icon name="person" [size]="avatarSize() === 'small' ? 'small' : 'large'"></ion-icon>
     }
   </ion-avatar>
   

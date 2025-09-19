@@ -222,6 +222,18 @@ ion-avatar ion-icon {
   opacity: 0.6 !important;
 }
 
+/* Avatar Fallback Icon Styling */
+ion-avatar .avatar-fallback {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  font-size: 20px !important;
+  color: var(--app-text) !important;
+  opacity: 0.6 !important;
+}
+
 /* Centralized Avatar Sizes */
 :root {
   --avatar-size-large: 180px;

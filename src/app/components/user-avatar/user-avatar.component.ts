@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Firestore } from '@angular/fire/firestore';
 import { ProjectsService } from '../../services/projects.service';
 import { Project } from '../../services/models/project.models';
+import { ImageFallbackDirective } from '../../directives/image-fallback.directive';
 
 export interface UserAvatarData {
   uid: string;
@@ -21,7 +22,7 @@ export interface UserAvatarData {
   templateUrl: './user-avatar.component.html',
   styleUrls: ['./user-avatar.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, TranslateModule]
+  imports: [CommonModule, IonicModule, TranslateModule, ImageFallbackDirective]
 })
 export class UserAvatarComponent implements OnInit {
   private navCtrl = inject(NavController);

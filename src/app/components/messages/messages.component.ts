@@ -4,13 +4,14 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { MessagesService } from '../../services/messages.service';
 import { Message } from '../../services/models/message.models';
+import { ImageFallbackDirective } from '../../directives/image-fallback.directive';
 
 @Component({
   selector: 'app-messages',
   templateUrl: './messages.component.html',
   styleUrls: ['./messages.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, TranslateModule]
+  imports: [IonicModule, CommonModule, TranslateModule, ImageFallbackDirective]
 })
 export class MessagesComponent {
   private messagesService = inject(MessagesService);

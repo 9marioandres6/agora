@@ -21,7 +21,11 @@
         <div class="avatar-section">
           <ion-avatar class="profile-avatar avatar-large">
             @if (photoURL) {
-              <img [src]="photoURL" [alt]="displayName || 'User'">
+              <img 
+                [src]="photoURL" 
+                appImageFallback
+                [fallbackIcon]="'person'"
+                [fallbackSize]="'large'">
             } @else {
               <ion-icon name="person" size="large"></ion-icon>
             }
