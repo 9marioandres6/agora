@@ -9,7 +9,7 @@
     @if (isAuthenticated() && userLocation) {
       <div class="location-container">
         <div class="location-info" (click)="requestLocationAccess()">
-          <span class="location-text">{{ userLocation.address || 'Location available' }}</span>
+          <span class="location-text">{{ userLocation.address || 'Location not available' }}</span>
         </div>
       </div>
     } @else if (isAuthenticated() && isRequestingLocation()) {
