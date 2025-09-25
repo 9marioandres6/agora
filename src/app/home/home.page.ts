@@ -44,6 +44,10 @@ export class HomePage implements OnInit, ViewWillEnter {
   currentScope = signal('all');
   isLoadingMore = false;
   isRequestingLocation = signal(false);
+  isLocationModalOpen = signal(false);
+  private isGettingAddress = false;
+  showLocationChangeFlag = signal(false);
+  newLocation: any = null;
 
   projects = computed(() => {
     const filteredProjects = this.projectsService.filteredProjects();
@@ -372,6 +376,79 @@ export class HomePage implements OnInit, ViewWillEnter {
       await this.projectsService.requestCollaboration(projectId, message);
     } catch (error) {
       console.error('Error requesting collaboration:', error);
+    }
+  }
+
+  showLocationModal() {
+    this.isLocationModalOpen.set(true);
+  }
+
+  closeLocationModal() {
+    this.isLocationModalOpen.set(false);
+  }
+
+  getFormattedAddress(): string {
+    if (!this.userLocation) {
+      return 'Location not available';
+    }
+
+    // If we have coordinates but no address, show a generic message
+    if (this.userLocation.latitude && this.userLocation.longitude && !this.userLocation.address) {
+      return 'Getting address...';
+    }
+
+    const parts = [];
+    
+    if (this.userLocation.address) {
+      const addressParts = this.userLocation.address.split(',');
+      
+      if (addressParts.length > 0) {
+        parts.push(addressParts[0].trim());
+      }
+      
+      if (addressParts.length >= 2) {
+        const cityPart = addressParts[addressParts.length - 2]?.trim();
+        if (cityPart) {
+          parts.push(cityPart);
+        }
+      }
+      
+      if (addressParts.length >= 1) {
+        const countryPart = addressParts[addressParts.length - 1]?.trim();
+        if (countryPart) {
+          parts.push(countryPart);
+        }
+      }
+    }
+    
+    if (parts.length === 0 && this.userLocation.city) {
+      parts.push(this.userLocation.city);
+    }
+    
+    if (parts.length === 0 && this.userLocation.country) {
+      parts.push(this.userLocation.country);
+    }
+    
+    return parts.length > 0 ? parts.join(', ') : (this.userLocation.address || 'Location not available');
+  }
+
+  async ensureLocationHasAddress() {
+    if (this.isGettingAddress) {
+      return; // Already getting address, don't call again
+    }
+    
+    if (this.userLocation && this.userLocation.latitude && this.userLocation.longitude && !this.userLocation.address) {
+      this.isGettingAddress = true;
+      try {
+        const locationWithAddress = await this.locationService.getLocationWithAddress();
+        if (locationWithAddress) {
+          this.userLocation = locationWithAddress;
+        }
+      } catch (error) {
+        console.error('Error getting address for location:', error);
+      } finally {
+        this.isGettingAddress = false;
+      }
     }
   }
 
