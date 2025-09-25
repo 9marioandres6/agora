@@ -25,8 +25,8 @@ service cloud.firestore {
       
       // Allow update access for specific fields that all users should be able to modify
       allow update: if request.auth != null && (
-        // Users can update support/oppose arrays (add/remove themselves)
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supports', 'opposes', 'comments', 'collaborationRequests']) ||
+        // Users can update support/oppose/followers arrays (add/remove themselves)
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['supports', 'opposes', 'comments', 'collaborationRequests', 'followers']) ||
         // Project creators and collaborators can update all fields
         request.auth.uid == resource.data.createdBy ||
         (resource.data.collaborators != null && request.auth.uid in resource.data.collaborators)
