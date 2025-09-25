@@ -58,6 +58,8 @@
   --app-primary-light: rgba(56, 128, 255, 0.1);
   --app-user-project-background: rgba(56, 128, 255, 0.05);
   --app-user-project-border: rgba(56, 128, 255, 0.2);
+  --app-background-secondary: #f8f9fa;
+  --app-border-color: #e0e0e0;
 }
 
 /* Specific scrollbar hiding for common scrollable elements */
@@ -107,6 +109,8 @@ ion-content .inner-scroll {
   --app-primary-light: rgba(56, 128, 255, 0.2);
   --app-user-project-background: rgba(56, 128, 255, 0.03);
   --app-user-project-border: rgba(56, 128, 255, 0.3);
+  --app-background-secondary: #404040;
+  --app-border-color: #404040;
   
   /* Spinner Theme Variables */
   --spinner-overlay-bg: rgba(0, 0, 0, 0.7);
@@ -134,6 +138,8 @@ ion-content .inner-scroll {
   --app-primary: #3880ff;
   --app-user-project-background: rgba(56, 128, 255, 0.05);
   --app-user-project-border: rgba(56, 128, 255, 0.2);
+  --app-background-secondary: #f8f9fa;
+  --app-border-color: #e0e0e0;
   
   /* Spinner Theme Variables */
   --spinner-overlay-bg: rgba(0, 0, 0, 0.5);
@@ -148,6 +154,7 @@ body {
   background-color: var(--app-background);
   color: var(--app-text);
   transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* Ensure smooth transitions for all themed elements */
@@ -500,6 +507,27 @@ ion-item::part(native) {
   border-top: none !important;
   border-left: none !important;
   border-right: none !important;
+}
+
+/* Theme-aware ion-chip styling */
+ion-chip {
+  --background: var(--app-background-secondary);
+  --color: var(--app-text);
+  border: 1px solid var(--app-border-color);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Specific chip color overrides for theme consistency */
+.dark ion-chip {
+  --background: #404040;
+  --color: #ffffff;
+  border-color: #555555;
+}
+
+.light-theme ion-chip {
+  --background: #f8f9fa;
+  --color: #000000;
+  border-color: #e0e0e0;
 }
 
 
