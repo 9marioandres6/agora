@@ -410,27 +410,15 @@ export class HomePage implements OnInit, ViewWillEnter {
       if (addressParts.length > 0) {
         parts.push(addressParts[0].trim());
       }
-      
-      if (addressParts.length >= 2) {
-        const cityPart = addressParts[addressParts.length - 2]?.trim();
-        if (cityPart) {
-          parts.push(cityPart);
-        }
-      }
-      
-      if (addressParts.length >= 1) {
-        const countryPart = addressParts[addressParts.length - 1]?.trim();
-        if (countryPart) {
-          parts.push(countryPart);
-        }
-      }
     }
     
-    if (parts.length === 0 && this.userLocation.city) {
+    // Add city from userLocation object
+    if (this.userLocation.city) {
       parts.push(this.userLocation.city);
     }
     
-    if (parts.length === 0 && this.userLocation.country) {
+    // Add country from userLocation object
+    if (this.userLocation.country) {
       parts.push(this.userLocation.country);
     }
     
