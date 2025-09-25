@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, signal, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, ModalController, IonInput, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ import { ImageFallbackDirective } from '../directives/image-fallback.directive';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, TranslateModule, ImageFallbackDirective]
 })
-export class NewItemComponent implements AfterViewInit {
+export class NewItemComponent implements OnInit, AfterViewInit {
   @ViewChild('titleInput', { static: false }) titleInput!: IonInput;
 
   private authService = inject(AuthService);
@@ -49,6 +49,7 @@ export class NewItemComponent implements AfterViewInit {
   searchResults: UserProfile[] = [];
   isSearching = false;
   selectedCollaborators: Collaborator[] = [];
+  userLocation: any = null;
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', label: 'Grupal - Small Group Collaboration', icon: 'people' },
@@ -271,14 +272,8 @@ export class NewItemComponent implements AfterViewInit {
         return;
       }
 
-      // Get user's current location
-      let userLocation = null;
-      try {
-        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-        userLocation = userProfile?.location || null;
-      } catch (error) {
-        console.warn('Could not get user location for project:', error);
-      }
+      // Use the already loaded user location
+      const userLocation = this.userLocation;
 
       // Create scope object
       const scopeObject: Scope = {
@@ -287,7 +282,7 @@ export class NewItemComponent implements AfterViewInit {
         image: ''
       };
 
-      const projectData = {
+      const projectData: any = {
         title: this.title.trim(),
         description: this.description.trim() || '',
         needs: this.needs,
@@ -296,9 +291,12 @@ export class NewItemComponent implements AfterViewInit {
         collaborators: this.selectedCollaborators,
         collaborationRequests: [],
         media: this.projectMedia,
-        location: userLocation || undefined,
-        locationAddress: userLocation?.address || undefined
+        location: userLocation || undefined
       };
+
+      if (userLocation?.address) {
+        projectData.locationAddress = userLocation.address;
+      }
 
       const projectId = await this.projectsService.createProject(projectData);
 
@@ -334,6 +332,41 @@ export class NewItemComponent implements AfterViewInit {
         return 'Global';
       default:
         return '';
+    }
+  }
+
+  async ngOnInit() {
+    await this.loadUserLocation();
+  }
+
+  async loadUserLocation() {
+    try {
+      const currentUser = this.user();
+      if (currentUser) {
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        if (userProfile?.location) {
+          this.userLocation = userProfile.location;
+        } else {
+          await this.requestLocationAccess();
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user location:', error);
+      await this.requestLocationAccess();
+    }
+  }
+
+  async requestLocationAccess() {
+    try {
+      const hasPermission = await this.locationService.requestLocationPermission();
+      if (hasPermission) {
+        const locationData = await this.locationService.getLocationWithAddress();
+        if (locationData) {
+          this.userLocation = locationData;
+        }
+      }
+    } catch (error) {
+      console.error('Error requesting location access:', error);
     }
   }
 
