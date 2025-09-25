@@ -1,10 +1,11 @@
-import { Component, input, output, signal, inject } from '@angular/core';
+import { Component, input, output, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { Project, Need, Scope } from '../../services/models/project.models';
 import { AuthService } from '../../services/auth.service';
+import { UserSearchService } from '../../services/user-search.service';
 import { UserAvatarComponent, UserAvatarData } from '../user-avatar/user-avatar.component';
 
 @Component({
@@ -14,8 +15,9 @@ import { UserAvatarComponent, UserAvatarData } from '../user-avatar/user-avatar.
   standalone: true,
   imports: [CommonModule, IonicModule, FormsModule, TranslateModule, UserAvatarComponent]
 })
-export class ProjectCardComponent {
+export class ProjectCardComponent implements OnInit {
   private authService = inject(AuthService);
+  private userSearchService = inject(UserSearchService);
 
   project = input.required<Project>();
   expandedComments = input<boolean>(false);
@@ -33,9 +35,23 @@ export class ProjectCardComponent {
 
   newCommentText = '';
   collaborationMessage = '';
+  creatorData = signal<UserAvatarData | null>(null);
 
   get user() {
     return this.authService.user();
+  }
+
+  ngOnInit() {
+    this.loadCreatorData();
+  }
+
+  async loadCreatorData() {
+    try {
+      const data = await this.getCreatorData();
+      this.creatorData.set(data);
+    } catch (error) {
+      console.error('Error loading creator data:', error);
+    }
   }
 
   getScopeIcon(scope: string | Scope): string {
@@ -109,9 +125,26 @@ export class ProjectCardComponent {
     return this.isProjectCreator(project) || this.isProjectCollaborator(project);
   }
 
-  getCreatorData(): UserAvatarData {
+  async getCreatorData(): Promise<UserAvatarData> {
     const project = this.project();
     if (project.creator) {
+      try {
+        // Try to get the current user profile data
+        const userProfile = await this.userSearchService.getUserProfile(project.creator.uid);
+        if (userProfile) {
+          return {
+            uid: project.creator.uid,
+            displayName: userProfile.displayName || project.creator.displayName,
+            email: userProfile.email || project.creator.email,
+            photoURL: userProfile.photoURL || project.creator.photoURL,
+            role: 'PROJECT.CREATOR'
+          };
+        }
+      } catch (error) {
+        console.warn('Could not fetch current creator profile, using stored data:', error);
+      }
+      
+      // Fallback to stored creator data
       return {
         uid: project.creator.uid,
         displayName: project.creator.displayName,
@@ -125,7 +158,7 @@ export class ProjectCardComponent {
       displayName: 'Anonymous',
       email: '',
       photoURL: undefined,
-              role: 'PROJECT.CREATOR'
+      role: 'PROJECT.CREATOR'
     };
   }
 

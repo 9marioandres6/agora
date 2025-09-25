@@ -203,13 +203,15 @@
   <div class="collaborators-container">
     <!-- Creator Section -->
     <div class="creator-section">
-      <app-user-avatar
-        [user]="getCreatorData()"
-        [variant]="'creator'"
-        [avatarSize]="'small'"
-        [showRole]="true"
-      >
-      </app-user-avatar>
+      @if (creatorData()) {
+        <app-user-avatar
+          [user]="creatorData()!"
+          [variant]="'creator'"
+          [avatarSize]="'small'"
+          [showRole]="true"
+        >
+        </app-user-avatar>
+      }
     </div>
 
     <!-- Current Collaborators -->
