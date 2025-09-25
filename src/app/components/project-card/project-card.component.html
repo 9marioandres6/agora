@@ -174,9 +174,23 @@
   <!-- Comments Section -->
   @if (expandedComments()) {
   <div class="comments-container">
+    <!-- Show comment input for all authenticated users -->
+    @if (user) {
+    <ion-item class="add-comment-section">
+      <ion-textarea
+        [(ngModel)]="newCommentText"
+        [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
+        rows="2"
+        class="comment-textarea"
+        (keydown.enter)="onCommentKeydown($event)"
+      >
+      </ion-textarea>
+    </ion-item>
+    }
+
     @if (project().comments && project().comments.length > 0) {
     <div class="comments-list">
-      @for (comment of project().comments; track comment.id) {
+      @for (comment of project().comments.slice().reverse(); track comment.id) {
       <div class="comment-item">
         <div class="comment-header">
           <div class="comment-author">
@@ -192,20 +206,6 @@
       </div>
       }
     </div>
-    }
-
-    <!-- Show comment input for all authenticated users -->
-    @if (user) {
-    <ion-item class="add-comment-section">
-      <ion-textarea
-        [(ngModel)]="newCommentText"
-        [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
-        rows="2"
-        class="comment-textarea"
-        (keydown.enter)="onCommentKeydown($event)"
-      >
-      </ion-textarea>
-    </ion-item>
     }
   </div>
   }

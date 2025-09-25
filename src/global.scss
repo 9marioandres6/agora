@@ -481,4 +481,25 @@ ion-card-content {
   }
 }
 
+/* Remove borders from all ion-item elements globally */
+ion-item {
+  --border-color: transparent !important;
+  --border-width: 0 !important;
+  --inner-border-width: 0 !important;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* Remove borders from ion-item inner elements */
+ion-item::part(native) {
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
 
