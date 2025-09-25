@@ -549,7 +549,7 @@ export class FirebaseQueryService {
 
       // For "all" projects, we need to handle grupal projects specially
       // We'll load public projects first, then add grupal projects where user is creator/collaborator
-      const publicScopes = ['local', 'state', 'national', 'global'];
+      const publicScopes = ['local', 'national', 'global'];
 
       // Query for public projects
       const publicQuery = query(

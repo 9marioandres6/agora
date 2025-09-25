@@ -83,7 +83,7 @@ This project uses **Supabase for file storage** (images and videos). See [`SUPAB
 ### Filter Options
 ```typescript
 interface FilterOptions {
-  scope: string;           // 'all', 'local', 'state', 'national', 'global', 'grupal', 'my-projects'
+  scope: string;           // 'all', 'local', 'national', 'global', 'grupal', 'my-projects'
   userId?: string;         // Current user ID for permission checks
   location?: LocationData; // User's location for distance-based filters
   searchTerm?: string;     // Text search term
@@ -96,7 +96,7 @@ interface FilterOptions {
 ### Query Types
 
 #### Scope-Based Queries
-- **Public Scopes**: `local`, `state`, `national`, `global` (no permission restrictions)
+- **Public Scopes**: `local`, `national`, `global` (no permission restrictions)
 - **Private Scopes**: `grupal` (permission-based), `my-projects` (user's own)
 
 #### Search Queries

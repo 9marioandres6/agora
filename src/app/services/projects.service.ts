@@ -1385,7 +1385,7 @@ export class ProjectsService {
     
     try {
       // For 'all' scope, we need to set up listeners for all public scopes
-      const publicScopes = ['local', 'state', 'national', 'global', 'grupal'];
+      const publicScopes = ['local', 'national', 'global', 'grupal'];
       
       // Ensure all public scope listeners are set up
       publicScopes.forEach(scope => this.ensureScopeListener(scope));
