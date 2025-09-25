@@ -48,6 +48,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   private isGettingAddress = false;
   showLocationChangeFlag = signal(false);
   newLocation: any = null;
+  locationChangeDismissed = signal(false);
 
   projects = computed(() => {
     const filteredProjects = this.projectsService.filteredProjects();
@@ -188,6 +189,9 @@ export class HomePage implements OnInit, ViewWillEnter {
             if (locationWithAddress) {
               this.userLocation = locationWithAddress;
             }
+          } else {
+            // Check if current location differs from saved location
+            await this.checkForLocationChange();
           }
         } else {
           await this.requestLocationAccess();
@@ -432,6 +436,56 @@ export class HomePage implements OnInit, ViewWillEnter {
     
     return parts.length > 0 ? parts.join(', ') : (this.userLocation.address || 'Location not available');
   }
+
+  async checkForLocationChange() {
+    try {
+      // Only check if user hasn't already dismissed the location change
+      if (this.locationChangeDismissed()) {
+        return;
+      }
+      
+      const currentLocation = await this.locationService.getLocationWithAddress();
+      if (currentLocation && this.userLocation) {
+        // Check if city has changed
+        const currentCity = currentLocation.city || '';
+        const savedCity = this.userLocation.city || '';
+        
+        if (currentCity && savedCity && currentCity !== savedCity) {
+          this.newLocation = currentLocation;
+          this.showLocationChangeFlag.set(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking for location change:', error);
+    }
+  }
+
+  async acceptLocationChange() {
+    try {
+      if (this.newLocation) {
+        this.userLocation = this.newLocation;
+        
+        // Update the user profile in the database
+        const currentUser = this.user();
+        if (currentUser) {
+          await this.userSearchService.createOrUpdateUserProfile(currentUser, this.newLocation);
+        }
+      }
+    } catch (error) {
+      console.error('Error accepting location change:', error);
+    } finally {
+      this.showLocationChangeFlag.set(false);
+      this.newLocation = null;
+      this.locationChangeDismissed.set(true);
+    }
+  }
+
+  dismissLocationChange() {
+    this.showLocationChangeFlag.set(false);
+    this.newLocation = null;
+    this.locationChangeDismissed.set(true);
+  }
+
 
   async ensureLocationHasAddress() {
     if (this.isGettingAddress) {

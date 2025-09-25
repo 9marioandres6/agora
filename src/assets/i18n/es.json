@@ -26,7 +26,9 @@
     "INFO": "Información",
     "PROJECT_NOT_FOUND": "Proyecto no encontrado",
     "OPTIONAL": "Opcional",
-    "ACCEPT": "Aceptar"
+    "ACCEPT": "Aceptar",
+    "DISMISS": "Descartar",
+    "UPDATE": "Actualizar"
   },
   "AUTH": {
     "LOGIN_TITLE": "Bienvenido de Vuelta",
@@ -111,6 +113,10 @@
     "CITY": "Ciudad",
     "COUNTRY": "País",
     "COORDINATES": "Coordenadas",
+    "LOCATION_CHANGE_TITLE": "Ubicación Cambiada",
+    "LOCATION_CHANGE_MESSAGE": "Detectamos que estás en una ciudad diferente. ¿Te gustaría actualizar tu ubicación?",
+    "CURRENT_LOCATION": "Ubicación Actual",
+    "SAVED_LOCATION": "Ubicación Guardada",
     "FILTER_PROJECTS": "Filtrar Proyectos",
     "SEARCH_PROJECTS": "Buscar Proyectos",
     "SEARCH_PLACEHOLDER": "Buscar proyectos por nombre...",

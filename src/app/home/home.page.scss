@@ -18,6 +18,12 @@ ion-content { --background: var(--app-background); }
   width: 100%;
   cursor: pointer;
   
+  .location-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    color: #ff9500;
+  }
+  
   ion-icon {
     font-size: 16px;
     flex-shrink: 0;
@@ -169,4 +175,115 @@ ion-content { --background: var(--app-background); }
     }
   }
 }
+
+/* Location Change Notification */
+.location-change-notification {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  background: #000000;
+  padding: 16px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.location-change-card {
+  max-width: 500px;
+  margin: 0 auto;
+  border-left: 4px solid var(--ion-color-warning);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: var(--ion-color-light);
+}
+
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  
+  ion-icon {
+    font-size: 24px;
+  }
+}
+
+.notification-text {
+  flex: 1;
+  
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  p {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    line-height: 1.4;
+  }
+}
+
+.location-comparison {
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  padding: 12px;
+  
+  .current-location,
+  .saved-location {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    strong {
+      font-size: 13px;
+      color: var(--ion-color-dark);
+    }
+    
+    span {
+      font-size: 13px;
+      color: var(--ion-color-medium);
+      text-align: right;
+    }
+  }
+}
+
+.notification-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Location Options Modal */
+.location-options {
+  .location-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+  }
+}
+
 
