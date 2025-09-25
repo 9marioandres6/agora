@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, inject, signal, ViewChild, AfterViewInit, OnInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, NavController, ModalController, IonInput, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +12,7 @@ import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selec
 import { ScopeOption } from './models/new-item.models';
 import { Need, Media, Collaborator, Scope } from '../services/models/project.models';
 import { LocationService } from '../services/location.service';
+import { GoogleMapsService, PlaceResult } from '../services/google-maps.service';
 import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
 @Component({
@@ -23,6 +24,8 @@ import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 })
 export class NewItemComponent implements OnInit, AfterViewInit {
   @ViewChild('titleInput', { static: false }) titleInput!: IonInput;
+  @ViewChild('cityInput', { static: false }) cityInput!: IonInput;
+  @ViewChild('countryInput', { static: false }) countryInput!: IonInput;
 
   private authService = inject(AuthService);
   private navCtrl = inject(NavController);
@@ -33,6 +36,7 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   private userSearchService = inject(UserSearchService);
   private toastCtrl = inject(ToastController);
   private locationService = inject(LocationService);
+  private googleMapsService = inject(GoogleMapsService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -50,6 +54,14 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   isSearching = false;
   selectedCollaborators: Collaborator[] = [];
   userLocation: any = null;
+  selectedCity = '';
+  selectedCountry = '';
+  isLocationLoading = false;
+  citySuggestions: PlaceResult[] = [];
+  countrySuggestions: PlaceResult[] = [];
+  showCitySuggestions = false;
+  showCountrySuggestions = false;
+  isSearchingPlaces = false;
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', label: 'Grupal - Small Group Collaboration', icon: 'people' },
@@ -316,17 +328,11 @@ export class NewItemComponent implements OnInit, AfterViewInit {
       return '';
     }
 
-    if (!userLocation?.latitude || !userLocation?.longitude) {
-      return '';
-    }
-
     switch (scope) {
       case 'local':
-        return userLocation.city || '';
-      case 'state':
-        return userLocation.state || '';
+        return this.selectedCity || userLocation?.city || '';
       case 'national':
-        return userLocation.country || '';
+        return this.selectedCountry || userLocation?.country || '';
       case 'global':
         return 'Global';
       default:
@@ -336,7 +342,9 @@ export class NewItemComponent implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     await this.loadUserLocation();
+    this.initializeLocationData();
   }
+
 
   async loadUserLocation() {
     try {
@@ -386,4 +394,99 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     });
     await toast.present();
   }
+
+  async initializeLocationData() {
+    if (!this.userLocation?.city && !this.userLocation?.country) {
+      this.isLocationLoading = true;
+      try {
+        const locationWithAddress = await this.locationService.getLocationWithAddress();
+        if (locationWithAddress) {
+          this.selectedCity = locationWithAddress.city || '';
+          this.selectedCountry = locationWithAddress.country || '';
+        }
+      } catch (error) {
+        console.warn('Could not get location data:', error);
+      } finally {
+        this.isLocationLoading = false;
+      }
+    } else {
+      this.selectedCity = this.userLocation?.city || '';
+      this.selectedCountry = this.userLocation?.country || '';
+    }
+  }
+
+  async refreshLocation() {
+    this.isLocationLoading = true;
+    try {
+      const locationWithAddress = await this.locationService.getLocationWithAddress();
+      if (locationWithAddress) {
+        this.selectedCity = locationWithAddress.city || '';
+        this.selectedCountry = locationWithAddress.country || '';
+      }
+    } catch (error) {
+      await this.showToast('Could not get current location', 'warning');
+    } finally {
+      this.isLocationLoading = false;
+    }
+  }
+
+  onCityInput(event: any) {
+    this.selectedCity = event.target.value;
+  }
+
+  async onCountryInput(event: any) {
+    const query = event.target.value;
+    this.selectedCountry = query;
+    
+    if (query.length < 2) {
+      this.countrySuggestions = [];
+      this.showCountrySuggestions = false;
+      return;
+    }
+
+    try {
+      this.isSearchingPlaces = true;
+      const suggestions = await this.googleMapsService.searchPlaces(query, 'country');
+      this.countrySuggestions = suggestions;
+      this.showCountrySuggestions = suggestions.length > 0;
+    } catch (error) {
+      console.warn('Error searching countries:', error);
+      this.countrySuggestions = [];
+      this.showCountrySuggestions = false;
+    } finally {
+      this.isSearchingPlaces = false;
+    }
+  }
+
+  selectCitySuggestion(suggestion: PlaceResult) {
+    this.selectedCity = suggestion.structured_formatting.main_text;
+    this.citySuggestions = [];
+    this.showCitySuggestions = false;
+    this.cityInput.setFocus();
+  }
+
+  selectCountrySuggestion(suggestion: PlaceResult) {
+    this.selectedCountry = suggestion.structured_formatting.main_text;
+    this.countrySuggestions = [];
+    this.showCountrySuggestions = false;
+    this.countryInput.setFocus();
+  }
+
+  hideCitySuggestions() {
+    setTimeout(() => {
+      this.showCitySuggestions = false;
+    }, 200);
+  }
+
+  hideCountrySuggestions() {
+    setTimeout(() => {
+      this.showCountrySuggestions = false;
+    }, 200);
+  }
+
+  selectCity(city: string) {
+    this.selectedCity = city;
+  }
+
+
 }

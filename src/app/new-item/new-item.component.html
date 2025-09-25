@@ -70,6 +70,152 @@
             }
           </ion-item>
 
+          @if (scope === 'local') {
+            <ion-item class="form-item">
+              <ion-label position="stacked">{{ 'NEW_ITEM.LOCATION' | translate }} ({{ 'NEW_ITEM.CITY' | translate }})</ion-label>
+              <div class="location-section">
+                <div class="location-display">
+                  @if (isLocationLoading) {
+                    <ion-spinner name="crescent" size="small"></ion-spinner>
+                    <span class="location-text">{{ 'NEW_ITEM.LOADING_LOCATION' | translate }}</span>
+                  } @else if (selectedCity) {
+                    <ion-icon name="location" class="location-icon"></ion-icon>
+                    <span class="location-text">{{ selectedCity }}</span>
+                    <ion-button 
+                      fill="clear" 
+                      size="small" 
+                      (click)="refreshLocation()"
+                      class="refresh-location-btn">
+                      <ion-icon name="refresh"></ion-icon>
+                    </ion-button>
+                  } @else {
+                    <ion-icon name="location-outline" class="location-icon"></ion-icon>
+                    <span class="location-text">{{ 'NEW_ITEM.LOCATION_NOT_AVAILABLE' | translate }}</span>
+                    <ion-button 
+                      fill="clear" 
+                      size="small" 
+                      (click)="refreshLocation()"
+                      class="refresh-location-btn">
+                      <ion-icon name="refresh"></ion-icon>
+                    </ion-button>
+                  }
+                </div>
+                <div class="location-input-container">
+                  <ion-input 
+                    #cityInput
+                    [(ngModel)]="selectedCity" 
+                    name="selectedCity"
+                    placeholder="{{ 'NEW_ITEM.ENTER_CITY' | translate }}"
+                    class="location-input"
+                    (ionInput)="onCityInput($event)"
+                    (ionBlur)="hideCitySuggestions()"
+                    (ionFocus)="showCitySuggestions = true">
+                  </ion-input>
+                  
+                  <div class="suggestions-dropdown">
+                    <div class="suggestion-item" (click)="selectCity('New York')">
+                      <ion-icon name="location" class="suggestion-icon"></ion-icon>
+                      <div class="suggestion-content">
+                        <div class="suggestion-main">New York</div>
+                        <div class="suggestion-secondary">NY, USA</div>
+                      </div>
+                    </div>
+                    <div class="suggestion-item" (click)="selectCity('Los Angeles')">
+                      <ion-icon name="location" class="suggestion-icon"></ion-icon>
+                      <div class="suggestion-content">
+                        <div class="suggestion-main">Los Angeles</div>
+                        <div class="suggestion-secondary">CA, USA</div>
+                      </div>
+                    </div>
+                    <div class="suggestion-item" (click)="selectCity('Chicago')">
+                      <ion-icon name="location" class="suggestion-icon"></ion-icon>
+                      <div class="suggestion-content">
+                        <div class="suggestion-main">Chicago</div>
+                        <div class="suggestion-secondary">IL, USA</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  @if (isSearchingPlaces) {
+                    <div class="searching-indicator">
+                      <ion-spinner name="crescent" size="small"></ion-spinner>
+                      <span>{{ 'NEW_ITEM.SEARCHING_PLACES' | translate }}</span>
+                    </div>
+                  }
+                  
+                </div>
+              </div>
+            </ion-item>
+          }
+
+          @if (scope === 'national') {
+            <ion-item class="form-item">
+              <ion-label position="stacked">{{ 'NEW_ITEM.LOCATION' | translate }} ({{ 'NEW_ITEM.COUNTRY' | translate }})</ion-label>
+              <div class="location-section">
+                <div class="location-display">
+                  @if (isLocationLoading) {
+                    <ion-spinner name="crescent" size="small"></ion-spinner>
+                    <span class="location-text">{{ 'NEW_ITEM.LOADING_LOCATION' | translate }}</span>
+                  } @else if (selectedCountry) {
+                    <ion-icon name="flag" class="location-icon"></ion-icon>
+                    <span class="location-text">{{ selectedCountry }}</span>
+                    <ion-button 
+                      fill="clear" 
+                      size="small" 
+                      (click)="refreshLocation()"
+                      class="refresh-location-btn">
+                      <ion-icon name="refresh"></ion-icon>
+                    </ion-button>
+                  } @else {
+                    <ion-icon name="flag-outline" class="location-icon"></ion-icon>
+                    <span class="location-text">{{ 'NEW_ITEM.LOCATION_NOT_AVAILABLE' | translate }}</span>
+                    <ion-button 
+                      fill="clear" 
+                      size="small" 
+                      (click)="refreshLocation()"
+                      class="refresh-location-btn">
+                      <ion-icon name="refresh"></ion-icon>
+                    </ion-button>
+                  }
+                </div>
+                <div class="location-input-container">
+                  <ion-input 
+                    #countryInput
+                    [(ngModel)]="selectedCountry" 
+                    name="selectedCountry"
+                    placeholder="{{ 'NEW_ITEM.ENTER_COUNTRY' | translate }}"
+                    class="location-input"
+                    (ionInput)="onCountryInput($event)"
+                    (ionBlur)="hideCountrySuggestions()"
+                    (ionFocus)="showCountrySuggestions = true">
+                  </ion-input>
+                  
+                  @if (showCountrySuggestions && countrySuggestions.length > 0) {
+                    <div class="suggestions-dropdown">
+                      @for (suggestion of countrySuggestions; track suggestion.place_id) {
+                        <div class="suggestion-item" (click)="selectCountrySuggestion(suggestion)">
+                          <ion-icon name="flag" class="suggestion-icon"></ion-icon>
+                          <div class="suggestion-content">
+                            <div class="suggestion-main">{{ suggestion.structured_formatting.main_text }}</div>
+                            <div class="suggestion-secondary">{{ suggestion.structured_formatting.secondary_text }}</div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                  
+                  @if (isSearchingPlaces) {
+                    <div class="searching-indicator">
+                      <ion-spinner name="crescent" size="small"></ion-spinner>
+                      <span>{{ 'NEW_ITEM.SEARCHING_PLACES' | translate }}</span>
+                    </div>
+                  }
+                  
+                </div>
+              </div>
+            </ion-item>
+          }
+
           @if (scope === 'grupal') {
             <ion-item class="form-item">
               <ion-label position="stacked">{{ 'NEW_ITEM.COLLABORATORS' | translate }}</ion-label>
