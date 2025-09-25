@@ -1,29 +1,11 @@
 <ion-card class="project-card" [class.user-project]="isUserProject(project())">
   <ion-card-header class="project-header" (click)="onProjectCardClick()">
-    <div class="project-header-top">
-      <div class="scope-section">
-        <ion-icon
-          [name]="getScopeIcon(project().scope || '')"
-          class="scope-icon"
-        ></ion-icon>
-      </div>
-      <div class="hashtag-section">
-        @if (getAllTags().length > 0) {
-          <div class="hashtags-container">
-            @for (tag of getAllTags(); track tag) {
-              <span class="hashtag">#{{ tag }}</span>
-            }
-          </div>
-        }
-      </div>
-      <div class="state-section">
-        <ion-chip class="state-chip">
-          {{ getStateLabel(project().state || "building") | translate }}
-        </ion-chip>
-      </div>
-    </div>
     <div class="project-title-section">
-      <h3 class="project-title">{{ project().title }}</h3>
+      <h3 class="project-title">
+        <ion-icon [name]="getScopeIcon(project().scope || '')" class="title-scope-icon"></ion-icon>
+        <span class="title-text">{{ project().title }}</span>
+        <ion-icon [name]="getStateIcon(project().state || 'building')" class="title-state-icon"></ion-icon>
+      </h3>
     </div>
   </ion-card-header>
 

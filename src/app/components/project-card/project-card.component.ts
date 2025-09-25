@@ -101,6 +101,15 @@ export class ProjectCardComponent implements OnInit {
     return stateLabels[state] || 'HOME.STATE_BUILDING';
   }
 
+  getStateIcon(state: string): string {
+    const stateIcons: { [key: string]: string } = {
+      'building': 'construct',
+      'implementing': 'play-circle',
+      'done': 'checkmark-circle'
+    };
+    return stateIcons[state] || 'construct';
+  }
+
   getNeedIcon(need: Need): string {
     return need.state === 'obtained' ? 'checkmark-circle' : 'time';
   }

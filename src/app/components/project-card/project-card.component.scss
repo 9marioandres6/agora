@@ -85,6 +85,11 @@
           height: 24px;
           --background: var(--ion-color-light);
           --color: var(--app-text);
+          
+          .state-icon {
+            font-size: 16px;
+            margin: 0;
+          }
         }
       }
     }
@@ -101,6 +106,17 @@
         color: var(--app-text);
         line-height: 1.5;
         letter-spacing: 1px;
+
+        .title-text {
+          margin: 0 10px;
+        }
+        
+        .title-scope-icon,
+        .title-state-icon {
+          font-size: 18px;
+          color: var(--app-text-secondary);
+          vertical-align: middle;
+        }
       }
     }
   }
@@ -156,8 +172,7 @@
     }
 
     .project-stats {
-      margin: 12px 8px 16px;
-      padding: 12px 60px;
+      padding: 6px 60px;
       background: var(--app-background-secondary);
       border-radius: 8px;
       border: 1px solid var(--app-border-color);
