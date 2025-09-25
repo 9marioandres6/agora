@@ -70,6 +70,19 @@ export class ProjectCardComponent implements OnInit {
     return typeof scope === 'string' ? scope : scope?.scope || '';
   }
 
+  getFirstTag(): string | null {
+    const project = this.project();
+    if (project.tags && project.tags.length > 0) {
+      return project.tags[0];
+    }
+    return null;
+  }
+
+  getAllTags(): string[] {
+    const project = this.project();
+    return project.tags || [];
+  }
+
   getStateColor(state: string): string {
     const stateColors: { [key: string]: string } = {
       'building': 'warning',

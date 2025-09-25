@@ -1,14 +1,29 @@
 <ion-card class="project-card" [class.user-project]="isUserProject(project())">
   <ion-card-header class="project-header" (click)="onProjectCardClick()">
-    <div class="project-title-line">
-      <ion-icon
-        [name]="getScopeIcon(project().scope || '')"
-        class="scope-icon-inline"
-      ></ion-icon>
-      <span class="project-title-text">{{ project().title }}</span>
-      <ion-chip class="state-chip-inline">
-        {{ getStateLabel(project().state || "building") | translate }}
-      </ion-chip>
+    <div class="project-header-top">
+      <div class="scope-section">
+        <ion-icon
+          [name]="getScopeIcon(project().scope || '')"
+          class="scope-icon"
+        ></ion-icon>
+      </div>
+      <div class="hashtag-section">
+        @if (getAllTags().length > 0) {
+          <div class="hashtags-container">
+            @for (tag of getAllTags(); track tag) {
+              <span class="hashtag">#{{ tag }}</span>
+            }
+          </div>
+        }
+      </div>
+      <div class="state-section">
+        <ion-chip class="state-chip">
+          {{ getStateLabel(project().state || "building") | translate }}
+        </ion-chip>
+      </div>
+    </div>
+    <div class="project-title-section">
+      <h3 class="project-title">{{ project().title }}</h3>
     </div>
   </ion-card-header>
 
@@ -182,8 +197,8 @@
     </div>
     }
 
-    <!-- Only show comment input for creators and collaborators -->
-    @if (canInteractWithProject(project())) {
+    <!-- Show comment input for all authenticated users -->
+    @if (user) {
     <ion-item class="add-comment-section">
       <ion-textarea
         [(ngModel)]="newCommentText"
