@@ -174,9 +174,6 @@
   <!-- Comments Section -->
   @if (expandedComments()) {
   <div class="comments-container">
-    <div class="comments-header">
-      <h4>{{ "HOME.COMMENTS" | translate }}</h4>
-    </div>
     @if (project().comments && project().comments.length > 0) {
     <div class="comments-list">
       @for (comment of project().comments; track comment.id) {
