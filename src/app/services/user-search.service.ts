@@ -100,15 +100,19 @@ export class UserSearchService {
           await setDoc(userRef, userProfile);
         } else {
           const existingData = userDoc.data() as UserProfile;
+          
+          // Check if user doesn't have an address and we have location data
+          const shouldUpdateLocation = location && (!existingData.location || !existingData.location.address);
+          
           const updatedProfile: UserProfile = {
             ...existingData,
             displayName: user.displayName || existingData.displayName,
             email: user.email || existingData.email,
             photoURL: user.photoURL || existingData.photoURL,
-            location: location || existingData.location,
-            city: location?.city || existingData.city || '',
-            state: location?.state || existingData.state || '',
-            country: location?.country || existingData.country || '',
+            location: shouldUpdateLocation ? location : existingData.location,
+            city: shouldUpdateLocation ? (location?.city || '') : (existingData.city || ''),
+            state: shouldUpdateLocation ? (location?.state || '') : (existingData.state || ''),
+            country: shouldUpdateLocation ? (location?.country || '') : (existingData.country || ''),
             updatedAt: new Date().toISOString()
           };
           

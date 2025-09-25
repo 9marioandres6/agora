@@ -392,8 +392,9 @@ export class HomePage implements OnInit, ViewWillEnter {
       return 'Location not available';
     }
 
-    // If we have coordinates but no address, show a generic message
+    // If we have coordinates but no address, trigger address retrieval and show loading message
     if (this.userLocation.latitude && this.userLocation.longitude && !this.userLocation.address) {
+      this.ensureLocationHasAddress();
       return 'Getting address...';
     }
 
@@ -443,6 +444,12 @@ export class HomePage implements OnInit, ViewWillEnter {
         const locationWithAddress = await this.locationService.getLocationWithAddress();
         if (locationWithAddress) {
           this.userLocation = locationWithAddress;
+          
+          // Update the user profile in the database with the new address
+          const currentUser = this.user();
+          if (currentUser) {
+            await this.userSearchService.createOrUpdateUserProfile(currentUser, locationWithAddress);
+          }
         }
       } catch (error) {
         console.error('Error getting address for location:', error);

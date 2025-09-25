@@ -184,9 +184,10 @@ export class LocationService {
     
     if (location) {
       try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.latitude}&lon=${location.longitude}&zoom=18&addressdetails=1`
-        );
+        // Use a CORS proxy to avoid CORS issues with Nominatim API
+        const proxyUrl = 'https://api.allorigins.win/raw?url=';
+        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.latitude}&lon=${location.longitude}&zoom=18&addressdetails=1`;
+        const response = await fetch(proxyUrl + encodeURIComponent(nominatimUrl));
         
         if (response.ok) {
           const data = await response.json();
@@ -210,6 +211,8 @@ export class LocationService {
         }
       } catch (error) {
         console.warn('Could not get address for location:', error);
+        // If geocoding fails, return the location without address
+        return location;
       }
     }
 
