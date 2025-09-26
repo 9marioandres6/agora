@@ -484,7 +484,7 @@ export class HomePage implements OnInit, ViewWillEnter {
       this.isGettingAddress = true;
       try {
         const locationWithAddress = await this.locationService.getLocationWithAddress();
-        if (locationWithAddress) {
+        if (locationWithAddress && locationWithAddress.address) {
           this.userLocation = locationWithAddress;
           
           // Update the user profile in the database with the new address
@@ -494,7 +494,8 @@ export class HomePage implements OnInit, ViewWillEnter {
           }
         }
       } catch (error) {
-        console.error('Error getting address for location:', error);
+        console.warn('Could not get address for location, using coordinates only:', error);
+        // Don't log as error since this is expected behavior when geocoding fails
       } finally {
         this.isGettingAddress = false;
       }
