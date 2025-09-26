@@ -49,41 +49,21 @@
             "NEW_ITEM.SCOPE" | translate
           }}</ion-label>
 
-          @if (!scope) {
-          <ion-select
-            [(ngModel)]="scope"
-            name="scope"
-            (ionChange)="scopeSelected()"
-            placeholder="{{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}"
-            interface="popover"
-            class="scope-select"
-          >
-            @for (option of scopeOptions; track option.value) {
-            <ion-select-option [value]="option.value">
-              <ion-icon [name]="option.icon" slot="start"></ion-icon>
-              {{ "NEW_ITEM.SCOPE_" + option.value.toUpperCase() | translate }}
-            </ion-select-option>
-            }
-          </ion-select>
-          } @else {
-          <div class="selected-scope-display">
-            <ion-icon
-              [name]="getScopeIcon(scope)"
-              class="scope-icon"
-            ></ion-icon>
-            <span class="scope-label">{{
-              "NEW_ITEM.SCOPE_" + scope.toUpperCase() | translate
-            }}</span>
-            <ion-button
-              fill="clear"
-              size="small"
-              (click)="scope = ''"
-              class="change-scope-btn"
-            >
-              <ion-icon name="create-outline"></ion-icon>
-            </ion-button>
-          </div>
-          }
+           <ion-select
+             [(ngModel)]="scope"
+             name="scope"
+             (ionChange)="scopeSelected()"
+             placeholder="{{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}"
+             interface="popover"
+             class="scope-select"
+           >
+             @for (option of scopeOptions; track option.value) {
+             <ion-select-option [value]="option.value">
+               <ion-icon [name]="option.icon" slot="start"></ion-icon>
+               {{ "NEW_ITEM.SCOPE_" + option.value.toUpperCase() | translate }}
+             </ion-select-option>
+             }
+           </ion-select>
         </ion-item>
 
         @if (scope === 'local') {

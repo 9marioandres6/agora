@@ -345,6 +345,17 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     }, 300);
   }
 
+  openScopeSelector() {
+    // Temporarily clear scope to show the dropdown, but don't reset other values
+    const currentScope = this.scope;
+    this.scope = '';
+    
+    // After a brief moment, the ion-select will be visible and we can trigger it
+    setTimeout(() => {
+      // The ion-select should now be visible and clickable
+    }, 50);
+  }
+
   async ngOnInit() {
     await this.loadUserLocation();
     this.initializeLocationData();
