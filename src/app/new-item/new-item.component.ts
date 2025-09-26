@@ -357,7 +357,15 @@ export class NewItemComponent implements OnInit, AfterViewInit {
       });
       autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
-        this.selectedCity = place.name;
+        // Format as "City, Country"
+        const city = place.address_components?.find((component: any) => 
+          component.types.includes('locality')
+        )?.long_name || place.name;
+        const country = place.address_components?.find((component: any) => 
+          component.types.includes('country')
+        )?.long_name || '';
+        
+        this.selectedCity = country ? `${city}, ${country}` : place.name;
       });
     });
   }
