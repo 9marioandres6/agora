@@ -1,6 +1,15 @@
 /* Custom styles that cannot be replaced with Ionic utilities */
 ion-content { --background: var(--app-background); }
 
+.new-button {
+  --color: #007bff !important;
+  
+  ion-icon {
+    color: #007bff !important;
+    
+  }
+}
+
 .location-container {
   position: absolute;
   left: 60px;

@@ -530,4 +530,67 @@ ion-chip {
   border-color: #e0e0e0;
 }
 
+/* Google Maps Autocomplete Global Styling */
+.pac-container {
+  background: var(--app-card-background) !important;
+  border: 1px solid var(--ion-color-light) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  margin-top: 4px !important;
+  z-index: 9999 !important;
+  font-family: inherit !important;
+  
+  .pac-item {
+    background: var(--app-card-background) !important;
+    border: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
+    color: var(--app-text) !important;
+    padding: 12px 16px !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+    
+    &:hover {
+      background: var(--app-primary-light) !important;
+    }
+    
+    &.pac-item-selected {
+      background: var(--app-primary-light) !important;
+    }
+    
+    .pac-item-query {
+      color: var(--app-text) !important;
+      font-weight: 500 !important;
+      font-size: 14px !important;
+      margin-bottom: 2px !important;
+    }
+    
+    .pac-matched {
+      font-weight: 600 !important;
+      color: var(--app-primary) !important;
+    }
+    
+    .pac-item-query + .pac-item-query {
+      color: var(--ion-color-medium) !important;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+    }
+  }
+  
+  .pac-icon {
+    display: none !important;
+  }
+  
+  /* Remove all borders and separators */
+  .pac-item:not(:last-child) {
+    border-bottom: none !important;
+  }
+  
+  .pac-item:not(:first-child) {
+    border-top: none !important;
+  }
+}
+
 
