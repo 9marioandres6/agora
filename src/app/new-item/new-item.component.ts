@@ -12,8 +12,9 @@ import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selec
 import { ScopeOption } from './models/new-item.models';
 import { Need, Media, Collaborator, Scope } from '../services/models/project.models';
 import { LocationService } from '../services/location.service';
-import { GoogleMapsService, PlaceResult } from '../services/google-maps.service';
 import { ImageFallbackDirective } from '../directives/image-fallback.directive';
+
+declare var google: any;
 
 @Component({
   selector: 'app-new-item',
@@ -36,7 +37,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   private userSearchService = inject(UserSearchService);
   private toastCtrl = inject(ToastController);
   private locationService = inject(LocationService);
-  private googleMapsService = inject(GoogleMapsService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -57,11 +57,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   selectedCity = '';
   selectedCountry = '';
   isLocationLoading = false;
-  citySuggestions: PlaceResult[] = [];
-  countrySuggestions: PlaceResult[] = [];
-  showCitySuggestions = false;
-  showCountrySuggestions = false;
-  isSearchingPlaces = false;
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', label: 'Grupal - Small Group Collaboration', icon: 'people' },
@@ -340,9 +335,43 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     }
   }
 
+  scopeSelected() {
+    setTimeout(() => {
+      if (this.scope === 'local' && this.cityInput) {
+        this.autocompleteCity();
+      } else if (this.scope === 'national' && this.countryInput) {
+        this.autocompleteCountry();
+      }
+    }, 300);
+  }
+
   async ngOnInit() {
     await this.loadUserLocation();
     this.initializeLocationData();
+  }
+
+  autocompleteCity() {
+    this.cityInput.getInputElement().then((element) => {
+      const autocomplete = new google.maps.places.Autocomplete(element, {
+        types: ['(cities)']
+      });
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        this.selectedCity = place.name;
+      });
+    });
+  }
+
+  autocompleteCountry() {
+    this.countryInput.getInputElement().then((element) => {
+      const autocomplete = new google.maps.places.Autocomplete(element, {
+        types: ['country']
+      });
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        this.selectedCountry = place.name;
+      });
+    });
   }
 
 
@@ -430,63 +459,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onCityInput(event: any) {
-    this.selectedCity = event.target.value;
-  }
-
-  async onCountryInput(event: any) {
-    const query = event.target.value;
-    this.selectedCountry = query;
-    
-    if (query.length < 2) {
-      this.countrySuggestions = [];
-      this.showCountrySuggestions = false;
-      return;
-    }
-
-    try {
-      this.isSearchingPlaces = true;
-      const suggestions = await this.googleMapsService.searchPlaces(query, 'country');
-      this.countrySuggestions = suggestions;
-      this.showCountrySuggestions = suggestions.length > 0;
-    } catch (error) {
-      console.warn('Error searching countries:', error);
-      this.countrySuggestions = [];
-      this.showCountrySuggestions = false;
-    } finally {
-      this.isSearchingPlaces = false;
-    }
-  }
-
-  selectCitySuggestion(suggestion: PlaceResult) {
-    this.selectedCity = suggestion.structured_formatting.main_text;
-    this.citySuggestions = [];
-    this.showCitySuggestions = false;
-    this.cityInput.setFocus();
-  }
-
-  selectCountrySuggestion(suggestion: PlaceResult) {
-    this.selectedCountry = suggestion.structured_formatting.main_text;
-    this.countrySuggestions = [];
-    this.showCountrySuggestions = false;
-    this.countryInput.setFocus();
-  }
-
-  hideCitySuggestions() {
-    setTimeout(() => {
-      this.showCitySuggestions = false;
-    }, 200);
-  }
-
-  hideCountrySuggestions() {
-    setTimeout(() => {
-      this.showCountrySuggestions = false;
-    }, 200);
-  }
-
-  selectCity(city: string) {
-    this.selectedCity = city;
-  }
 
 
 }
