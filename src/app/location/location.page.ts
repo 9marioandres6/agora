@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
+import { ProjectsService } from '../services/projects.service';
 import { ActivatedRoute } from '@angular/router';
 
 declare var google: any;
@@ -21,6 +22,7 @@ export class LocationPage implements OnInit {
   private authService = inject(AuthService);
   private locationService = inject(LocationService);
   private userSearchService = inject(UserSearchService);
+  private projectsService = inject(ProjectsService);
   private navCtrl = inject(NavController);
   private route = inject(ActivatedRoute);
 
@@ -152,28 +154,35 @@ export class LocationPage implements OnInit {
   }
 
   async acceptLocationChange() {
+    // Store the new location before clearing it
+    const locationToAccept = this.newLocation;
+    
+    // Hide the location change element immediately
+    this.showLocationChangeFlag.set(false);
+    this.newLocation = null;
+    this.locationChangeDismissed.set(true);
+    
     try {
-      if (this.newLocation) {
-        this.locationService.setUserLocation(this.newLocation);
+      if (locationToAccept) {
+        this.locationService.setUserLocation(locationToAccept);
         
         // Update cache
         if (this.userProfileCache) {
-          this.userProfileCache.location = this.newLocation;
+          this.userProfileCache.location = locationToAccept;
         }
         
         const currentUser = this.user();
         if (currentUser) {
-          await this.userSearchService.createOrUpdateUserProfile(currentUser, this.newLocation);
+          await this.userSearchService.createOrUpdateUserProfile(currentUser, locationToAccept);
           // Clear cache to ensure fresh data is fetched
           this.userSearchService.invalidateUserProfileCache(currentUser.uid);
         }
+        
+        // Refresh projects with the new location
+        await this.projectsService.refreshProjectsWithCurrentLocation();
       }
     } catch (error) {
       console.error('Error accepting location change:', error);
-    } finally {
-      this.showLocationChangeFlag.set(false);
-      this.newLocation = null;
-      this.locationChangeDismissed.set(true);
     }
   }
 
@@ -248,6 +257,9 @@ export class LocationPage implements OnInit {
                 // Clear cache to ensure fresh data is fetched
                 this.userSearchService.invalidateUserProfileCache(currentUser.uid);
               }
+              
+              // Refresh projects with the new location
+              await this.projectsService.refreshProjectsWithCurrentLocation();
     } catch (error) {
       console.error('Error saving new address:', error);
     }

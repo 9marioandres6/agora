@@ -83,9 +83,11 @@ export class FirebaseQueryService {
     }
   }
 
-  async queryProjects(filterOptions: FilterOptions): Promise<QueryResult> {
+  async queryProjects(filterOptions: FilterOptions, showLoading: boolean = true): Promise<QueryResult> {
     try {
-      this._isLoading.set(true);
+      if (showLoading) {
+        this._isLoading.set(true);
+      }
       this._currentFilter.set(filterOptions);
 
       const constraints: QueryConstraint[] = [];
@@ -179,7 +181,9 @@ export class FirebaseQueryService {
       console.error('Error querying projects:', error);
       throw error;
     } finally {
-      this._isLoading.set(false);
+      if (showLoading) {
+        this._isLoading.set(false);
+      }
     }
   }
 
@@ -538,9 +542,11 @@ export class FirebaseQueryService {
     });
   }
 
-  async loadAllProjects(limitCount: number = 8): Promise<QueryResult> {
+  async loadAllProjects(limitCount: number = 8, showLoading: boolean = true): Promise<QueryResult> {
     try {
-      this._isLoading.set(true);
+      if (showLoading) {
+        this._isLoading.set(true);
+      }
 
       const currentUser = this.authService.user();
       if (!currentUser?.uid) {
@@ -659,7 +665,9 @@ export class FirebaseQueryService {
       console.error('Error loading all projects:', error);
       throw error;
     } finally {
-      this._isLoading.set(false);
+      if (showLoading) {
+        this._isLoading.set(false);
+      }
     }
   }
 

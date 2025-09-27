@@ -1274,12 +1274,14 @@ export class ProjectsService {
   public refreshScopeProjects(scope: string) {
   }
 
-  public async setFilteredProjects(scope: string) {
+  public async setFilteredProjects(scope: string, showLoading: boolean = true) {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return;
 
-    // Set filtered projects loading to true
-    this.loadingService.setFilteredProjectsLoading(true);
+    // Set filtered projects loading to true only if requested
+    if (showLoading) {
+      this.loadingService.setFilteredProjectsLoading(true);
+    }
 
     // Ensure the scope listener is set up for this scope
     this.ensureScopeListener(scope);
@@ -1303,14 +1305,20 @@ export class ProjectsService {
     };
 
     try {
-      await this.firebaseQueryService.queryProjects(filterOptions);
+      await this.firebaseQueryService.queryProjects(filterOptions, showLoading);
       this.firebaseQueryService.setupRealTimeListener(
         filterOptions,
-        () => this.loadingService.setFilteredProjectsLoading(false)
+        () => {
+          if (showLoading) {
+            this.loadingService.setFilteredProjectsLoading(false);
+          }
+        }
       );
       
     } catch (error) {
-      this.loadingService.setFilteredProjectsLoading(false);
+      if (showLoading) {
+        this.loadingService.setFilteredProjectsLoading(false);
+      }
     }
   }
 
@@ -1376,12 +1384,14 @@ export class ProjectsService {
     }
   }
 
-  public async resetFilteredProjects() {
+  public async resetFilteredProjects(showLoading: boolean = true) {
     const currentUser = this.authService.user();
     if (!currentUser?.uid) return;
     
-    // Set filtered projects loading to true
-    this.loadingService.setFilteredProjectsLoading(true);
+    // Set filtered projects loading to true only if requested
+    if (showLoading) {
+      this.loadingService.setFilteredProjectsLoading(true);
+    }
     
     try {
       // For 'all' scope, we need to set up listeners for all public scopes
@@ -1402,19 +1412,43 @@ export class ProjectsService {
         console.warn('Could not get user location for filtering:', error);
       }
       
-      await this.firebaseQueryService.loadAllProjects();
+      await this.firebaseQueryService.loadAllProjects(8, showLoading);
       this.firebaseQueryService.setupRealTimeListener(
         { scope: 'all', userId: currentUser.uid, location: userLocation },
-        () => this.loadingService.setFilteredProjectsLoading(false)
+        () => {
+          if (showLoading) {
+            this.loadingService.setFilteredProjectsLoading(false);
+          }
+        }
       );
       
     } catch (error) {
-      this.loadingService.setFilteredProjectsLoading(false);
+      if (showLoading) {
+        this.loadingService.setFilteredProjectsLoading(false);
+      }
     }
   }
 
   public getFilteredProjectsCount(): number {
     return this.firebaseQueryService.filteredProjects().length;
+  }
+
+  public async refreshProjectsWithCurrentLocation(): Promise<void> {
+    const currentUser = this.authService.user();
+    if (!currentUser?.uid) return;
+
+    // Get current scope from filter state
+    const currentScope = this.filterStateService.getSelectedScope();
+    
+    try {
+      if (currentScope === 'all') {
+        await this.resetFilteredProjects(false); // Silent refresh - no loading spinner
+      } else {
+        await this.setFilteredProjects(currentScope, false); // Silent refresh - no loading spinner
+      }
+    } catch (error) {
+      console.error('Error refreshing projects with current location:', error);
+    }
   }
 
   public refreshUserLocation() {

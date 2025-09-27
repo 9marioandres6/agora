@@ -466,22 +466,31 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   async acceptLocationChange() {
+    // Store the new location before clearing it
+    const locationToAccept = this.newLocation;
+    
+    // Hide the location change element immediately
+    this.showLocationChangeFlag.set(false);
+    this.newLocation = null;
+    this.locationChangeDismissed.set(true);
+    
     try {
-      if (this.newLocation) {
-        this.locationService.setUserLocation(this.newLocation);
+      if (locationToAccept) {
+        this.locationService.setUserLocation(locationToAccept);
         
         // Update the user profile in the database
         const currentUser = this.user();
         if (currentUser) {
-          await this.userSearchService.createOrUpdateUserProfile(currentUser, this.newLocation);
+          await this.userSearchService.createOrUpdateUserProfile(currentUser, locationToAccept);
+          // Clear cache to ensure fresh data is fetched
+          this.userSearchService.invalidateUserProfileCache(currentUser.uid);
         }
+        
+        // Refresh projects with the new location
+        await this.projectsService.refreshProjectsWithCurrentLocation();
       }
     } catch (error) {
       console.error('Error accepting location change:', error);
-    } finally {
-      this.showLocationChangeFlag.set(false);
-      this.newLocation = null;
-      this.locationChangeDismissed.set(true);
     }
   }
 
