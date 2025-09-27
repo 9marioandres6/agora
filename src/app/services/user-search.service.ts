@@ -219,7 +219,7 @@ export class UserSearchService {
 
   async updateUserLocation(uid: string, location: LocationData): Promise<void> {
     try {
-      // Store only essential fields in Firebase - minimal storage approach
+      // Store only coordinates and geohash in Firebase - pure coordinate-based approach
       const minimalLocation: any = {
         latitude: location.latitude,
         longitude: location.longitude,
@@ -230,10 +230,6 @@ export class UserSearchService {
       if (location.geohash) {
         minimalLocation.geohash = location.geohash;
       }
-
-      // Optionally store city and country for quick filtering (you can remove these if you want truly minimal)
-      if (location.city) minimalLocation.city = location.city;
-      if (location.countryCode) minimalLocation.countryCode = location.countryCode;
 
       const userRef = doc(this.usersCollection, uid);
       await setDoc(userRef, {
