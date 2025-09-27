@@ -82,9 +82,10 @@ export class LocationPage implements OnInit {
               // Update the cache
               this.userProfileCache.location = locationWithAddress;
             }
-          } else {
-            await this.checkForLocationChange();
           }
+          
+          // Always check for location change when loading user location
+          await this.checkForLocationChange();
         } else {
           // If no saved location, check if location service has current location
           const currentLocationState = this.locationState();
@@ -130,13 +131,19 @@ export class LocationPage implements OnInit {
       
       const currentLocation = await this.locationService.getLocationWithAddress();
       const savedLocation = this.userLocation().userLocation;
+      
       if (currentLocation && savedLocation) {
-        const currentCity = currentLocation.city || '';
-        const savedCity = savedLocation.city || '';
+        // Check if city has changed - normalize cities for comparison
+        const currentCity = (currentLocation.city || '').toLowerCase().trim();
+        const savedCity = (savedLocation.city || '').toLowerCase().trim();
         
+        // Only show location change if cities are different and both are valid
         if (currentCity && savedCity && currentCity !== savedCity) {
           this.newLocation = currentLocation;
           this.showLocationChangeFlag.set(true);
+        } else {
+          // If cities match, ensure the flag is false
+          this.showLocationChangeFlag.set(false);
         }
       }
     } catch (error) {

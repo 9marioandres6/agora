@@ -191,10 +191,10 @@ export class HomePage implements OnInit, ViewWillEnter {
             if (locationWithAddress) {
               this.locationService.setUserLocation(locationWithAddress);
             }
-          } else {
-            // Check if current location differs from saved location
-            await this.checkForLocationChange();
           }
+          
+          // Always check for location change when loading user location
+          await this.checkForLocationChange();
         } else {
           await this.requestLocationAccess();
         }
@@ -445,14 +445,19 @@ export class HomePage implements OnInit, ViewWillEnter {
       
       const currentLocation = await this.locationService.getLocationWithAddress();
       const userLocation = this.userLocation().userLocation;
+      
       if (currentLocation && userLocation) {
-        // Check if city has changed
-        const currentCity = currentLocation.city || '';
-        const savedCity = userLocation.city || '';
+        // Check if city has changed - normalize cities for comparison
+        const currentCity = (currentLocation.city || '').toLowerCase().trim();
+        const savedCity = (userLocation.city || '').toLowerCase().trim();
         
+        // Only show location change if cities are different and both are valid
         if (currentCity && savedCity && currentCity !== savedCity) {
           this.newLocation = currentLocation;
           this.showLocationChangeFlag.set(true);
+        } else {
+          // If cities match, ensure the flag is false
+          this.showLocationChangeFlag.set(false);
         }
       }
     } catch (error) {
