@@ -1117,13 +1117,17 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   getScopeLabel(scope: string | Scope): string {
     const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
     const scopeLabels: { [key: string]: string } = {
-      'grupal': 'Grupal - Small Group Collaboration',
-      'local': 'Local - Neighbourhood/Community',
-      'state': 'State - State/Province level',
-      'national': 'National - Country level',
-      'global': 'Global - International level'
+      'grupal': 'NEW_ITEM.SCOPE_GRUPAL',
+      'local': 'NEW_ITEM.SCOPE_LOCAL',
+      'national': 'NEW_ITEM.SCOPE_NATIONAL',
+      'global': 'NEW_ITEM.SCOPE_GLOBAL'
     };
-    return scopeLabels[scopeValue] || scopeValue;
+    const translationKey = scopeLabels[scopeValue];
+    if (translationKey) {
+      const translated = this.translateService.instant(translationKey);
+      return translated;
+    }
+    return scopeValue;
   }
 
   getScopeValue(scope: string | Scope): string {
