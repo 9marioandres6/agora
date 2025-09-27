@@ -1,0 +1,47 @@
+.location-details {
+  .location-change-card {
+    margin-bottom: 16px;
+    
+    .location-comparison {
+      margin-bottom: 16px;
+      
+      .current-location,
+      .saved-location {
+        margin-bottom: 8px;
+        
+        strong {
+          color: var(--ion-color-primary);
+        }
+      }
+    }
+    
+    .notification-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+  }
+}
+
+.no-location {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  
+  ion-icon {
+    margin-bottom: 16px;
+  }
+  
+  h2 {
+    margin-bottom: 8px;
+    color: var(--ion-color-medium);
+  }
+  
+  p {
+    margin-bottom: 24px;
+    color: var(--ion-color-medium);
+  }
+}

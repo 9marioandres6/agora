@@ -31,6 +31,7 @@ export class UserSearchService {
 
   private _searchResults = signal<UserProfile[]>([]);
   private _isSearching = signal(false);
+  private userProfileCache = new Map<string, UserProfile>();
 
   searchResults = this._searchResults.asReadonly();
   isSearching = this._isSearching.asReadonly();
@@ -98,6 +99,8 @@ export class UserSearchService {
           };
           
           await setDoc(userRef, userProfile);
+          // Update cache
+          this.userProfileCache.set(user.uid, userProfile);
         } else {
           const existingData = userDoc.data() as UserProfile;
           
@@ -117,6 +120,8 @@ export class UserSearchService {
           };
           
           await setDoc(userRef, updatedProfile);
+          // Update cache
+          this.userProfileCache.set(user.uid, updatedProfile);
         }
       })();
 
@@ -130,11 +135,19 @@ export class UserSearchService {
 
   async getUserProfile(uid: string): Promise<UserProfile | null> {
     try {
+      // Check cache first
+      if (this.userProfileCache.has(uid)) {
+        return this.userProfileCache.get(uid)!;
+      }
+
       const userRef = doc(this.usersCollection, uid);
       const userDoc = await getDoc(userRef);
       
       if (userDoc.exists()) {
-        return userDoc.data() as UserProfile;
+        const userProfile = userDoc.data() as UserProfile;
+        // Cache the result
+        this.userProfileCache.set(uid, userProfile);
+        return userProfile;
       }
       return null;
     } catch (error) {
@@ -145,6 +158,14 @@ export class UserSearchService {
 
   clearSearchResults(): void {
     this._searchResults.set([]);
+  }
+
+  clearUserProfileCache(): void {
+    this.userProfileCache.clear();
+  }
+
+  invalidateUserProfileCache(uid: string): void {
+    this.userProfileCache.delete(uid);
   }
 
   async updateUserProjectCounts(uid: string, projectCounts: {

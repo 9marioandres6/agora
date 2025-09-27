@@ -44,7 +44,6 @@ export class HomePage implements OnInit, ViewWillEnter {
   currentScope = signal('all');
   isLoadingMore = false;
   isRequestingLocation = signal(false);
-  isLocationModalOpen = signal(false);
   private isGettingAddress = false;
   showLocationChangeFlag = signal(false);
   newLocation: any = null;
@@ -384,11 +383,14 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   showLocationModal() {
-    this.isLocationModalOpen.set(true);
-  }
-
-  closeLocationModal() {
-    this.isLocationModalOpen.set(false);
+    this.navCtrl.navigateForward('/location', {
+      state: {
+        userLocation: this.userLocation,
+        showLocationChangeFlag: this.showLocationChangeFlag(),
+        newLocation: this.newLocation,
+        locationChangeDismissed: this.locationChangeDismissed()
+      }
+    });
   }
 
   getFormattedAddress(): string {
