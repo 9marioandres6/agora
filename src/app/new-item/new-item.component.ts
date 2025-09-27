@@ -296,13 +296,8 @@ export class NewItemComponent implements OnInit, AfterViewInit {
         createdBy: currentUser.uid,
         collaborators: this.selectedCollaborators,
         collaborationRequests: [],
-        media: this.projectMedia,
-        location: userLocation || undefined
+        media: this.projectMedia
       };
-
-      if (userLocation?.address) {
-        projectData.locationAddress = userLocation.address;
-      }
 
       const projectId = await this.projectsService.createProject(projectData);
 

@@ -1,4 +1,3 @@
-import { LocationData } from '../location.service';
 
 export interface Scope {
   scope: string;
@@ -16,8 +15,6 @@ export interface Project {
   createdAt: string;
   updatedAt?: string;
   status?: 'active' | 'completed' | 'cancelled';
-  participants?: string[];
-  tags?: string[];
   state: 'building' | 'implementing' | 'done';
   implementationPercentage: number;
   supports: string[];
@@ -35,8 +32,6 @@ export interface Project {
     email?: string;
     photoURL?: string;
   };
-  location?: LocationData;
-  locationAddress?: string;
 }
 
 export interface Need {

@@ -44,39 +44,6 @@
         }
       }
 
-      .hashtag-section {
-        flex: 1;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        margin: 0 16px;
-        overflow: hidden;
-
-        .hashtags-container {
-          display: flex;
-          gap: 8px;
-          overflow-x: auto;
-          overflow-y: hidden;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-          white-space: nowrap;
-          flex: 1;
-          min-width: 0;
-
-          &::-webkit-scrollbar {
-            display: none;
-          }
-
-          .hashtag {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--app-text-secondary);
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            white-space: nowrap;
-            flex-shrink: 0;
-          }
-        }
-      }
 
       .state-section {
         flex: 0 0 auto;

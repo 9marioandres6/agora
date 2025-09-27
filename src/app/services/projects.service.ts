@@ -418,8 +418,6 @@ export class ProjectsService {
         verifies: [],
         followers: [],
         comments: [],
-        participants: [projectData.createdBy],
-        tags: this.generateTags(projectData.title, projectData.description, projectData.needs),
         creator: {
           uid: currentUser.uid,
           displayName: currentUser.displayName || 'Anonymous',
@@ -694,27 +692,6 @@ export class ProjectsService {
     }
   }
 
-  async joinProject(projectId: string, userId: string): Promise<void> {
-    try {
-      const projectRef = doc(this.firestore, 'projects', projectId);
-      await updateDoc(projectRef, {
-        participants: arrayUnion(userId)
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async leaveProject(projectId: string, userId: string): Promise<void> {
-    try {
-      const projectRef = doc(this.firestore, 'projects', projectId);
-      await updateDoc(projectRef, {
-        participants: arrayRemove(userId)
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
 
   async updateProjectState(projectId: string, newState: 'building' | 'implementing' | 'done'): Promise<void> {
     try {
@@ -1243,21 +1220,6 @@ export class ProjectsService {
     }
   }
 
-  private generateTags(title: string, description: string, needs: Need[]): string[] {
-    const needNames = needs.map(need => need.name).join(' ');
-    const allText = `${title} ${description} ${needNames}`.toLowerCase();
-    const words = allText.split(/\s+/).filter(word => word.length > 3);
-    const tagCount: { [key: string]: number } = {};
-    
-    words.forEach(word => {
-      tagCount[word] = (tagCount[word] || 0) + 1;
-    });
-    
-    return Object.entries(tagCount)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 5)
-      .map(([word]) => word);
-  }
 
   private generateCommentId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -1453,11 +1415,6 @@ export class ProjectsService {
     // This is now handled by the FirebaseQueryService
   }
 
-  public getProjectsByTag(tag: string): Project[] {
-    return this.projects().filter(project => 
-      project.tags?.includes(tag)
-    );
-  }
 
   public getProjectsByState(state: 'building' | 'implementing' | 'done'): Project[] {
     return this.projects().filter(project => project.state === state);
