@@ -398,9 +398,9 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     try {
       const currentUser = this.user();
       if (currentUser) {
-        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-        if (userProfile?.location) {
-          this.userLocation = userProfile.location;
+        const location = this.locationService.userLocation().userLocation;
+        if (location) {
+          this.userLocation = location;
         } else {
           await this.requestLocationAccess();
         }

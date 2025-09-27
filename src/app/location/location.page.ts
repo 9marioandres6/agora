@@ -114,10 +114,6 @@ export class LocationPage implements OnInit {
                     this.userProfileCache.location = locationData;
                   }
                   
-                  const currentUser = this.user();
-                  if (currentUser) {
-                    await this.userSearchService.createOrUpdateUserProfile(currentUser, locationData);
-                  }
                 }
       }
     } catch (error) {
@@ -171,12 +167,6 @@ export class LocationPage implements OnInit {
           this.userProfileCache.location = locationToAccept;
         }
         
-        const currentUser = this.user();
-        if (currentUser) {
-          await this.userSearchService.createOrUpdateUserProfile(currentUser, locationToAccept);
-          // Clear cache to ensure fresh data is fetched
-          this.userSearchService.invalidateUserProfileCache(currentUser.uid);
-        }
         
         // Refresh projects with the new location
         await this.projectsService.refreshProjectsWithCurrentLocation();
@@ -250,13 +240,6 @@ export class LocationPage implements OnInit {
               // Close the input immediately
               this.cancelAddressChange();
 
-              // Save to database
-              const currentUser = this.user();
-              if (currentUser) {
-                await this.userSearchService.createOrUpdateUserProfile(currentUser, locationData);
-                // Clear cache to ensure fresh data is fetched
-                this.userSearchService.invalidateUserProfileCache(currentUser.uid);
-              }
               
               // Refresh projects with the new location
               await this.projectsService.refreshProjectsWithCurrentLocation();

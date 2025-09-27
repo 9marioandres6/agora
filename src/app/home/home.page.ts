@@ -213,11 +213,6 @@ export class HomePage implements OnInit, ViewWillEnter {
         const locationData = await this.locationService.getLocationWithAddress();
         if (locationData) {
           this.locationService.setUserLocation(locationData);
-          
-          const currentUser = this.user();
-          if (currentUser) {
-            await this.userSearchService.createOrUpdateUserProfile(currentUser, locationData);
-          }
         }
       }
     } catch (error) {
@@ -478,13 +473,6 @@ export class HomePage implements OnInit, ViewWillEnter {
       if (locationToAccept) {
         this.locationService.setUserLocation(locationToAccept);
         
-        // Update the user profile in the database
-        const currentUser = this.user();
-        if (currentUser) {
-          await this.userSearchService.createOrUpdateUserProfile(currentUser, locationToAccept);
-          // Clear cache to ensure fresh data is fetched
-          this.userSearchService.invalidateUserProfileCache(currentUser.uid);
-        }
         
         // Refresh projects with the new location
         await this.projectsService.refreshProjectsWithCurrentLocation();
@@ -513,12 +501,6 @@ export class HomePage implements OnInit, ViewWillEnter {
         const locationWithAddress = await this.locationService.getLocationWithAddress();
         if (locationWithAddress && locationWithAddress.address) {
           this.locationService.setUserLocation(locationWithAddress);
-          
-          // Update the user profile in the database with the new address
-          const currentUser = this.user();
-          if (currentUser) {
-            await this.userSearchService.createOrUpdateUserProfile(currentUser, locationWithAddress);
-          }
         }
       } catch (error) {
         console.warn('Could not get address for location, using coordinates only:', error);

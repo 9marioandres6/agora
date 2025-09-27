@@ -52,12 +52,9 @@ export class MyProfileComponent {
 
   private async loadUserLocation(): Promise<void> {
     try {
-      const currentUser = this.user();
-      if (currentUser) {
-        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-        if (userProfile?.location) {
-          this.userLocation = userProfile.location;
-        }
+      const location = this.locationService.userLocation().userLocation;
+      if (location) {
+        this.userLocation = location;
       }
     } catch (error) {
       console.error('Error loading user location:', error);
@@ -68,11 +65,8 @@ export class MyProfileComponent {
     try {
       const location = await this.locationService.getLocationWithAddress();
       if (location) {
+        this.locationService.setUserLocation(location);
         this.userLocation = location;
-        const currentUser = this.user();
-        if (currentUser) {
-          await this.userSearchService.createOrUpdateUserProfile(currentUser, location);
-        }
       }
     } catch (error) {
       console.error('Error updating location:', error);

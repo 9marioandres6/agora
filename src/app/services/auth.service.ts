@@ -47,9 +47,7 @@ export class AuthService {
       try {
         if (user) {
           // Add timeout to prevent hanging on user profile creation
-          const profilePromise = this.getUserLocation().then(location => 
-            this.userSearchService.createOrUpdateUserProfile(user, location)
-          );
+          const profilePromise = this.userSearchService.createOrUpdateUserProfile(user);
           
           // Wait for profile creation with timeout
           await Promise.race([
@@ -83,9 +81,7 @@ export class AuthService {
       if (result) {
         try {
           // Add timeout to prevent hanging on user profile creation
-          const profilePromise = this.getUserLocation().then(location => 
-            this.userSearchService.createOrUpdateUserProfile(result.user, location)
-          );
+          const profilePromise = this.userSearchService.createOrUpdateUserProfile(result.user);
           
           // Wait for profile creation with timeout
           await Promise.race([
@@ -188,8 +184,7 @@ export class AuthService {
         await updateProfile(credential.user, { displayName });
       }
       
-      const location = await this.getUserLocation();
-      await this.userSearchService.createOrUpdateUserProfile(credential.user, location);
+      await this.userSearchService.createOrUpdateUserProfile(credential.user);
       this.loadingService.setAuthLoading(false);
     } catch (error: any) {
       this.authState.update(state => ({
@@ -222,8 +217,7 @@ export class AuthService {
       const currentUser = this.auth.currentUser;
       if (currentUser) {
         await updateProfile(currentUser, profileData);
-        const location = await this.getUserLocation();
-        await this.userSearchService.createOrUpdateUserProfile(currentUser, location);
+        await this.userSearchService.createOrUpdateUserProfile(currentUser);
         this.authState.update(state => ({
           ...state,
           user: currentUser

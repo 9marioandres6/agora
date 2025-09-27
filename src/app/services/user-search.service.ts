@@ -1,16 +1,11 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, setDoc, getDoc } from '@angular/fire/firestore';
-import { LocationData } from './location.service';
 
 export interface UserProfile {
   uid: string;
   displayName: string;
   email: string;
   photoURL?: string;
-  location?: LocationData | null;
-  city?: string;
-  state?: string;
-  country?: string;
   createdAt: string;
   updatedAt: string;
   projectCounts?: {
@@ -73,7 +68,7 @@ export class UserSearchService {
     }
   }
 
-  async createOrUpdateUserProfile(user: any, location?: LocationData | null): Promise<void> {
+  async createOrUpdateUserProfile(user: any): Promise<void> {
     try {
       // Add timeout protection to prevent hanging
       const timeoutPromise = new Promise((_, reject) => 
@@ -90,10 +85,6 @@ export class UserSearchService {
             displayName: user.displayName || user.email?.split('@')[0] || 'Anonymous',
             email: user.email || '',
             photoURL: user.photoURL || '',
-            location: location,
-            city: location?.city || '',
-            state: location?.state || '',
-            country: location?.country || '',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           };
@@ -104,18 +95,11 @@ export class UserSearchService {
         } else {
           const existingData = userDoc.data() as UserProfile;
           
-          // Check if user doesn't have an address and we have location data
-          const shouldUpdateLocation = location && (!existingData.location || !existingData.location.address);
-          
           const updatedProfile: UserProfile = {
             ...existingData,
             displayName: user.displayName || existingData.displayName,
             email: user.email || existingData.email,
             photoURL: user.photoURL || existingData.photoURL,
-            location: shouldUpdateLocation ? location : existingData.location,
-            city: shouldUpdateLocation ? (location?.city || '') : (existingData.city || ''),
-            state: shouldUpdateLocation ? (location?.state || '') : (existingData.state || ''),
-            country: shouldUpdateLocation ? (location?.country || '') : (existingData.country || ''),
             updatedAt: new Date().toISOString()
           };
           
