@@ -37,6 +37,12 @@
           <div class="info-row">
             <div class="info-content">
               <ion-chip color="primary">{{ getScopeLabel(project()?.scope || '') }}</ion-chip>
+              @if (project()?.scope?.place) {
+                <ion-chip color="secondary">
+                  <ion-icon name="location-outline" slot="start"></ion-icon>
+                  {{ project()?.scope?.place }}
+                </ion-chip>
+              }
               <ion-chip 
                 class="state-chip" 
                 [class.clickable]="isCreator() && canAdvanceState()"

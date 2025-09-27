@@ -7,7 +7,7 @@ import { LoadingService } from './loading.service';
 import { FirebaseQueryService, FilterOptions } from './firebase-query.service';
 import { FilterStateService } from './filter-state.service';
 import { UserSearchService } from './user-search.service';
-import { LocationData } from './location.service';
+import { LocationData, LocationService } from './location.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,7 @@ export class ProjectsService {
   private firebaseQueryService = inject(FirebaseQueryService);
   private filterStateService = inject(FilterStateService);
   private userSearchService = inject(UserSearchService);
+  private locationService = inject(LocationService);
 
   // Reactive signals for real-time data
   private _projects = signal<Project[]>([]);
@@ -1289,11 +1290,10 @@ export class ProjectsService {
     // Clean up unused scope listeners to free up resources
     this.cleanupUnusedScopeListeners([scope]);
 
-    // Get user's location for filtering
+    // Get user's SET location from location service (not profile or GPS location)
     let userLocation: LocationData | undefined;
     try {
-      const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-      userLocation = userProfile?.location || undefined;
+      userLocation = this.locationService.userLocation().userLocation || undefined;
     } catch (error) {
       console.warn('Could not get user location for filtering:', error);
     }
@@ -1351,11 +1351,10 @@ export class ProjectsService {
         return false;
       }
       
-      // Get user's location for filtering
+      // Get user's SET location from location service (not profile or GPS location)
       let userLocation: LocationData | undefined;
       try {
-        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-        userLocation = userProfile?.location || undefined;
+        userLocation = this.locationService.userLocation().userLocation || undefined;
       } catch (error) {
         console.warn('Could not get user location for filtering:', error);
       }
@@ -1403,11 +1402,10 @@ export class ProjectsService {
       // Clean up any unused scope listeners
       this.cleanupUnusedScopeListeners(publicScopes);
       
-      // Get user's location for filtering
+      // Get user's SET location from location service (not profile or GPS location)
       let userLocation: LocationData | undefined;
       try {
-        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-        userLocation = userProfile?.location || undefined;
+        userLocation = this.locationService.userLocation().userLocation || undefined;
       } catch (error) {
         console.warn('Could not get user location for filtering:', error);
       }

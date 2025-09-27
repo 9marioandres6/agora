@@ -36,6 +36,14 @@
               {{ getStateLabel(project()?.state || 'building') | translate }}
             </ion-chip>
           </div>
+          @if (project()?.scope?.place) {
+            <div class="project-location-line">
+              <ion-chip color="secondary" class="location-chip">
+                <ion-icon name="location-outline" slot="start"></ion-icon>
+                {{ project()?.scope?.place }}
+              </ion-chip>
+            </div>
+          }
         </ion-card-header>
 
         <ion-card-content class="project-body">

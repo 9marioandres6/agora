@@ -16,7 +16,7 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { Project } from './models/project.models';
-import { LocationData } from './location.service';
+import { LocationData, LocationService } from './location.service';
 import { UserSearchService } from './user-search.service';
 
 export interface FilterOptions {
@@ -628,16 +628,13 @@ export class FirebaseQueryService {
         return dateB.getTime() - dateA.getTime();
       });
 
-      // Apply location-based filtering - get user location from profile
-      const currentUserForLocation = this.authService.user();
+      // Apply location-based filtering - get user location from location service
       let userLocation: LocationData | undefined;
-      if (currentUserForLocation?.uid) {
-        try {
-          const userProfile = await this.userSearchService.getUserProfile(currentUserForLocation.uid);
-          userLocation = userProfile?.location || undefined;
-        } catch (error) {
-          console.warn('Could not get user location for filtering:', error);
-        }
+      try {
+        const locationService = inject(LocationService);
+        userLocation = locationService.userLocation().userLocation || undefined;
+      } catch (error) {
+        console.warn('Could not get user location for filtering:', error);
       }
       allProjects = this.filterProjectsByLocation(allProjects, userLocation);
 
