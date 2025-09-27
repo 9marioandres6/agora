@@ -121,6 +121,7 @@
           size="small"
           (click)="onCollaboratorsButtonClick($event)"
           class="collaborators-button"
+          [color]="expandedCollaborators() ? 'primary' : ''"
         >
           <ion-icon name="people-outline"></ion-icon>
           @if ((project().collaborators || []).length > 0) {
@@ -132,6 +133,7 @@
           size="small"
           (click)="onCommentsButtonClick($event)"
           class="comments-button"
+          [color]="expandedComments() ? 'primary' : ''"
         >
           <ion-icon name="chatbubble-outline"></ion-icon>
           @if ((project().comments || []).length > 0) {
