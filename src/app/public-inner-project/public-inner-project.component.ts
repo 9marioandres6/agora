@@ -8,6 +8,8 @@ import { ProjectsService } from '../services/projects.service';
 import { Project, Need, Scope } from '../services/models/project.models';
 import { AuthService } from '../services/auth.service';
 import { UserAvatarComponent, UserAvatarData } from '../components/user-avatar/user-avatar.component';
+import { GoogleMapsService } from '../services/google-maps.service';
+import { LocationData } from '../services/location.service';
 
 
 @Component({
@@ -25,11 +27,13 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
   private alertCtrl = inject(AlertController);
   private translateService = inject(TranslateService);
   private authService = inject(AuthService);
+  private googleMapsService = inject(GoogleMapsService);
   
   projectId = this.route.snapshot.paramMap.get('id');
   project = signal<Project | null>(null);
   isLoading = signal(true);
   collaborationMessage = '';
+  locationDisplayText = signal<string>('');
   membersExpanded = signal(false);
   
   ngOnInit() {
@@ -64,11 +68,45 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
       if (project) {
         this.project.set(project);
         this.isLoading.set(false);
+        
+        // Update location display text
+        if (project.scope?.location) {
+          this.updateLocationDisplayText();
+        } else {
+          this.locationDisplayText.set('');
+        }
       } else {
         // Project not found or still loading
         this.isLoading.set(true);
       }
     });
+  }
+
+  async getLocationDisplayText(): Promise<string> {
+    const proj = this.project();
+    if (!proj?.scope?.location) {
+      return '';
+    }
+
+    try {
+      // Convert coordinates to address using Google Maps
+      const address = await this.googleMapsService.coordinatesToAddress(
+        proj.scope.location.latitude,
+        proj.scope.location.longitude
+      );
+      
+      // Handle both string and AddressComponents return types
+      const addressText = typeof address === 'string' ? address : address?.formattedAddress || '';
+      return addressText || `${proj.scope.location.latitude.toFixed(4)}, ${proj.scope.location.longitude.toFixed(4)}`;
+    } catch (error) {
+      console.error('Error getting location display text:', error);
+      return `${proj.scope.location.latitude.toFixed(4)}, ${proj.scope.location.longitude.toFixed(4)}`;
+    }
+  }
+
+  private async updateLocationDisplayText() {
+    const displayText = await this.getLocationDisplayText();
+    this.locationDisplayText.set(displayText);
   }
   
   getScopeIcon(scope: string | Scope): string {

@@ -525,18 +525,13 @@ export class FirebaseQueryService {
         return true;
       }
 
-      // Handle projects with coordinate-based location
+      // PURE COORDINATE-BASED FILTERING ONLY
       if (project.scope?.location) {
         return this.isProjectInUserScope(project, userLocation);
       }
 
-      // Handle legacy projects with text-based location (backward compatibility)
-      if (project.scope?.place) {
-        return this.isProjectInUserScopeLegacy(project, userLocation);
-      }
-
-      // If no location data, include the project
-      return true;
+      // If no coordinate data, exclude the project (pure coordinate system)
+      return false;
     });
   }
 
@@ -551,39 +546,30 @@ export class FirebaseQueryService {
       projectLocation.longitude
     );
 
-    switch (project.scope?.scope) {
-      case 'local':
-        // Local projects: within 50km radius (same city/metropolitan area)
-        return distance <= 50;
-
-      case 'state':
-        // State projects: within 500km radius (same state/region)
-        return distance <= 500;
-
-      case 'national':
-        // National projects: within 2000km radius (same country)
-        return distance <= 2000;
-
-      default:
-        return true;
-    }
-  }
-
-  private isProjectInUserScopeLegacy(project: Project, userLocation: LocationData): boolean {
-    const projectPlace = project.scope?.place?.toLowerCase();
-    if (!projectPlace) return true;
+    let maxDistance = 0;
+    let result = false;
 
     switch (project.scope?.scope) {
       case 'local':
-        return !!(userLocation.city && userLocation.city.toLowerCase() === projectPlace);
+        maxDistance = 50;
+        result = distance <= 50;
+        break;
       case 'state':
-        return !!(userLocation.state && userLocation.state.toLowerCase() === projectPlace);
+        maxDistance = 500;
+        result = distance <= 500;
+        break;
       case 'national':
-        return !!(userLocation.country && userLocation.country.toLowerCase() === projectPlace);
+        maxDistance = 2000;
+        result = distance <= 2000;
+        break;
       default:
-        return true;
+        maxDistance = Infinity;
+        result = true;
     }
+
+    return result;
   }
+
 
   async loadAllProjects(limitCount: number = 8, showLoading: boolean = true): Promise<QueryResult> {
     try {

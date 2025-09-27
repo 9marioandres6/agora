@@ -281,27 +281,41 @@ export class NewItemComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      // Determine the location to use based on scope
+      // Determine the location to use based on scope - PURE COORDINATES ONLY
       let scopeLocation: LocationData | undefined;
-      let scopePlace: string | undefined;
 
       if (this.scope === 'local' && this.selectedLocation) {
-        scopeLocation = this.selectedLocation;
+        // Store ONLY coordinates for selected location
+        scopeLocation = {
+          latitude: this.selectedLocation.latitude,
+          longitude: this.selectedLocation.longitude,
+          geohash: this.selectedLocation.geohash || '',
+          timestamp: Date.now(),
+          accuracy: 0
+        };
       } else if (this.scope === 'national' && this.selectedLocation) {
-        scopeLocation = this.selectedLocation;
-      } else if (this.userLocation) {
-        scopeLocation = this.userLocation;
+        // Store ONLY coordinates for selected location
+        scopeLocation = {
+          latitude: this.selectedLocation.latitude,
+          longitude: this.selectedLocation.longitude,
+          geohash: this.selectedLocation.geohash || '',
+          timestamp: Date.now(),
+          accuracy: 0
+        };
+      } else if (this.userLocation && (this.scope === 'local' || this.scope === 'national')) {
+        // Store ONLY coordinates for user location
+        scopeLocation = {
+          latitude: this.userLocation.latitude,
+          longitude: this.userLocation.longitude,
+          geohash: this.userLocation.geohash || '',
+          timestamp: Date.now(),
+          accuracy: 0
+        };
       }
 
-      // Keep legacy place field for backward compatibility
-      if (this.scope !== 'grupal' && this.scope !== 'global') {
-        scopePlace = await this.determinePlaceFromScope(this.scope, this.userLocation);
-      }
-
-      // Create scope object
+      // Create scope object - NO TEXT FIELDS, ONLY COORDINATES
       const scopeObject: Scope = {
         scope: this.scope,
-        place: scopePlace,
         location: scopeLocation,
         image: ''
       };

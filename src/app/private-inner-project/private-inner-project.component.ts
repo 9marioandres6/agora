@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnDestroy, ViewChildren, QueryList, ChangeDetectorRef, effect } from '@angular/core';
+import { Component, computed, inject, signal, OnDestroy, ViewChildren, ViewChild, QueryList, ChangeDetectorRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController, ToastController, AlertController, IonInput } from '@ionic/angular';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -9,9 +9,13 @@ import { ProjectsService } from '../services/projects.service';
 import { Project, Chapter, Media, Need, Scope } from '../services/models/project.models';
 import { SupabaseService } from '../services/supabase.service';
 import { UserSearchService } from '../services/user-search.service';
+import { LocationService, LocationData } from '../services/location.service';
+import { GoogleMapsService } from '../services/google-maps.service';
 import { PendingCollaborator } from './models/private-inner-project.models';
 import { UserAvatarComponent, UserAvatarData } from '../components/user-avatar/user-avatar.component';
 import { ImageFallbackDirective } from '../directives/image-fallback.directive';
+
+declare var google: any;
 
 @Component({
   selector: 'app-private-inner-project',
@@ -21,6 +25,7 @@ import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 })
 export class PrivateInnerProjectComponent implements OnDestroy {
   @ViewChildren('chapterTitleInput') chapterTitleInputs!: QueryList<IonInput>;
+  @ViewChild('locationInput', { static: false }) locationInput!: IonInput;
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -33,6 +38,8 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   private alertCtrl = inject(AlertController);
   private cdr = inject(ChangeDetectorRef);
   private userSearchService = inject(UserSearchService);
+  private locationService = inject(LocationService);
+  private googleMapsService = inject(GoogleMapsService);
   
   projectId = this.route.snapshot.paramMap.get('id');
   
@@ -44,6 +51,12 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   
   // New need input
   newNeedText = '';
+  
+  // Location editing
+  isEditingLocation = signal(false);
+  newLocationText = '';
+  selectedLocation: LocationData | null = null;
+  locationDisplayText = signal<string>('');
   
   // Signals
   readonly project = signal<Project | null>(null);
@@ -99,6 +112,13 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         if (this.isCreator()) {
           this.loadPendingCollaborators();
         }
+
+        // Update location display text
+        if (project.scope?.location) {
+          this.updateLocationDisplayText();
+        } else {
+          this.locationDisplayText.set('');
+        }
       } else {
         // Project not found or still loading
         this.isLoading.set(true);
@@ -130,7 +150,6 @@ export class PrivateInnerProjectComponent implements OnDestroy {
 
       const scopeObject: Scope = {
         scope: 'local',
-        place: '',
         image: ''
       };
 
@@ -1326,5 +1345,157 @@ export class PrivateInnerProjectComponent implements OnDestroy {
       position: 'bottom'
     });
     await toast.present();
+  }
+
+  canEditLocation(): boolean {
+    const proj = this.project();
+    if (!proj || !this.isCreator()) return false;
+    
+    const scope = this.getScopeValue(proj.scope);
+    return scope === 'local' || scope === 'national';
+  }
+
+  async getLocationDisplayText(): Promise<string> {
+    const proj = this.project();
+    if (!proj?.scope?.location) {
+      return '';
+    }
+
+    try {
+      // Convert coordinates to address using Google Maps
+      const address = await this.googleMapsService.coordinatesToAddress(
+        proj.scope.location.latitude,
+        proj.scope.location.longitude
+      );
+      
+      // Handle both string and AddressComponents return types
+      const addressText = typeof address === 'string' ? address : address?.formattedAddress || '';
+      return addressText || `${proj.scope.location.latitude.toFixed(4)}, ${proj.scope.location.longitude.toFixed(4)}`;
+    } catch (error) {
+      console.error('Error getting location display text:', error);
+      return `${proj.scope.location.latitude.toFixed(4)}, ${proj.scope.location.longitude.toFixed(4)}`;
+    }
+  }
+
+  private async updateLocationDisplayText() {
+    const displayText = await this.getLocationDisplayText();
+    this.locationDisplayText.set(displayText);
+  }
+
+  startEditingLocation() {
+    const proj = this.project();
+    if (!proj || !this.canEditLocation()) return;
+    
+    this.newLocationText = this.locationDisplayText() || '';
+    this.selectedLocation = null;
+    this.isEditingLocation.set(true);
+    
+    // Initialize autocomplete after a short delay
+    setTimeout(() => {
+      this.initializeLocationAutocomplete();
+    }, 100);
+  }
+
+  cancelLocationEdit() {
+    this.isEditingLocation.set(false);
+    this.newLocationText = '';
+    this.selectedLocation = null;
+  }
+
+  async saveLocationEdit() {
+    const proj = this.project();
+    if (!proj || !this.selectedLocation || !this.newLocationText.trim()) {
+      return;
+    }
+
+    try {
+      // Create updated scope with ONLY coordinates - pure coordinate system
+      const coordinateOnlyLocation: LocationData = {
+        latitude: this.selectedLocation.latitude,
+        longitude: this.selectedLocation.longitude,
+        geohash: this.selectedLocation.geohash || '',
+        timestamp: Date.now(),
+        accuracy: 0
+      };
+
+      const updatedScope: Scope = {
+        ...proj.scope,
+        location: coordinateOnlyLocation
+      };
+
+
+      // Update the project
+      await this.projectsService.updateProject(proj.id!, { scope: updatedScope });
+      
+      // Update local state
+      this.project.set({ ...proj, scope: updatedScope });
+      
+      // Close editing mode
+      this.cancelLocationEdit();
+      
+      // Show success message
+      const toast = await this.toastCtrl.create({
+        message: 'Location updated successfully',
+        duration: 2000,
+        color: 'success'
+      });
+      await toast.present();
+      
+    } catch (error) {
+      console.error('Error updating project location:', error);
+      const toast = await this.toastCtrl.create({
+        message: 'Error updating location',
+        duration: 3000,
+        color: 'danger'
+      });
+      await toast.present();
+    }
+  }
+
+  private initializeLocationAutocomplete() {
+    if (!this.locationInput || typeof google === 'undefined') {
+      return;
+    }
+
+    this.locationInput.getInputElement().then((element) => {
+      if (!element) return;
+
+      const autocomplete = new google.maps.places.Autocomplete(element, {
+        types: ['geocode']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        
+        if (place.geometry) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          const geohash = this.googleMapsService.generateGeohash(lat, lng);
+
+          this.selectedLocation = {
+            latitude: lat,
+            longitude: lng,
+            geohash,
+            address: place.formatted_address,
+            city: this.extractAddressComponent(place, 'locality') || 
+                  this.extractAddressComponent(place, 'administrative_area_level_2'),
+            state: this.extractAddressComponent(place, 'administrative_area_level_1'),
+            country: this.extractAddressComponent(place, 'country'),
+            countryCode: this.extractAddressComponent(place, 'country', true),
+            accuracy: 0,
+            timestamp: Date.now()
+          };
+
+          this.newLocationText = place.formatted_address;
+        }
+      });
+    });
+  }
+
+  private extractAddressComponent(place: any, type: string, useShortName: boolean = false): string {
+    const component = place.address_components?.find((comp: any) => 
+      comp.types.includes(type)
+    );
+    return useShortName ? (component?.short_name || '') : (component?.long_name || '');
   }
 }

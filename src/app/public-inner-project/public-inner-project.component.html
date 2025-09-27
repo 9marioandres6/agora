@@ -36,11 +36,11 @@
               {{ getStateLabel(project()?.state || 'building') | translate }}
             </ion-chip>
           </div>
-          @if (project()?.scope?.place) {
+          @if (locationDisplayText()) {
             <div class="project-location-line">
               <ion-chip color="secondary" class="location-chip">
                 <ion-icon name="location-outline" slot="start"></ion-icon>
-                {{ project()?.scope?.place }}
+                {{ locationDisplayText() }}
               </ion-chip>
             </div>
           }

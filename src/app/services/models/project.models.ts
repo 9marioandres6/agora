@@ -2,7 +2,6 @@ import { LocationData } from '../location.service';
 
 export interface Scope {
   scope: string;
-  place?: string;
   location?: LocationData;
   image: string;
 }
