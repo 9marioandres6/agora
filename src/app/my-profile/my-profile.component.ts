@@ -5,8 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../services/auth.service';
 import { ThemeService } from '../services/theme.service';
-import { LocationService, LocationData } from '../services/location.service';
-import { UserSearchService } from '../services/user-search.service';
 import { SupabaseService } from '../services/supabase.service';
 import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
@@ -21,24 +19,19 @@ export class MyProfileComponent {
   private authService = inject(AuthService);
   private navCtrl = inject(NavController);
   private themeService = inject(ThemeService);
-  private locationService = inject(LocationService);
-  private userSearchService = inject(UserSearchService);
   private supabaseService = inject(SupabaseService);
   private toastCtrl = inject(ToastController);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
   isDark = signal(this.themeService.isDarkMode());
-  location = this.locationService.location;
 
   displayName = '';
   email = '';
   photoURL = '';
-  userLocation: LocationData | null = null;
 
   constructor() {
     this.initializeProfile();
-    this.loadUserLocation();
   }
 
   private initializeProfile(): void {
@@ -50,28 +43,6 @@ export class MyProfileComponent {
     }
   }
 
-  private async loadUserLocation(): Promise<void> {
-    try {
-      const location = this.locationService.userLocation().userLocation;
-      if (location) {
-        this.userLocation = location;
-      }
-    } catch (error) {
-      console.error('Error loading user location:', error);
-    }
-  }
-
-  async updateLocation(): Promise<void> {
-    try {
-      const location = await this.locationService.getLocationWithAddress();
-      if (location) {
-        this.locationService.setUserLocation(location);
-        this.userLocation = location;
-      }
-    } catch (error) {
-      console.error('Error updating location:', error);
-    }
-  }
 
   async saveProfile(): Promise<void> {
     try {
