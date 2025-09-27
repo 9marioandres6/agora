@@ -446,45 +446,18 @@ export class HomePage implements OnInit, ViewWillEnter {
         const currentCity = (currentLocation.city || '').toLowerCase().trim();
         const savedCity = (userLocation.city || '').toLowerCase().trim();
         
-        // Also check if coordinates are significantly different (more than ~1km)
-        let coordinatesChanged = false;
-        if (currentLocation.latitude && currentLocation.longitude && 
-            userLocation.latitude && userLocation.longitude) {
-          const distance = this.calculateDistance(
-            currentLocation.latitude, currentLocation.longitude,
-            userLocation.latitude, userLocation.longitude
-          );
-          coordinatesChanged = distance > 1; // More than 1km difference
-        }
-        
-        // Show location change if cities are different OR coordinates changed significantly
-        if ((currentCity && savedCity && currentCity !== savedCity) || coordinatesChanged) {
+        // Only show location change if cities are different and both are valid
+        if (currentCity && savedCity && currentCity !== savedCity) {
           this.newLocation = currentLocation;
           this.showLocationChangeFlag.set(true);
         } else {
-          // If cities match and coordinates are close, ensure the flag is false
+          // If cities match, ensure the flag is false
           this.showLocationChangeFlag.set(false);
         }
       }
     } catch (error) {
       console.error('Error checking for location change:', error);
     }
-  }
-
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = this.toRadians(lat2 - lat1);
-    const dLon = this.toRadians(lon2 - lon1);
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  }
-
-  private toRadians(degrees: number): number {
-    return degrees * (Math.PI / 180);
   }
 
   async acceptLocationChange() {
@@ -498,16 +471,8 @@ export class HomePage implements OnInit, ViewWillEnter {
     
     try {
       if (locationToAccept) {
-        // Ensure location has geohash
-        const locationWithGeohash = this.locationService.ensureLocationHasGeohash(locationToAccept);
+        this.locationService.setUserLocation(locationToAccept);
         
-        this.locationService.setUserLocation(locationWithGeohash);
-        
-        // Save to user profile in Firebase
-        const currentUser = this.authService.user();
-        if (currentUser) {
-          await this.userSearchService.updateUserLocation(currentUser.uid, locationWithGeohash);
-        }
         
         // Refresh projects with the new location
         await this.projectsService.refreshProjectsWithCurrentLocation();

@@ -73,52 +73,6 @@
           "order": "DESCENDING"
         }
       ]
-    },
-    {
-      "collectionGroup": "projects",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "scope.location.geohash",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "projects",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "scope.scope",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "scope.location.geohash",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "createdAt",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "users",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "location.geohash",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "updatedAt",
-          "order": "DESCENDING"
-        }
-      ]
     }
   ]
 }
