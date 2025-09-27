@@ -1,14 +1,17 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { GoogleMapsService } from './google-maps.service';
 
 export interface LocationData {
   latitude: number;
   longitude: number;
   accuracy: number;
   timestamp: number;
+  geohash?: string;
   address?: string;
   city?: string;
   state?: string;
   country?: string;
+  countryCode?: string;
 }
 
 export interface LocationState {
@@ -28,6 +31,7 @@ export interface UserLocationState {
   providedIn: 'root'
 })
 export class LocationService {
+  private googleMapsService = inject(GoogleMapsService);
   private locationState = signal<LocationState>({
     location: null,
     loading: false,
@@ -44,11 +48,6 @@ export class LocationService {
   });
 
   userLocation = this.userLocationState.asReadonly();
-  
-  private geocodingCache = new Map<string, LocationData>();
-  private geocodingInProgress = new Set<string>();
-  private lastGeocodingTime = 0;
-  private readonly GEOCODING_RATE_LIMIT = 1000; // 1 second between requests
 
   async requestLocationPermission(): Promise<boolean> {
     try {
@@ -203,157 +202,46 @@ export class LocationService {
     
     if (location) {
       try {
-        // Try multiple geocoding services with fallbacks
-        const locationWithAddress = await this.geocodeLocation(location);
+        const addressComponents = await this.googleMapsService.coordinatesToAddress(
+          location.latitude, 
+          location.longitude
+        );
         
-        if (locationWithAddress) {
-          this.locationState.update(state => ({
-            ...state,
-            location: locationWithAddress
-          }));
-          return locationWithAddress;
-        }
+        const geohash = this.googleMapsService.generateGeohash(
+          location.latitude, 
+          location.longitude
+        );
+        
+        const locationWithAddress: LocationData = {
+          ...location,
+          geohash,
+          address: addressComponents?.formattedAddress,
+          city: addressComponents?.city,
+          state: addressComponents?.state,
+          country: addressComponents?.country,
+          countryCode: addressComponents?.countryCode
+        };
+        
+        this.locationState.update(state => ({
+          ...state,
+          location: locationWithAddress
+        }));
+        
+        return locationWithAddress;
       } catch (error) {
         console.warn('Could not get address for location:', error);
-        // If geocoding fails, return the location without address
-        return location;
+        // If geocoding fails, still add geohash and return the location
+        const locationWithGeohash: LocationData = {
+          ...location,
+          geohash: this.googleMapsService.generateGeohash(location.latitude, location.longitude)
+        };
+        return locationWithGeohash;
       }
     }
 
     return location;
   }
 
-  private async geocodeLocation(location: LocationData): Promise<LocationData | null> {
-    const lat = location.latitude;
-    const lon = location.longitude;
-    const cacheKey = `${lat.toFixed(4)},${lon.toFixed(4)}`;
-    
-    // Check cache first
-    if (this.geocodingCache.has(cacheKey)) {
-      const cached = this.geocodingCache.get(cacheKey)!;
-      return {
-        ...location,
-        address: cached.address,
-        city: cached.city,
-        state: cached.state,
-        country: cached.country
-      };
-    }
-    
-    // Check if geocoding is already in progress for this location
-    if (this.geocodingInProgress.has(cacheKey)) {
-      return null;
-    }
-    
-    // Rate limiting
-    const now = Date.now();
-    if (now - this.lastGeocodingTime < this.GEOCODING_RATE_LIMIT) {
-      return null;
-    }
-    
-    this.geocodingInProgress.add(cacheKey);
-    this.lastGeocodingTime = now;
-    
-    try {
-      // Try multiple geocoding services in order of preference
-      const geocodingServices = [
-        () => this.tryNominatimDirect(lat, lon),
-        () => this.tryNominatimProxy(lat, lon),
-        () => this.tryAlternativeGeocoding(lat, lon)
-      ];
-
-      for (const service of geocodingServices) {
-        try {
-          const result = await service();
-          if (result) {
-            const locationWithAddress = {
-              ...location,
-              ...result
-            };
-            
-            // Cache the result
-            this.geocodingCache.set(cacheKey, locationWithAddress);
-            
-            return locationWithAddress;
-          }
-        } catch (error) {
-          console.warn('Geocoding service failed:', error);
-          continue;
-        }
-      }
-
-      return null;
-    } finally {
-      this.geocodingInProgress.delete(cacheKey);
-    }
-  }
-
-  private async tryNominatimDirect(lat: number, lon: number): Promise<Partial<LocationData> | null> {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-    
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'AgoraApp/1.0'
-      }
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      return this.parseNominatimResponse(data);
-    }
-    
-    return null;
-  }
-
-  private async tryNominatimProxy(lat: number, lon: number): Promise<Partial<LocationData> | null> {
-    const proxyUrls = [
-      'https://api.allorigins.win/raw?url=',
-      'https://cors-anywhere.herokuapp.com/',
-      'https://api.codetabs.com/v1/proxy?quest='
-    ];
-
-    for (const proxyUrl of proxyUrls) {
-      try {
-        const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-        const response = await fetch(proxyUrl + encodeURIComponent(nominatimUrl), {
-          headers: {
-            'User-Agent': 'AgoraApp/1.0'
-          }
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          return this.parseNominatimResponse(data);
-        }
-      } catch (error) {
-        continue;
-      }
-    }
-    
-    return null;
-  }
-
-  private async tryAlternativeGeocoding(lat: number, lon: number): Promise<Partial<LocationData> | null> {
-    // Fallback to a simple coordinate-based address
-    return {
-      address: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
-      city: 'Unknown',
-      state: 'Unknown',
-      country: 'Unknown'
-    };
-  }
-
-  private parseNominatimResponse(data: any): Partial<LocationData> {
-    const address = data.display_name;
-    const addressDetails = data.address;
-    
-    return {
-      address,
-      city: addressDetails?.city || addressDetails?.town || addressDetails?.village || '',
-      state: addressDetails?.state || addressDetails?.province || addressDetails?.region || '',
-      country: addressDetails?.country_code?.toUpperCase() || addressDetails?.country || ''
-    };
-  }
 
   clearError() {
     this.locationState.update(state => ({ ...state, error: null }));
@@ -368,12 +256,11 @@ export class LocationService {
   }
 
   clearGeocodingCache() {
-    this.geocodingCache.clear();
-    this.geocodingInProgress.clear();
+    this.googleMapsService.clearCache();
   }
 
   getCacheSize(): number {
-    return this.geocodingCache.size;
+    return this.googleMapsService.getCacheSize();
   }
 
   // User location management methods
@@ -452,5 +339,48 @@ export class LocationService {
       error: null
     }));
     localStorage.removeItem('userLocation');
+  }
+
+  async addressToCoordinates(address: string): Promise<LocationData | null> {
+    try {
+      const coordinates = await this.googleMapsService.addressToCoordinates(address);
+      
+      if (coordinates) {
+        const addressComponents = await this.googleMapsService.coordinatesToAddress(
+          coordinates.latitude,
+          coordinates.longitude
+        );
+
+        const locationData: LocationData = {
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
+          accuracy: 0,
+          timestamp: Date.now(),
+          geohash: coordinates.geohash,
+          address: addressComponents?.formattedAddress,
+          city: addressComponents?.city,
+          state: addressComponents?.state,
+          country: addressComponents?.country,
+          countryCode: addressComponents?.countryCode
+        };
+
+        return locationData;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error converting address to coordinates:', error);
+      return null;
+    }
+  }
+
+  ensureLocationHasGeohash(location: LocationData): LocationData {
+    if (!location.geohash) {
+      return {
+        ...location,
+        geohash: this.googleMapsService.generateGeohash(location.latitude, location.longitude)
+      };
+    }
+    return location;
   }
 }

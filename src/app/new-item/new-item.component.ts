@@ -11,7 +11,8 @@ import { UserSearchService, UserProfile } from '../services/user-search.service'
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
 import { ScopeOption } from './models/new-item.models';
 import { Need, Media, Collaborator, Scope } from '../services/models/project.models';
-import { LocationService } from '../services/location.service';
+import { LocationService, LocationData } from '../services/location.service';
+import { GoogleMapsService } from '../services/google-maps.service';
 import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
 declare var google: any;
@@ -37,6 +38,7 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   private userSearchService = inject(UserSearchService);
   private toastCtrl = inject(ToastController);
   private locationService = inject(LocationService);
+  private googleMapsService = inject(GoogleMapsService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -53,9 +55,10 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   searchResults: UserProfile[] = [];
   isSearching = false;
   selectedCollaborators: Collaborator[] = [];
-  userLocation: any = null;
+  userLocation: LocationData | null = null;
   selectedCity = '';
   selectedCountry = '';
+  selectedLocation: LocationData | null = null;
   isLocationLoading = false;
 
   scopeOptions: ScopeOption[] = [
@@ -278,13 +281,28 @@ export class NewItemComponent implements OnInit, AfterViewInit {
         return;
       }
 
-      // Use the already loaded user location
-      const userLocation = this.userLocation;
+      // Determine the location to use based on scope
+      let scopeLocation: LocationData | undefined;
+      let scopePlace: string | undefined;
+
+      if (this.scope === 'local' && this.selectedLocation) {
+        scopeLocation = this.selectedLocation;
+      } else if (this.scope === 'national' && this.selectedLocation) {
+        scopeLocation = this.selectedLocation;
+      } else if (this.userLocation) {
+        scopeLocation = this.userLocation;
+      }
+
+      // Keep legacy place field for backward compatibility
+      if (this.scope !== 'grupal' && this.scope !== 'global') {
+        scopePlace = await this.determinePlaceFromScope(this.scope, this.userLocation);
+      }
 
       // Create scope object
       const scopeObject: Scope = {
         scope: this.scope,
-        place: await this.determinePlaceFromScope(this.scope, userLocation),
+        place: scopePlace,
+        location: scopeLocation,
         image: ''
       };
 
@@ -297,11 +315,11 @@ export class NewItemComponent implements OnInit, AfterViewInit {
         collaborators: this.selectedCollaborators,
         collaborationRequests: [],
         media: this.projectMedia,
-        location: userLocation || undefined
+        location: scopeLocation || undefined
       };
 
-      if (userLocation?.address) {
-        projectData.locationAddress = userLocation.address;
+      if (scopeLocation?.address) {
+        projectData.locationAddress = scopeLocation.address;
       }
 
       const projectId = await this.projectsService.createProject(projectData);
@@ -368,15 +386,38 @@ export class NewItemComponent implements OnInit, AfterViewInit {
       });
       autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
-        // Format as "City, Country"
-        const city = place.address_components?.find((component: any) => 
-          component.types.includes('locality')
-        )?.long_name || place.name;
-        const country = place.address_components?.find((component: any) => 
-          component.types.includes('country')
-        )?.long_name || '';
-        
-        this.selectedCity = country ? `${city}, ${country}` : place.name;
+        if (place.geometry) {
+          // Format as "City, Country"
+          const city = place.address_components?.find((component: any) => 
+            component.types.includes('locality')
+          )?.long_name || place.name;
+          const country = place.address_components?.find((component: any) => 
+            component.types.includes('country')
+          )?.long_name || '';
+          const countryCode = place.address_components?.find((component: any) => 
+            component.types.includes('country')
+          )?.short_name || '';
+          
+          this.selectedCity = country ? `${city}, ${country}` : place.name;
+          
+          // Store coordinates for the selected location
+          const geohash = this.googleMapsService.generateGeohash(
+            place.geometry.location.lat(),
+            place.geometry.location.lng()
+          );
+          
+          this.selectedLocation = {
+            latitude: place.geometry.location.lat(),
+            longitude: place.geometry.location.lng(),
+            geohash,
+            address: place.formatted_address,
+            city,
+            country,
+            countryCode,
+            accuracy: 0,
+            timestamp: Date.now()
+          };
+        }
       });
     });
   }
@@ -388,7 +429,33 @@ export class NewItemComponent implements OnInit, AfterViewInit {
       });
       autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
-        this.selectedCountry = place.name;
+        if (place.geometry) {
+          const country = place.address_components?.find((component: any) => 
+            component.types.includes('country')
+          )?.long_name || place.name;
+          const countryCode = place.address_components?.find((component: any) => 
+            component.types.includes('country')
+          )?.short_name || '';
+          
+          this.selectedCountry = country;
+          
+          // Store coordinates for the selected location
+          const geohash = this.googleMapsService.generateGeohash(
+            place.geometry.location.lat(),
+            place.geometry.location.lng()
+          );
+          
+          this.selectedLocation = {
+            latitude: place.geometry.location.lat(),
+            longitude: place.geometry.location.lng(),
+            geohash,
+            address: place.formatted_address,
+            country,
+            countryCode,
+            accuracy: 0,
+            timestamp: Date.now()
+          };
+        }
       });
     });
   }

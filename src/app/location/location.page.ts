@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
 import { ProjectsService } from '../services/projects.service';
+import { GoogleMapsService } from '../services/google-maps.service';
 import { ActivatedRoute } from '@angular/router';
 
 declare var google: any;
@@ -23,6 +24,7 @@ export class LocationPage implements OnInit {
   private locationService = inject(LocationService);
   private userSearchService = inject(UserSearchService);
   private projectsService = inject(ProjectsService);
+  private googleMapsService = inject(GoogleMapsService);
   private navCtrl = inject(NavController);
   private route = inject(ActivatedRoute);
 
@@ -135,12 +137,23 @@ export class LocationPage implements OnInit {
         const currentCity = (currentLocation.city || '').toLowerCase().trim();
         const savedCity = (savedLocation.city || '').toLowerCase().trim();
         
-        // Only show location change if cities are different and both are valid
-        if (currentCity && savedCity && currentCity !== savedCity) {
+        // Also check if coordinates are significantly different (more than ~1km)
+        let coordinatesChanged = false;
+        if (currentLocation.latitude && currentLocation.longitude && 
+            savedLocation.latitude && savedLocation.longitude) {
+          const distance = this.googleMapsService.calculateDistance(
+            currentLocation.latitude, currentLocation.longitude,
+            savedLocation.latitude, savedLocation.longitude
+          );
+          coordinatesChanged = distance > 1; // More than 1km difference
+        }
+        
+        // Show location change if cities are different OR coordinates changed significantly
+        if ((currentCity && savedCity && currentCity !== savedCity) || coordinatesChanged) {
           this.newLocation = currentLocation;
           this.showLocationChangeFlag.set(true);
         } else {
-          // If cities match, ensure the flag is false
+          // If cities match and coordinates are close, ensure the flag is false
           this.showLocationChangeFlag.set(false);
         }
       }
@@ -160,13 +173,21 @@ export class LocationPage implements OnInit {
     
     try {
       if (locationToAccept) {
-        this.locationService.setUserLocation(locationToAccept);
+        // Ensure location has geohash
+        const locationWithGeohash = this.locationService.ensureLocationHasGeohash(locationToAccept);
+        
+        this.locationService.setUserLocation(locationWithGeohash);
+        
+        // Save to user profile in Firebase
+        const currentUser = this.user();
+        if (currentUser) {
+          await this.userSearchService.updateUserLocation(currentUser.uid, locationWithGeohash);
+        }
         
         // Update cache
         if (this.userProfileCache) {
-          this.userProfileCache.location = locationToAccept;
+          this.userProfileCache.location = locationWithGeohash;
         }
-        
         
         // Refresh projects with the new location
         await this.projectsService.refreshProjectsWithCurrentLocation();
@@ -219,30 +240,42 @@ export class LocationPage implements OnInit {
 
     try {
       const place = this.selectedPlace;
+      const geohash = this.googleMapsService.generateGeohash(
+        place.geometry.location.lat(),
+        place.geometry.location.lng()
+      );
+
       const locationData = {
         latitude: place.geometry.location.lat(),
         longitude: place.geometry.location.lng(),
+        geohash,
         address: place.formatted_address,
         city: this.extractAddressComponent(place, 'locality') || this.extractAddressComponent(place, 'administrative_area_level_2'),
         state: this.extractAddressComponent(place, 'administrative_area_level_1'),
         country: this.extractAddressComponent(place, 'country'),
+        countryCode: this.extractAddressComponent(place, 'country', true),
         accuracy: 0,
         timestamp: Date.now()
       };
 
-              this.locationService.setUserLocation(locationData);
+      this.locationService.setUserLocation(locationData);
+      
+      // Save to user profile in Firebase
+      const currentUser = this.user();
+      if (currentUser) {
+        await this.userSearchService.updateUserLocation(currentUser.uid, locationData);
+      }
       
       // Update cache
       if (this.userProfileCache) {
         this.userProfileCache.location = locationData;
       }
       
-              // Close the input immediately
-              this.cancelAddressChange();
+      // Close the input immediately
+      this.cancelAddressChange();
 
-              
-              // Refresh projects with the new location
-              await this.projectsService.refreshProjectsWithCurrentLocation();
+      // Refresh projects with the new location
+      await this.projectsService.refreshProjectsWithCurrentLocation();
     } catch (error) {
       console.error('Error saving new address:', error);
     }
@@ -268,10 +301,10 @@ export class LocationPage implements OnInit {
     });
   }
 
-  private extractAddressComponent(place: any, type: string): string {
+  private extractAddressComponent(place: any, type: string, useShortName: boolean = false): string {
     const component = place.address_components?.find((comp: any) => 
       comp.types.includes(type)
     );
-    return component?.long_name || '';
+    return useShortName ? (component?.short_name || '') : (component?.long_name || '');
   }
 }

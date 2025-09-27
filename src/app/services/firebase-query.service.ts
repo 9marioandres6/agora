@@ -18,6 +18,7 @@ import { AuthService } from './auth.service';
 import { Project } from './models/project.models';
 import { LocationData, LocationService } from './location.service';
 import { UserSearchService } from './user-search.service';
+import { GoogleMapsService } from './google-maps.service';
 
 export interface FilterOptions {
   scope: string;
@@ -42,6 +43,7 @@ export class FirebaseQueryService {
   private firestore = inject(Firestore);
   private authService = inject(AuthService);
   private userSearchService = inject(UserSearchService);
+  private googleMapsService = inject(GoogleMapsService);
 
   private _filteredProjects = signal<Project[]>([]);
   private _isLoading = signal(false);
@@ -523,23 +525,63 @@ export class FirebaseQueryService {
         return true;
       }
 
-      if (!project.scope?.place) {
-        return true;
+      // Handle projects with coordinate-based location
+      if (project.scope?.location) {
+        return this.isProjectInUserScope(project, userLocation);
       }
 
-      const projectPlace = project.scope.place.toLowerCase();
-
-      switch (project.scope.scope) {
-        case 'local':
-          return userLocation.city && userLocation.city.toLowerCase() === projectPlace;
-        case 'state':
-          return userLocation.state && userLocation.state.toLowerCase() === projectPlace;
-        case 'national':
-          return userLocation.country && userLocation.country.toLowerCase() === projectPlace;
-        default:
-          return true;
+      // Handle legacy projects with text-based location (backward compatibility)
+      if (project.scope?.place) {
+        return this.isProjectInUserScopeLegacy(project, userLocation);
       }
+
+      // If no location data, include the project
+      return true;
     });
+  }
+
+  private isProjectInUserScope(project: Project, userLocation: LocationData): boolean {
+    const projectLocation = project.scope?.location;
+    if (!projectLocation) return true;
+
+    switch (project.scope?.scope) {
+      case 'local':
+        // For local projects, check if they're in the same city (within ~50km)
+        const distance = this.googleMapsService.calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          projectLocation.latitude,
+          projectLocation.longitude
+        );
+        return distance <= 50; // 50km radius for local projects
+
+      case 'state':
+        // For state projects, check if they're in the same state/region
+        return userLocation.state === projectLocation.state;
+
+      case 'national':
+        // For national projects, check if they're in the same country
+        return userLocation.countryCode === projectLocation.countryCode;
+
+      default:
+        return true;
+    }
+  }
+
+  private isProjectInUserScopeLegacy(project: Project, userLocation: LocationData): boolean {
+    const projectPlace = project.scope?.place?.toLowerCase();
+    if (!projectPlace) return true;
+
+    switch (project.scope?.scope) {
+      case 'local':
+        return !!(userLocation.city && userLocation.city.toLowerCase() === projectPlace);
+      case 'state':
+        return !!(userLocation.state && userLocation.state.toLowerCase() === projectPlace);
+      case 'national':
+        return !!(userLocation.country && userLocation.country.toLowerCase() === projectPlace);
+      default:
+        return true;
+    }
   }
 
   async loadAllProjects(limitCount: number = 8, showLoading: boolean = true): Promise<QueryResult> {

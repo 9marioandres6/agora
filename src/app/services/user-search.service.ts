@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, setDoc, getDoc } from '@angular/fire/firestore';
+import { LocationData } from './location.service';
 
 export interface UserProfile {
   uid: string;
@@ -8,6 +9,7 @@ export interface UserProfile {
   photoURL?: string;
   createdAt: string;
   updatedAt: string;
+  location?: LocationData;
   projectCounts?: {
     createdBuilding: number;
     createdImplementing: number;
@@ -211,6 +213,42 @@ export class UserSearchService {
       await this.updateUserProjectCounts(uid, projectCounts);
     } catch (error) {
       console.error('Error recalculating user project counts:', error);
+      throw error;
+    }
+  }
+
+  async updateUserLocation(uid: string, location: LocationData): Promise<void> {
+    try {
+      // Store only essential fields in Firebase - minimal storage approach
+      const minimalLocation: any = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        timestamp: location.timestamp
+      };
+
+      // Add geohash for efficient querying
+      if (location.geohash) {
+        minimalLocation.geohash = location.geohash;
+      }
+
+      // Optionally store city and country for quick filtering (you can remove these if you want truly minimal)
+      if (location.city) minimalLocation.city = location.city;
+      if (location.countryCode) minimalLocation.countryCode = location.countryCode;
+
+      const userRef = doc(this.usersCollection, uid);
+      await setDoc(userRef, {
+        location: minimalLocation,
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+      
+      // Update cache with full location data for better UX
+      const cachedProfile = this.userProfileCache.get(uid);
+      if (cachedProfile) {
+        cachedProfile.location = location;
+        cachedProfile.updatedAt = new Date().toISOString();
+      }
+    } catch (error) {
+      console.error('Error updating user location:', error);
       throw error;
     }
   }
