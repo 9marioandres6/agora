@@ -176,6 +176,16 @@ export class LocationPage implements OnInit {
     this.locationChangeDismissed.set(true);
   }
 
+  chooseLocation() {
+    // Hide the location change notification
+    this.showLocationChangeFlag.set(false);
+    this.newLocation = null;
+    this.locationChangeDismissed.set(true);
+    
+    // Show the address input to let user choose a different location
+    this.toggleAddressInput();
+  }
+
   goBack() {
     this.navCtrl.back();
   }

@@ -15,11 +15,18 @@
       }
     }
     
-    .notification-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-    }
+            .notification-actions {
+              display: flex;
+              gap: 8px;
+              justify-content: flex-end;
+              flex-wrap: wrap;
+              
+              ion-button {
+                flex: 1;
+                min-width: 100px;
+                max-width: 120px;
+              }
+            }
   }
 
   .change-address-section {

@@ -12,36 +12,6 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   @if (userLocationData()) {
     <div class="location-details">
-      <!-- Location Change Section -->
-      @if (showLocationChangeFlag() && newLocation) {
-        <ion-card class="location-change-card">
-          <ion-card-header>
-            <ion-card-title>{{ 'HOME.LOCATION_CHANGE_TITLE' | translate }}</ion-card-title>
-            <ion-card-subtitle>{{ 'HOME.LOCATION_CHANGE_MESSAGE' | translate }}</ion-card-subtitle>
-          </ion-card-header>
-          <ion-card-content>
-            <div class="location-comparison">
-              <div class="current-location">
-                <strong>{{ 'HOME.CURRENT_LOCATION' | translate }}:</strong>
-                <span>{{ newLocation.city }}, {{ newLocation.country }}</span>
-              </div>
-              <div class="saved-location">
-                <strong>{{ 'HOME.SAVED_LOCATION' | translate }}:</strong>
-                <span>{{ userLocationData()?.city }}, {{ userLocationData()?.country }}</span>
-              </div>
-            </div>
-            <div class="notification-actions">
-              <ion-button fill="outline" (click)="dismissLocationChange()">
-                {{ 'COMMON.DISMISS' | translate }}
-              </ion-button>
-              <ion-button fill="solid" (click)="acceptLocationChange()">
-                {{ 'COMMON.UPDATE' | translate }}
-              </ion-button>
-            </div>
-          </ion-card-content>
-        </ion-card>
-      }
-      
       <!-- Location Details -->
       <ion-card>
         <ion-card-header>
@@ -89,15 +59,16 @@
       </ion-card>
 
       <!-- Change Address Section -->
-      <div class="change-address-section">
-        <ion-button 
-          (click)="toggleAddressInput()" 
-          fill="clear" 
-          size="small"
-          class="change-address-btn">
-          <ion-icon name="create-outline" slot="start"></ion-icon>
-          {{ 'HOME.CHANGE_ADDRESS' | translate }}
-        </ion-button>
+      @if (!showLocationChangeFlag()) {
+        <div class="change-address-section">
+          <ion-button 
+            (click)="toggleAddressInput()" 
+            fill="clear" 
+            size="small"
+            class="change-address-btn">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            {{ 'HOME.CHANGE_ADDRESS' | translate }}
+          </ion-button>
             
             @if (showAddressInput()) {
               <div class="address-input-container">
@@ -127,7 +98,41 @@
                 </div>
               </div>
             }
-      </div>
+        </div>
+      }
+
+      <!-- Location Change Section -->
+      @if (showLocationChangeFlag() && newLocation) {
+        <ion-card class="location-change-card">
+          <ion-card-header>
+            <ion-card-title>{{ 'HOME.LOCATION_CHANGE_TITLE' | translate }}</ion-card-title>
+            <ion-card-subtitle>{{ 'HOME.LOCATION_CHANGE_MESSAGE' | translate }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="location-comparison">
+              <div class="current-location">
+                <strong>{{ 'HOME.CURRENT_LOCATION' | translate }}:</strong>
+                <span>{{ newLocation.city }}, {{ newLocation.country }}</span>
+              </div>
+              <div class="saved-location">
+                <strong>{{ 'HOME.SAVED_LOCATION' | translate }}:</strong>
+                <span>{{ userLocationData()?.city }}, {{ userLocationData()?.country }}</span>
+              </div>
+            </div>
+            <div class="notification-actions">
+              <ion-button fill="outline" (click)="dismissLocationChange()">
+                {{ 'COMMON.DISMISS' | translate }}
+              </ion-button>
+              <ion-button fill="outline" (click)="chooseLocation()">
+                {{ 'HOME.CHOOSE_LOCATION' | translate }}
+              </ion-button>
+              <ion-button fill="solid" (click)="acceptLocationChange()">
+                {{ 'COMMON.UPDATE' | translate }}
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
     </div>
   } @else {
     <div class="no-location">
