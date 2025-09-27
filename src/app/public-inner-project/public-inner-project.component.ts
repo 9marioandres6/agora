@@ -75,7 +75,7 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
     const scopeIcons: { [key: string]: string } = {
       'grupal': 'people',
-      'local': 'home',
+      'local': 'business-outline',
       'state': 'business',
       'national': 'flag',
       'global': 'globe'

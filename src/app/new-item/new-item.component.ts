@@ -60,7 +60,7 @@ export class NewItemComponent implements OnInit, AfterViewInit {
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', label: 'Grupal - Small Group Collaboration', icon: 'people' },
-    { value: 'local', label: 'Local - Neighbourhood/Community', icon: 'home' },
+    { value: 'local', label: 'Local - Neighbourhood/Community', icon: 'business-outline' },
     { value: 'national', label: 'National - Country level', icon: 'flag' },
     { value: 'global', label: 'Global - International level', icon: 'globe' }
   ];

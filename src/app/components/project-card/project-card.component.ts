@@ -58,7 +58,7 @@ export class ProjectCardComponent implements OnInit {
     const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
     const scopeIcons: { [key: string]: string } = {
       'grupal': 'people',
-      'local': 'home',
+      'local': 'business-outline',
       'state': 'business',
       'national': 'flag',
       'global': 'globe'
