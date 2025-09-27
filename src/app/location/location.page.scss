@@ -21,6 +21,35 @@
       justify-content: flex-end;
     }
   }
+
+  .change-address-section {
+    margin-top: 16px;
+    
+    .change-address-btn {
+      --color: var(--ion-color-medium);
+      --color-hover: var(--ion-color-primary);
+      --background: transparent;
+      --background-hover: var(--app-primary-light);
+      border-radius: 8px;
+      margin: 0;
+    }
+    
+    .address-input-container {
+      margin-top: 16px;
+      background: var(--app-card-background);
+      border: 1px solid var(--app-border-color);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      
+      .address-input-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+    }
+  }
 }
 
 .no-location {

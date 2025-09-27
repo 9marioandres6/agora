@@ -322,6 +322,18 @@ ion-header {
   --background: var(--app-toolbar-background);
 }
 
+/* Prevent text selection in headers */
+ion-header,
+ion-toolbar,
+ion-title {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Ensure toolbar buttons adapt to theme */
 ion-toolbar ion-button {
   --color: var(--app-toolbar-text);

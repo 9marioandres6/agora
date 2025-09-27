@@ -40,7 +40,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   hasMoreFiltered = this.projectsService.hasMoreFiltered;
   expandedComments = signal<string | null>(null);
   expandedCollaborators = signal<string | null>(null);
-  userLocation: any = null;
+  userLocation = this.locationService.userLocation;
   currentScope = signal('all');
   isLoadingMore = false;
   isRequestingLocation = signal(false);
@@ -128,7 +128,10 @@ export class HomePage implements OnInit, ViewWillEnter {
 
   async ionViewWillEnter() {
     this.checkConnection();
-    this.loadUserLocation();
+    
+    // Always load user location to get the latest from database
+    // The location service will maintain the current state if it's newer
+    await this.loadUserLocation();
     
     const selectedScope = this.filterStateService.getSelectedScope();
     const previousScope = this.currentScope();
@@ -178,15 +181,15 @@ export class HomePage implements OnInit, ViewWillEnter {
     try {
       const currentUser = this.user();
       if (currentUser) {
-        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
-        if (userProfile?.location) {
-          this.userLocation = userProfile.location;
-          
+        // Use centralized location service
+        const userLocation = await this.locationService.loadUserLocation(this.userSearchService, currentUser);
+        
+        if (userLocation) {
           // If we have coordinates but no address, get the address using the existing service
-          if (this.userLocation.latitude && this.userLocation.longitude && !this.userLocation.address) {
+          if (userLocation.latitude && userLocation.longitude && !userLocation.address) {
             const locationWithAddress = await this.locationService.getLocationWithAddress();
             if (locationWithAddress) {
-              this.userLocation = locationWithAddress;
+              this.locationService.setUserLocation(locationWithAddress);
             }
           } else {
             // Check if current location differs from saved location
@@ -209,7 +212,12 @@ export class HomePage implements OnInit, ViewWillEnter {
       if (hasPermission) {
         const locationData = await this.locationService.getLocationWithAddress();
         if (locationData) {
-          this.userLocation = locationData;
+          this.locationService.setUserLocation(locationData);
+          
+          const currentUser = this.user();
+          if (currentUser) {
+            await this.userSearchService.createOrUpdateUserProfile(currentUser, locationData);
+          }
         }
       }
     } catch (error) {
@@ -385,7 +393,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   showLocationModal() {
     this.navCtrl.navigateForward('/location', {
       state: {
-        userLocation: this.userLocation,
+        userLocation: this.userLocation().userLocation,
         showLocationChangeFlag: this.showLocationChangeFlag(),
         newLocation: this.newLocation,
         locationChangeDismissed: this.locationChangeDismissed()
@@ -394,20 +402,21 @@ export class HomePage implements OnInit, ViewWillEnter {
   }
 
   getFormattedAddress(): string {
-    if (!this.userLocation) {
+    const userLocation = this.userLocation().userLocation;
+    if (!userLocation) {
       return 'Location not available';
     }
 
     // If we have coordinates but no address, trigger address retrieval and show loading message
-    if (this.userLocation.latitude && this.userLocation.longitude && !this.userLocation.address) {
+    if (userLocation.latitude && userLocation.longitude && !userLocation.address) {
       this.ensureLocationHasAddress();
       return 'Getting address...';
     }
 
     const parts = [];
     
-    if (this.userLocation.address) {
-      const addressParts = this.userLocation.address.split(',');
+    if (userLocation.address) {
+      const addressParts = userLocation.address.split(',');
       
       if (addressParts.length > 0) {
         parts.push(addressParts[0].trim());
@@ -415,16 +424,16 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
     
     // Add city from userLocation object
-    if (this.userLocation.city) {
-      parts.push(this.userLocation.city);
+    if (userLocation.city) {
+      parts.push(userLocation.city);
     }
     
     // Add country from userLocation object
-    if (this.userLocation.country) {
-      parts.push(this.userLocation.country);
+    if (userLocation.country) {
+      parts.push(userLocation.country);
     }
     
-    return parts.length > 0 ? parts.join(', ') : (this.userLocation.address || 'Location not available');
+    return parts.length > 0 ? parts.join(', ') : (userLocation.address || 'Location not available');
   }
 
   async checkForLocationChange() {
@@ -435,10 +444,11 @@ export class HomePage implements OnInit, ViewWillEnter {
       }
       
       const currentLocation = await this.locationService.getLocationWithAddress();
-      if (currentLocation && this.userLocation) {
+      const userLocation = this.userLocation().userLocation;
+      if (currentLocation && userLocation) {
         // Check if city has changed
         const currentCity = currentLocation.city || '';
-        const savedCity = this.userLocation.city || '';
+        const savedCity = userLocation.city || '';
         
         if (currentCity && savedCity && currentCity !== savedCity) {
           this.newLocation = currentLocation;
@@ -453,7 +463,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   async acceptLocationChange() {
     try {
       if (this.newLocation) {
-        this.userLocation = this.newLocation;
+        this.locationService.setUserLocation(this.newLocation);
         
         // Update the user profile in the database
         const currentUser = this.user();
@@ -482,12 +492,13 @@ export class HomePage implements OnInit, ViewWillEnter {
       return; // Already getting address, don't call again
     }
     
-    if (this.userLocation && this.userLocation.latitude && this.userLocation.longitude && !this.userLocation.address) {
+    const userLocation = this.userLocation().userLocation;
+    if (userLocation && userLocation.latitude && userLocation.longitude && !userLocation.address) {
       this.isGettingAddress = true;
       try {
         const locationWithAddress = await this.locationService.getLocationWithAddress();
         if (locationWithAddress && locationWithAddress.address) {
-          this.userLocation = locationWithAddress;
+          this.locationService.setUserLocation(locationWithAddress);
           
           // Update the user profile in the database with the new address
           const currentUser = this.user();

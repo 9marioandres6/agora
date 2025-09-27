@@ -87,6 +87,47 @@
           }
         </ion-card-content>
       </ion-card>
+
+      <!-- Change Address Section -->
+      <div class="change-address-section">
+        <ion-button 
+          (click)="toggleAddressInput()" 
+          fill="clear" 
+          size="small"
+          class="change-address-btn">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          {{ 'HOME.CHANGE_ADDRESS' | translate }}
+        </ion-button>
+            
+            @if (showAddressInput()) {
+              <div class="address-input-container">
+                <ion-item>
+                  <ion-icon name="search" slot="start"></ion-icon>
+                  <ion-input
+                    #addressInput
+                    [(ngModel)]="newAddress"
+                    [placeholder]="'HOME.SEARCH_NEW_ADDRESS' | translate"
+                    class="address-input">
+                  </ion-input>
+                </ion-item>
+                <div class="address-input-actions">
+                  <ion-button 
+                    (click)="cancelAddressChange()" 
+                    fill="clear" 
+                    size="small">
+                    {{ 'COMMON.CANCEL' | translate }}
+                  </ion-button>
+                  <ion-button 
+                    (click)="saveNewAddress()" 
+                    fill="solid" 
+                    size="small"
+                    [disabled]="!newAddress.trim()">
+                    {{ 'COMMON.SAVE' | translate }}
+                  </ion-button>
+                </div>
+              </div>
+            }
+      </div>
     </div>
   } @else {
     <div class="no-location">

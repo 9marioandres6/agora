@@ -18,6 +18,12 @@ export interface LocationState {
   permissionGranted: boolean;
 }
 
+export interface UserLocationState {
+  userLocation: LocationData | null;
+  loading: boolean;
+  error: string | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,6 +36,14 @@ export class LocationService {
   });
 
   location = this.locationState.asReadonly();
+  
+  private userLocationState = signal<UserLocationState>({
+    userLocation: null,
+    loading: false,
+    error: null
+  });
+
+  userLocation = this.userLocationState.asReadonly();
   
   private geocodingCache = new Map<string, LocationData>();
   private geocodingInProgress = new Set<string>();
@@ -360,5 +374,83 @@ export class LocationService {
 
   getCacheSize(): number {
     return this.geocodingCache.size;
+  }
+
+  // User location management methods
+  setUserLocation(location: LocationData | null) {
+    this.userLocationState.update(state => ({
+      ...state,
+      userLocation: location,
+      error: null
+    }));
+    
+    // Persist to localStorage to survive page refreshes
+    if (location) {
+      localStorage.setItem('userLocation', JSON.stringify(location));
+    } else {
+      localStorage.removeItem('userLocation');
+    }
+  }
+
+  async loadUserLocation(userSearchService: any, currentUser: any): Promise<LocationData | null> {
+    try {
+      this.userLocationState.update(state => ({ ...state, loading: true, error: null }));
+      
+      // First check localStorage for persisted location
+      const persistedLocation = this.getPersistedLocation();
+      if (persistedLocation) {
+        this.userLocationState.update(state => ({
+          ...state,
+          userLocation: persistedLocation,
+          loading: false
+        }));
+        return persistedLocation;
+      }
+      
+      // Then check current location in service
+      const currentLocation = this.userLocationState().userLocation;
+      if (currentLocation) {
+        this.userLocationState.update(state => ({ ...state, loading: false }));
+        return currentLocation;
+      }
+      
+      // Finally load from database if no current location
+      if (currentUser) {
+        const userProfile = await userSearchService.getUserProfile(currentUser.uid);
+        if (userProfile?.location) {
+          this.setUserLocation(userProfile.location);
+          return userProfile.location;
+        }
+      }
+      
+      this.userLocationState.update(state => ({ ...state, loading: false }));
+      return null;
+    } catch (error) {
+      this.userLocationState.update(state => ({
+        ...state,
+        loading: false,
+        error: 'Error loading user location'
+      }));
+      return this.userLocationState().userLocation;
+    }
+  }
+
+  private getPersistedLocation(): LocationData | null {
+    try {
+      const persisted = localStorage.getItem('userLocation');
+      return persisted ? JSON.parse(persisted) : null;
+    } catch (error) {
+      console.warn('Error reading persisted location:', error);
+      return null;
+    }
+  }
+
+  clearUserLocation() {
+    this.userLocationState.update(state => ({
+      ...state,
+      userLocation: null,
+      error: null
+    }));
+    localStorage.removeItem('userLocation');
   }
 }

@@ -6,7 +6,7 @@
       </ion-button>
     </ion-buttons>
     
-    @if (isAuthenticated() && userLocation) {
+    @if (isAuthenticated() && userLocation().userLocation) {
       <div class="location-container">
         <div class="location-info" (click)="showLocationModal()">
           @if (showLocationChangeFlag() && !locationChangeDismissed()) {
