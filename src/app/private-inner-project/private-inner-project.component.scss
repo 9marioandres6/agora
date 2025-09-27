@@ -57,6 +57,15 @@
     font-weight: 500;
     color: var(--app-text);
   }
+
+  .separator {
+    color: var(--app-text-secondary);
+  }
+
+  .request-count.has-requests {
+    color: var(--ion-color-success);
+    font-weight: 600;
+  }
   
   .expand-icon {
     font-size: 18px;

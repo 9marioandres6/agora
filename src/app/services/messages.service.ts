@@ -44,7 +44,6 @@ export class MessagesService {
     const q = query(
       this.messagesCollection,
       where('recipientUid', '==', userId),
-      orderBy('createdAt', 'desc'),
       limit(100)
     );
 
@@ -54,8 +53,16 @@ export class MessagesService {
         ...doc.data()
       })) as Message[];
 
-      this._messages.set(messages);
-      this._unreadCount.set(messages.filter(m => !m.isRead).length);
+      // Filter out deleted messages (client-side filtering)
+      const nonDeletedMessages = messages.filter(message => !message.deleted);
+
+      // Sort messages by createdAt in descending order (newest first)
+      const sortedMessages = nonDeletedMessages.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      
+      this._messages.set(sortedMessages);
+      this._unreadCount.set(sortedMessages.filter(m => !m.isRead).length);
     });
 
     this.listeners.set('messages', unsubscribe);
@@ -63,7 +70,6 @@ export class MessagesService {
 
   async sendMessage(message: Omit<Message, 'id' | 'createdAt' | 'isRead'>): Promise<string> {
     try {
-  
       const messageData: Omit<Message, 'id'> = {
         ...message,
         createdAt: new Date().toISOString(),
@@ -71,10 +77,8 @@ export class MessagesService {
       };
 
       const docRef = await addDoc(this.messagesCollection, messageData);
-
       return docRef.id;
     } catch (error) {
-      console.error('MessagesService: Error sending message:', error);
       throw error;
     }
   }
@@ -113,7 +117,6 @@ export class MessagesService {
         deletedAt: new Date().toISOString()
       });
     } catch (error) {
-      console.error('Error deleting message:', error);
       throw error;
     }
   }

@@ -1067,7 +1067,7 @@ export class ProjectsService {
         collaborationRequests: arrayUnion(request)
       });
 
-      const messageId = await this.messagesService.sendMessage({
+      await this.messagesService.sendMessage({
         recipientUid: project.createdBy,
         senderUid: currentUser.uid,
         senderName: currentUser.displayName || 'Anonymous',
@@ -1119,7 +1119,7 @@ export class ProjectsService {
         collaborationRequests: arrayRemove(request)
       });
 
-      const messageId = await this.messagesService.sendMessage({
+      await this.messagesService.sendMessage({
         recipientUid: request.uid,
         senderUid: project.createdBy,
         senderName: project.creator?.displayName || 'Project Creator',
@@ -1168,7 +1168,7 @@ export class ProjectsService {
         collaborationRequests: arrayRemove(request)
       });
 
-      const messageId = await this.messagesService.sendMessage({
+      await this.messagesService.sendMessage({
         recipientUid: request.uid,
         senderUid: project.createdBy,
         senderName: project.creator?.displayName || 'Project Creator',

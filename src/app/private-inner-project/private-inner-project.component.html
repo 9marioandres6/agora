@@ -264,7 +264,13 @@
           <div class="info-row">
             <div class="info-content">
               <div class="members-summary" (click)="toggleMembers()">
-                <span>{{ getMembersSummary() }}</span>
+                <span>
+                  {{ getCollaboratorsText() }}
+                  <span class="separator"> - </span>
+                  <span [class.request-count]="hasPendingRequests()" [class.has-requests]="hasPendingRequests()">
+                    {{ getRequestsText() }}
+                  </span>
+                </span>
                 <ion-icon 
                   [name]="membersExpanded() ? 'chevron-up' : 'chevron-down'" 
                   class="expand-icon">

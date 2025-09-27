@@ -35,7 +35,7 @@
         <ion-item 
           *ngFor="let message of messages()" 
           [class.unread]="!message.isRead"
-          (click)="markAsRead(message.id!)"
+          (click)="navigateToProject(message)"
           button>
           
           <ion-avatar slot="start" *ngIf="message.senderPhotoURL">

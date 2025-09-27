@@ -2,9 +2,12 @@ import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
+import { Router } from '@angular/router';
 import { MessagesService } from '../../services/messages.service';
 import { Message } from '../../services/models/message.models';
 import { ImageFallbackDirective } from '../../directives/image-fallback.directive';
+import { AuthService } from '../../services/auth.service';
+import { ProjectsService } from '../../services/projects.service';
 
 @Component({
   selector: 'app-messages',
@@ -16,6 +19,9 @@ import { ImageFallbackDirective } from '../../directives/image-fallback.directiv
 export class MessagesComponent {
   private messagesService = inject(MessagesService);
   private modalCtrl = inject(ModalController);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private projectsService = inject(ProjectsService);
 
   public readonly messages = this.messagesService.messages;
   public readonly unreadCount = this.messagesService.unreadCount;
@@ -33,11 +39,50 @@ export class MessagesComponent {
   }
 
   async deleteMessage(messageId: string): Promise<void> {
-    await this.messagesService.deleteMessage(messageId);
+    try {
+      await this.messagesService.deleteMessage(messageId);
+    } catch (error) {
+      // You could add a toast notification here to inform the user
+    }
   }
 
   async closeModal(): Promise<void> {
     await this.modalCtrl.dismiss();
+  }
+
+  async navigateToProject(message: Message): Promise<void> {
+    // Mark message as read if it's unread
+    if (!message.isRead && message.id) {
+      await this.markAsRead(message.id);
+    }
+    
+    await this.modalCtrl.dismiss();
+    
+    try {
+      // Get the project to check if user is creator or collaborator
+      const project = await this.projectsService.getProjectAsync(message.projectId);
+      const currentUser = this.authService.user();
+      
+      if (project && currentUser?.uid) {
+        // Check if user is creator or collaborator
+        const isCreator = project.createdBy === currentUser.uid;
+        const isCollaborator = project.collaborators?.some(c => c.uid === currentUser.uid) || false;
+        
+        if (isCreator || isCollaborator) {
+          // User has access to private project page
+          this.router.navigate(['/project', message.projectId, 'private']);
+        } else {
+          // User should go to public project page
+          this.router.navigate(['/project', message.projectId, 'public']);
+        }
+      } else {
+        // Fallback to public page if project not found
+        this.router.navigate(['/project', message.projectId, 'public']);
+      }
+    } catch (error) {
+      // Fallback to public page on error
+      this.router.navigate(['/project', message.projectId, 'public']);
+    }
   }
 
   getMessageTypeLabel(type: Message['type']): string {

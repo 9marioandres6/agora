@@ -13,6 +13,8 @@ export interface Message {
   isRead: boolean;
   createdAt: string;
   readAt?: string;
+  deleted?: boolean;
+  deletedAt?: string;
 }
 
 export interface MessageNotification {

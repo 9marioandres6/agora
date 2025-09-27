@@ -1239,6 +1239,34 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     }
   }
 
+  getCollaboratorsText(): string {
+    const project = this.project();
+    if (!project) return '';
+    
+    const collaboratorsCount = (project.collaborators || []).length;
+    return `${collaboratorsCount} Collaborator${collaboratorsCount > 1 ? 's' : ''} yet`;
+  }
+
+  getRequestsText(): string {
+    const project = this.project();
+    if (!project) return 'No requests';
+    
+    const pendingCount = (project.collaborationRequests || []).length;
+    if (pendingCount === 0) {
+      return 'No requests';
+    } else {
+      return `${pendingCount} request${pendingCount > 1 ? 's' : ''}`;
+    }
+  }
+
+  hasPendingRequests(): boolean {
+    const project = this.project();
+    if (!project) return false;
+    
+    const pendingCount = (project.collaborationRequests || []).length;
+    return pendingCount > 0;
+  }
+
   toggleMembers() {
     this.membersExpanded.update(expanded => !expanded);
   }
