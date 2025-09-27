@@ -544,25 +544,24 @@ export class FirebaseQueryService {
     const projectLocation = project.scope?.location;
     if (!projectLocation) return true;
 
-    const distance = this.googleMapsService.calculateDistance(
-      userLocation.latitude,
-      userLocation.longitude,
-      projectLocation.latitude,
-      projectLocation.longitude
-    );
-
     switch (project.scope?.scope) {
       case 'local':
-        // Local projects: within 50km radius (same city/metropolitan area)
-        return distance <= 50;
+        // For local projects, check if they're in the same city (within ~50km)
+        const distance = this.googleMapsService.calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          projectLocation.latitude,
+          projectLocation.longitude
+        );
+        return distance <= 50; // 50km radius for local projects
 
       case 'state':
-        // State projects: within 500km radius (same state/region)
-        return distance <= 500;
+        // For state projects, check if they're in the same state/region
+        return userLocation.state === projectLocation.state;
 
       case 'national':
-        // National projects: within 2000km radius (same country)
-        return distance <= 2000;
+        // For national projects, check if they're in the same country
+        return userLocation.countryCode === projectLocation.countryCode;
 
       default:
         return true;
