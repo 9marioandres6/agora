@@ -12,9 +12,6 @@
           <ion-icon name="pencil" slot="icon-only"></ion-icon>
         </ion-button>
       }
-      <ion-button (click)="recalculateProjectCounts()" fill="clear" color="warning">
-        <ion-icon name="refresh" slot="icon-only"></ion-icon>
-      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -36,109 +33,98 @@
       </ion-card-content>
     </ion-card>
   } @else if (userProfile) {
-    <!-- Projects Table -->
-    @if (!projectsLoading()) {
-      <ion-card class="projects-card">
-        <ion-card-header>
-          <ion-card-title>
-            {{ 'PROFILE.USER_PROJECTS' | translate }} 
-            <span class="projects-summary">({{ getTotalProjectsByState('building') }}·{{ getTotalProjectsByState('implementing') }}·{{ getTotalProjectsByState('done') }})</span>
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="projects-table">
-            <table class="projects-table-content">
-              <thead>
-                <tr>
-                  <th class="role-header">{{ 'PROFILE.ROLE' | translate }}</th>
-                  <th class="state-header">{{ 'HOME.STATE_BUILDING' | translate }}</th>
-                  <th class="state-header">{{ 'HOME.STATE_IMPLEMENTING' | translate }}</th>
-                  <th class="state-header">{{ 'HOME.STATE_DONE' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="role-row">
-                  <td class="role-cell creator-role">{{ 'HOME.CREATOR' | translate }}</td>
-                  <td class="state-cell">
-                    <div class="project-count" (click)="navigateToProjectsByState('creator', 'building')">
-                      {{ getCreatedProjectsByState('building').length }}
-                    </div>
-                  </td>
-                  <td class="state-cell">
-                    <div class="project-count" (click)="navigateToProjectsByState('creator', 'implementing')">
-                      {{ getCreatedProjectsByState('implementing').length }}
-                    </div>
-                  </td>
-                  <td class="state-cell">
-                    <div class="project-count" (click)="navigateToProjectsByState('creator', 'done')">
-                      {{ getCreatedProjectsByState('done').length }}
-                    </div>
-                  </td>
-                </tr>
-                <tr class="role-row">
-                  <td class="role-cell collaborator-role">{{ 'HOME.COLLABORATORS' | translate }}</td>
-                  <td class="state-cell">
-                    <div class="project-count" (click)="navigateToProjectsByState('collaborator', 'building')">
-                      {{ getCollaboratedProjectsByState('building').length }}
-                    </div>
-                  </td>
-                  <td class="state-cell">
-                    <div class="project-count" (click)="navigateToProjectsByState('collaborator', 'implementing')">
-                      {{ getCollaboratedProjectsByState('implementing').length }}
-                    </div>
-                  </td>
-                  <td class="state-cell">
-                    <div class="project-count" (click)="navigateToProjectsByState('collaborator', 'done')">
-                      {{ getCollaboratedProjectsByState('done').length }}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    } @else {
-      <ion-card class="projects-loading-card">
-        <ion-card-content>
-          <div class="loading-container">
-            <ion-spinner></ion-spinner>
-            <p>{{ 'PROFILE.LOADING_PROJECTS' | translate }}</p>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    }
-
-    <!-- Profile Information -->
-    <ion-card class="profile-card">
-      <ion-card-content>
-        <div class="avatar-section">
-          <ion-avatar class="profile-avatar avatar-large">
-            @if (userProfile.photoURL) {
-              <img 
-                [src]="userProfile.photoURL" 
-                appImageFallback
-                [fallbackIcon]="'person'"
-                [fallbackSize]="'large'">
-            } @else {
-              <ion-icon name="person" size="large"></ion-icon>
-            }
-          </ion-avatar>
-        </div>
-
+    <div class="profile-container">
+      <!-- First line: Photo and Name/Email -->
+      <div class="profile-header">
+        <ion-avatar class="profile-avatar avatar-large">
+          @if (userProfile.photoURL) {
+            <img 
+              [src]="userProfile.photoURL" 
+              appImageFallback
+              [fallbackIcon]="'person'"
+              [fallbackSize]="'large'">
+          } @else {
+            <ion-icon name="person" size="large"></ion-icon>
+          }
+        </ion-avatar>
         <div class="profile-info">
-          <div class="info-item">
-            <ion-label class="info-label">{{ 'PROFILE.DISPLAY_NAME' | translate }}</ion-label>
-            <div class="info-value">{{ userProfile.displayName || 'N/A' }}</div>
-          </div>
-
-          <div class="info-item">
-            <ion-label class="info-label">{{ 'PROFILE.EMAIL' | translate }}</ion-label>
-            <div class="info-value">{{ userProfile.email || 'N/A' }}</div>
-          </div>
-
+          <div class="profile-name">{{ userProfile.displayName || 'Anonymous' }}</div>
+          <div class="profile-email">{{ userProfile.email || 'N/A' }}</div>
         </div>
-      </ion-card-content>
-    </ion-card>
+      </div>
+
+      <!-- Projects Table below -->
+      @if (!projectsLoading()) {
+        <ion-card class="projects-card">
+          <ion-card-header>
+            <ion-card-title>
+              {{ 'PROFILE.USER_PROJECTS' | translate }} 
+              <span class="projects-summary">({{ getTotalProjectsByState('building') }}·{{ getTotalProjectsByState('implementing') }}·{{ getTotalProjectsByState('done') }})</span>
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="projects-table">
+              <table class="projects-table-content">
+                <thead>
+                  <tr>
+                    <th class="role-header">{{ 'PROFILE.ROLE' | translate }}</th>
+                    <th class="state-header">{{ 'HOME.STATE_BUILDING' | translate }}</th>
+                    <th class="state-header">{{ 'HOME.STATE_IMPLEMENTING' | translate }}</th>
+                    <th class="state-header">{{ 'HOME.STATE_DONE' | translate }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="role-row">
+                    <td class="role-cell creator-role">{{ 'HOME.CREATOR' | translate }}</td>
+                    <td class="state-cell">
+                      <div class="project-count" (click)="navigateToProjectsByState('creator', 'building')">
+                        {{ getCreatedProjectsByState('building').length }}
+                      </div>
+                    </td>
+                    <td class="state-cell">
+                      <div class="project-count" (click)="navigateToProjectsByState('creator', 'implementing')">
+                        {{ getCreatedProjectsByState('implementing').length }}
+                      </div>
+                    </td>
+                    <td class="state-cell">
+                      <div class="project-count" (click)="navigateToProjectsByState('creator', 'done')">
+                        {{ getCreatedProjectsByState('done').length }}
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="role-row">
+                    <td class="role-cell collaborator-role">{{ 'HOME.COLLABORATORS' | translate }}</td>
+                    <td class="state-cell">
+                      <div class="project-count" (click)="navigateToProjectsByState('collaborator', 'building')">
+                        {{ getCollaboratedProjectsByState('building').length }}
+                      </div>
+                    </td>
+                    <td class="state-cell">
+                      <div class="project-count" (click)="navigateToProjectsByState('collaborator', 'implementing')">
+                        {{ getCollaboratedProjectsByState('implementing').length }}
+                      </div>
+                    </td>
+                    <td class="state-cell">
+                      <div class="project-count" (click)="navigateToProjectsByState('collaborator', 'done')">
+                        {{ getCollaboratedProjectsByState('done').length }}
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      } @else {
+        <ion-card class="projects-loading-card">
+          <ion-card-content>
+            <div class="loading-container">
+              <ion-spinner></ion-spinner>
+              <p>{{ 'PROFILE.LOADING_PROJECTS' | translate }}</p>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+    </div>
   }
 </ion-content>

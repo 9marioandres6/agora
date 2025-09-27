@@ -1,47 +1,71 @@
 /* Custom styles that cannot be replaced with Ionic utilities */
-.profile-form-card {
+.profile-container {
   max-width: 600px;
   margin: 0 auto;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  margin-bottom: 16px;
+  position: relative;
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    margin-right: 16px;
+    flex-shrink: 0;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    
+    ion-icon {
+      font-size: 32px;
+      color: var(--ion-color-medium);
+    }
+  }
+  
+  .profile-info {
+    flex: 1;
+    min-width: 0;
+    
+    .profile-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--app-text);
+      margin-bottom: 4px;
+      line-height: 1.2;
+    }
+    
+    .profile-email {
+      font-size: 16px;
+      color: var(--ion-color-medium);
+      line-height: 1.3;
+    }
+  }
+  
+  .change-avatar-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --border-radius: 50%;
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+  }
+}
+
+.profile-form-card {
+  margin: 0;
   
   ion-card-content {
     padding: 20px !important;
-  }
-  
-  .avatar-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 24px;
-    position: relative;
-    
-    .profile-avatar {
-      width: 120px;
-      height: 120px;
-      margin-bottom: 8px;
-      
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-      }
-      
-      ion-icon {
-        font-size: 48px;
-        color: var(--ion-color-medium);
-      }
-    }
-    
-    .change-avatar-btn {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      --padding-start: 8px;
-      --padding-end: 8px;
-      --border-radius: 50%;
-      --background: var(--ion-color-primary);
-      --color: var(--ion-color-primary-contrast);
-    }
   }
   
   .profile-form {
@@ -134,8 +158,36 @@
 }
 
 @media (max-width: 576px) {
-  .profile-form-card {
+  .profile-container {
     margin: 4px;
+  }
+  
+  .profile-header {
+    padding: 16px 0;
+    
+    .profile-avatar {
+      width: 64px;
+      height: 64px;
+      margin-right: 12px;
+      
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+    
+    .profile-info {
+      .profile-name {
+        font-size: 20px;
+      }
+      
+      .profile-email {
+        font-size: 14px;
+      }
+    }
+  }
+  
+  .profile-form-card {
+    margin: 0;
   }
   
   .profile-form .form-item ion-input {
