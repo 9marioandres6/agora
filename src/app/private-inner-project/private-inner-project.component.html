@@ -37,46 +37,12 @@
           <div class="info-row">
             <div class="info-content">
               <ion-chip color="primary">{{ getScopeLabel(project()?.scope || '') }}</ion-chip>
-              
-              <!-- Location Display/Edit -->
-              @if (!isEditingLocation()) {
-                @if (locationDisplayText()) {
-                  <ion-chip color="secondary" [class.clickable]="canEditLocation()" (click)="canEditLocation() ? startEditingLocation() : null">
-                    <ion-icon name="location-outline" slot="start"></ion-icon>
-                    {{ locationDisplayText() }}
-                    @if (canEditLocation()) {
-                      <ion-icon name="create-outline" slot="end"></ion-icon>
-                    }
-                  </ion-chip>
-                } @else if (canEditLocation()) {
-                  <ion-chip color="medium" class="clickable" (click)="startEditingLocation()">
-                    <ion-icon name="add-outline" slot="start"></ion-icon>
-                    Add Location
-                  </ion-chip>
-                }
-              } @else {
-                <!-- Location Editing Mode -->
-                <div class="location-edit-container">
-                  <ion-item>
-                    <ion-icon name="location-outline" slot="start"></ion-icon>
-                    <ion-input
-                      #locationInput
-                      [(ngModel)]="newLocationText"
-                      placeholder="Search for location..."
-                      class="location-input">
-                    </ion-input>
-                  </ion-item>
-                  <div class="location-edit-actions">
-                    <ion-button fill="clear" size="small" (click)="cancelLocationEdit()">
-                      Cancel
-                    </ion-button>
-                    <ion-button fill="solid" size="small" (click)="saveLocationEdit()" [disabled]="!selectedLocation">
-                      Save
-                    </ion-button>
-                  </div>
-                </div>
+              @if (project()?.scope?.place) {
+                <ion-chip color="secondary">
+                  <ion-icon name="location-outline" slot="start"></ion-icon>
+                  {{ project()?.scope?.place }}
+                </ion-chip>
               }
-              
               <ion-chip 
                 class="state-chip" 
                 [class.clickable]="isCreator() && canAdvanceState()"

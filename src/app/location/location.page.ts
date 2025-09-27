@@ -173,7 +173,6 @@ export class LocationPage implements OnInit {
     
     try {
       if (locationToAccept) {
-
         // Ensure location has geohash
         const locationWithGeohash = this.locationService.ensureLocationHasGeohash(locationToAccept);
         

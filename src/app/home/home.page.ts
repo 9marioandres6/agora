@@ -498,7 +498,6 @@ export class HomePage implements OnInit, ViewWillEnter {
     
     try {
       if (locationToAccept) {
-
         // Ensure location has geohash
         const locationWithGeohash = this.locationService.ensureLocationHasGeohash(locationToAccept);
         
