@@ -1130,6 +1130,17 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     return scopeValue;
   }
 
+  getScopeIcon(scope: string | Scope): string {
+    const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
+    const scopeIcons: { [key: string]: string } = {
+      'grupal': 'people',
+      'local': 'business-outline',
+      'national': 'flag',
+      'global': 'globe'
+    };
+    return scopeIcons[scopeValue] || 'help-circle';
+  }
+
   getScopeValue(scope: string | Scope): string {
     return typeof scope === 'string' ? scope : scope?.scope || '';
   }

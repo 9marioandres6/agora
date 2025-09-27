@@ -41,7 +41,10 @@
                 <h5>{{ project.title }}</h5>
                 <p>{{ project.description }}</p>
                 <div class="project-meta">
-                  <span class="scope">{{ 'NEW_ITEM.SCOPE_' + getScopeValue(project.scope).toUpperCase() | translate }}</span>
+                  <span class="scope">
+                    <ion-icon [name]="getScopeIcon(project.scope)" style="margin-right: 6px;"></ion-icon>
+                    {{ 'NEW_ITEM.SCOPE_' + getScopeValue(project.scope).toUpperCase() | translate }}
+                  </span>
                   <span class="state">{{ 'HOME.STATE_' + project.state.toUpperCase() | translate }}</span>
                 </div>
               </div>
@@ -73,7 +76,7 @@
           <span>{{ 'NEW_ITEM.SCOPE_GRUPAL' | translate }}</span>
         </div>
         <div class="legend-item" (click)="applyFilter('local')">
-          <ion-icon name="home" color="primary"></ion-icon>
+          <ion-icon name="business-outline" color="primary"></ion-icon>
           <span>{{ 'NEW_ITEM.SCOPE_LOCAL' | translate }}</span>
         </div>
         <div class="legend-item" (click)="applyFilter('national')">
@@ -81,7 +84,7 @@
           <span>{{ 'NEW_ITEM.SCOPE_NATIONAL' | translate }}</span>
         </div>
         <div class="legend-item" (click)="applyFilter('global')">
-          <ion-icon name="planet" color="primary"></ion-icon>
+          <ion-icon name="globe" color="primary"></ion-icon>
           <span>{{ 'NEW_ITEM.SCOPE_GLOBAL' | translate }}</span>
         </div>
       </div>

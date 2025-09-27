@@ -1,6 +1,7 @@
 .new-item-form {
   padding: 16px;
   overflow: visible;
+
   
   ion-item {
     --border-style: none;
@@ -102,46 +103,46 @@ ion-select {
   }
 }
 
-.scope-select {
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 12px;
-  --padding-bottom: 12px;
-  border: none;
-  border-radius: 8px;
-  margin-top: 8px;
-  --background: transparent;
-  color: var(--app-text);
-  --border-style: none;
-  --border-width: 0;
-  
-  &:focus-within {
-    border: 1px solid var(--app-primary);
-    box-shadow: 0 0 0 2px var(--app-primary-light);
-  }
-  
-  &::part(icon) {
-    color: var(--app-primary);
-  }
-}
 
-.scope-select {
-  --background: var(--app-primary-light);
-  --color: var(--app-primary);
-  --padding-start: 12px;
-  --padding-end: 12px;
-  --padding-top: 8px;
-  --padding-bottom: 8px;
-  border-radius: 6px;
+.scope-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-top: 8px;
   
-  &::part(icon) {
+  .scope-icon {
+    font-size: 20px;
     color: var(--app-primary);
+    min-width: 20px;
+    flex-shrink: 0;
   }
   
-  &::part(text) {
-    color: var(--app-primary);
-    font-weight: 500;
+  ion-select {
+    flex: 1;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border: none;
+    border-radius: 8px;
+    --background: transparent;
+    color: var(--app-text);
+    --border-style: none;
+    --border-width: 0;
+    
+    &:focus-within {
+      border: 1px solid var(--app-primary);
+      box-shadow: 0 0 0 2px var(--app-primary-light);
+    }
+    
+    &::part(icon) {
+      color: var(--app-primary);
+    }
+    
+    &::part(text) {
+      color: var(--app-text);
+      font-weight: 500;
+    }
   }
 }
 

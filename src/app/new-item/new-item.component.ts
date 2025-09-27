@@ -59,10 +59,10 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   isLocationLoading = false;
 
   scopeOptions: ScopeOption[] = [
-    { value: 'grupal', label: 'Grupal - Small Group Collaboration', icon: 'people' },
-    { value: 'local', label: 'Local - Neighbourhood/Community', icon: 'business-outline' },
-    { value: 'national', label: 'National - Country level', icon: 'flag' },
-    { value: 'global', label: 'Global - International level', icon: 'globe' }
+    { value: 'grupal', icon: 'people' },
+    { value: 'local', icon: 'business-outline' },
+    { value: 'national', icon: 'flag' },
+    { value: 'global', icon: 'globe' }
   ];
 
 
@@ -147,11 +147,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   getScopeIcon(scope: string): string {
     const scopeOption = this.scopeOptions.find(option => option.value === scope);
     return scopeOption ? scopeOption.icon : 'help-circle';
-  }
-
-  getScopeLabel(scope: string): string {
-    const scopeOption = this.scopeOptions.find(option => option.value === scope);
-    return scopeOption ? scopeOption.value : scope;
   }
 
   async openScopeModal() {

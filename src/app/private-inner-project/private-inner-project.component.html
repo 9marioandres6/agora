@@ -36,7 +36,10 @@
 
           <div class="info-row">
             <div class="info-content">
-              <ion-chip color="primary">{{ getScopeLabel(project()?.scope || '') }}</ion-chip>
+              <ion-chip color="primary">
+                <ion-icon [name]="getScopeIcon(project()?.scope || '')" style="margin-right: 8px;"></ion-icon>
+                {{ getScopeLabel(project()?.scope || '') }}
+              </ion-chip>
               @if (project()?.scope?.place) {
                 <ion-chip color="secondary">
                   <ion-icon name="location-outline" slot="start"></ion-icon>

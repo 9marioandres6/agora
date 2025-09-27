@@ -49,21 +49,25 @@
             "NEW_ITEM.SCOPE" | translate
           }}</ion-label>
 
-           <ion-select
-             [(ngModel)]="scope"
-             name="scope"
-             (ionChange)="scopeSelected()"
-             placeholder="{{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}"
-             interface="popover"
-             class="scope-select"
-           >
-             @for (option of scopeOptions; track option.value) {
-             <ion-select-option [value]="option.value">
-               <ion-icon [name]="option.icon" slot="start"></ion-icon>
-               {{ "NEW_ITEM.SCOPE_" + option.value.toUpperCase() | translate }}
-             </ion-select-option>
-             }
-           </ion-select>
+          <div class="scope-selector-container">
+            @if (scope) {
+              <ion-icon [name]="getScopeIcon(scope)" class="scope-icon"></ion-icon>
+            }
+            <ion-select
+              [(ngModel)]="scope"
+              name="scope"
+              (ionChange)="scopeSelected()"
+              placeholder="{{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}"
+              interface="popover"
+              class="scope-select"
+            >
+              @for (option of scopeOptions; track option.value) {
+              <ion-select-option [value]="option.value">
+                {{ "NEW_ITEM.SCOPE_" + option.value.toUpperCase() | translate }}
+              </ion-select-option>
+              }
+            </ion-select>
+          </div>
         </ion-item>
 
         @if (scope === 'local') {
