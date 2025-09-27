@@ -39,6 +39,9 @@ export class ProjectsService {
 
   // Active listeners to clean up
   private listeners: Map<string, Unsubscribe> = new Map();
+  
+  // Track if we've loaded projects in this session
+  private _hasLoadedProjects = signal<boolean>(false);
 
   private get projectsCollection() {
     return collection(this.firestore, 'projects');
@@ -104,8 +107,8 @@ export class ProjectsService {
   }
 
   public hasFilteredProjectsLoaded(): boolean {
-    // Check if we have filtered projects loaded
-    return this.filteredProjects().length > 0;
+    // Check if we've loaded projects in this session
+    return this._hasLoadedProjects();
   }
 
   // Lazy load scope listeners only when needed
@@ -1274,6 +1277,8 @@ export class ProjectsService {
           if (showLoading) {
             this.loadingService.setFilteredProjectsLoading(false);
           }
+          // Mark that we've loaded projects
+          this._hasLoadedProjects.set(true);
         }
       );
       
@@ -1379,6 +1384,8 @@ export class ProjectsService {
           if (showLoading) {
             this.loadingService.setFilteredProjectsLoading(false);
           }
+          // Mark that we've loaded projects
+          this._hasLoadedProjects.set(true);
         }
       );
       
@@ -1401,11 +1408,17 @@ export class ProjectsService {
     const currentScope = this.filterStateService.getSelectedScope();
     
     try {
+      // Update the query time to indicate we're doing a fresh query
+      this.filterStateService.updateLastQueryTime();
+      
       if (currentScope === 'all') {
         await this.resetFilteredProjects(false); // Silent refresh - no loading spinner
       } else {
         await this.setFilteredProjects(currentScope, false); // Silent refresh - no loading spinner
       }
+      
+      // Mark that we've loaded projects (this will be set by the callback, but set it here too for safety)
+      this._hasLoadedProjects.set(true);
     } catch (error) {
       console.error('Error refreshing projects with current location:', error);
     }

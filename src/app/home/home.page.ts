@@ -76,17 +76,8 @@ export class HomePage implements OnInit, ViewWillEnter {
   });
 
   constructor() {
-    effect(() => {
-      const projects = this.projectsService.projects();
-      const scope = this.currentScope();
-      
-      if (projects.length > 0 && scope !== 'all') {
-        this.projectsService.setFilteredProjects(scope);
-      } else if (scope === 'all' && projects.length === 0) {
-        // Load all projects if no filter is active and no projects are loaded
-        this.projectsService.resetFilteredProjects();
-      }
-    });
+    // Remove the automatic loading effect that was causing unnecessary queries
+    // Projects will now only be loaded when explicitly needed in ionViewWillEnter
   }
 
   async presentSettingsModal() {
@@ -135,10 +126,15 @@ export class HomePage implements OnInit, ViewWillEnter {
     
     const selectedScope = this.filterStateService.getSelectedScope();
     const previousScope = this.currentScope();
+    const currentLocation = this.locationService.userLocation().userLocation;
     
-    // Only query Firebase if we don't have filtered projects loaded or if the scope changed
-    if (this.shouldQueryFirebase(selectedScope, previousScope)) {
+    // Only query Firebase if we don't have filtered projects loaded or if something relevant changed
+    if (this.shouldQueryFirebase(selectedScope, previousScope, currentLocation)) {
       this.currentScope.set(selectedScope);
+      
+      // Update the filter state service with current location and query time
+      this.filterStateService.setLastLocation(currentLocation);
+      this.filterStateService.updateLastQueryTime();
       
       if (selectedScope !== 'all') {
         await this.projectsService.setFilteredProjects(selectedScope);
@@ -151,11 +147,26 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  private shouldQueryFirebase(selectedScope: string, previousScope: string): boolean {
+  private shouldQueryFirebase(selectedScope: string, previousScope: string, currentLocation: any): boolean {
     // Query Firebase if:
     // 1. No filtered projects are loaded, OR
-    // 2. The scope has changed
-    return !this.projectsService.hasFilteredProjectsLoaded() || previousScope !== selectedScope;
+    // 2. The scope has changed, OR
+    // 3. The location has changed (which affects local/national filtering), OR
+    // 4. It's been more than 5 minutes since last query (optional refresh)
+    
+    const hasFilteredProjects = this.projectsService.hasFilteredProjectsLoaded();
+    const scopeChanged = previousScope !== selectedScope;
+    const locationChanged = this.filterStateService.hasLocationChanged(currentLocation);
+    const lastQueryTime = this.filterStateService.getLastQueryTime();
+    const timeSinceLastQuery = Date.now() - lastQueryTime;
+    const shouldRefreshByTime = timeSinceLastQuery > 5 * 60 * 1000; // 5 minutes
+    
+    // Don't query if we have projects and nothing relevant has changed
+    if (hasFilteredProjects && !scopeChanged && !locationChanged && !shouldRefreshByTime) {
+      return false;
+    }
+    
+    return true;
   }
 
   navigateToFilterPage() {
@@ -473,6 +484,8 @@ export class HomePage implements OnInit, ViewWillEnter {
       if (locationToAccept) {
         this.locationService.setUserLocation(locationToAccept);
         
+        // Update filter state service to track location change
+        this.filterStateService.setLastLocation(locationToAccept);
         
         // Refresh projects with the new location
         await this.projectsService.refreshProjectsWithCurrentLocation();

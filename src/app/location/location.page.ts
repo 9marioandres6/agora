@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
 import { ProjectsService } from '../services/projects.service';
+import { FilterStateService } from '../services/filter-state.service';
 import { ActivatedRoute } from '@angular/router';
 
 declare var google: any;
@@ -23,6 +24,7 @@ export class LocationPage implements OnInit {
   private locationService = inject(LocationService);
   private userSearchService = inject(UserSearchService);
   private projectsService = inject(ProjectsService);
+  private filterStateService = inject(FilterStateService);
   private navCtrl = inject(NavController);
   private route = inject(ActivatedRoute);
 
@@ -167,6 +169,8 @@ export class LocationPage implements OnInit {
           this.userProfileCache.location = locationToAccept;
         }
         
+        // Update filter state service to track location change
+        this.filterStateService.setLastLocation(locationToAccept);
         
         // Refresh projects with the new location
         await this.projectsService.refreshProjectsWithCurrentLocation();
@@ -230,19 +234,21 @@ export class LocationPage implements OnInit {
         timestamp: Date.now()
       };
 
-              this.locationService.setUserLocation(locationData);
+      this.locationService.setUserLocation(locationData);
       
       // Update cache
       if (this.userProfileCache) {
         this.userProfileCache.location = locationData;
       }
       
-              // Close the input immediately
-              this.cancelAddressChange();
+      // Update filter state service to track location change
+      this.filterStateService.setLastLocation(locationData);
+      
+      // Close the input immediately
+      this.cancelAddressChange();
 
-              
-              // Refresh projects with the new location
-              await this.projectsService.refreshProjectsWithCurrentLocation();
+      // Refresh projects with the new location
+      await this.projectsService.refreshProjectsWithCurrentLocation();
     } catch (error) {
       console.error('Error saving new address:', error);
     }

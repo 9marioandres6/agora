@@ -29,6 +29,9 @@ export class FilterPage {
   applyFilter(scope: string) {
     this.filterStateService.setSelectedScope(scope);
     
+    // Update query time since we're applying a new filter
+    this.filterStateService.updateLastQueryTime();
+    
     if (scope === 'all') {
       this.projectsService.resetFilteredProjects();
     } else {
