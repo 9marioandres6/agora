@@ -29,21 +29,27 @@
     <div class="project-container">
       <ion-card class="project-card">
         <ion-card-header class="project-header">
-          <div class="project-title-line">
-            <ion-icon [name]="getScopeIcon(project()?.scope || '')" class="scope-icon-inline"></ion-icon>
-            <span class="project-title-text">{{ project()?.title }}</span>
-            <ion-chip [color]="getStateColor(project()?.state || 'building')" class="state-chip-inline">
+          <!-- All Chips in One Line -->
+          <div class="project-chips-line">
+            <ion-chip color="primary" class="scope-chip">
+              <ion-icon [name]="getScopeIcon(project()?.scope || '')" style="margin-right: 8px;"></ion-icon>
+              {{ getScopeLabel(project()?.scope || '') }}
+            </ion-chip>
+            <ion-chip [color]="getStateColor(project()?.state || 'building')" class="state-chip">
               {{ getStateLabel(project()?.state || 'building') | translate }}
             </ion-chip>
-          </div>
-          @if (project()?.scope?.place) {
-            <div class="project-location-line">
+            @if (project()?.scope?.place) {
               <ion-chip color="secondary" class="location-chip">
                 <ion-icon name="location-outline" slot="start"></ion-icon>
                 {{ project()?.scope?.place }}
               </ion-chip>
-            </div>
-          }
+            }
+          </div>
+          
+          <!-- Project Title -->
+          <div class="project-title-line">
+            <h1 class="project-title">{{ project()?.title }}</h1>
+          </div>
         </ion-card-header>
 
         <ion-card-content class="project-body">

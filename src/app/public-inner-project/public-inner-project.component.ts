@@ -83,6 +83,18 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
     return scopeIcons[scopeValue] || 'help-circle';
   }
 
+  getScopeLabel(scope: string | Scope): string {
+    const scopeValue = typeof scope === 'string' ? scope : scope?.scope || '';
+    const scopeLabels: { [key: string]: string } = {
+      'grupal': 'NEW_ITEM.SCOPE_GRUPAL',
+      'local': 'NEW_ITEM.SCOPE_LOCAL',
+      'national': 'NEW_ITEM.SCOPE_NATIONAL',
+      'global': 'NEW_ITEM.SCOPE_GLOBAL'
+    };
+    const translationKey = scopeLabels[scopeValue];
+    return translationKey ? this.translateService.instant(translationKey) : scopeValue;
+  }
+
   getScopeValue(scope: string | Scope): string {
     return typeof scope === 'string' ? scope : scope?.scope || '';
   }
