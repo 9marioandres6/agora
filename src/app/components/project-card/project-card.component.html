@@ -51,13 +51,29 @@
     } @if (project().needs && project().needs.length > 0) {
     <div class="project-needs">
       <ul class="needs-list">
-        @for (need of project().needs; track need.name) {
+        @for (need of getDisplayedNeeds(); track need.name) {
         <li>
-          <ion-icon [name]="getNeedIcon(need)" [color]="getNeedIconColor(need)" class="need-icon"> </ion-icon>
+          <ion-icon [name]="getNeedIcon(need)" class="need-icon"> </ion-icon>
           {{ need.name }}
         </li>
         }
       </ul>
+      @if (hasMoreNeeds()) {
+      <div class="needs-expand-container">
+        <button 
+          class="needs-expand-button" 
+          (click)="toggleNeedsExpansion($event)"
+          [attr.aria-expanded]="needsExpanded()">
+          <ion-icon 
+            [name]="needsExpanded() ? 'chevron-up' : 'chevron-down'" 
+            class="expand-icon">
+          </ion-icon>
+          <span class="expand-text">
+            {{ needsExpanded() ? ('HOME.SHOW_LESS' | translate) : ('HOME.SHOW_MORE' | translate) }}
+          </span>
+        </button>
+      </div>
+      }
     </div>
     } @if (project().state === 'implementing') {
     <div class="implementation-progress">

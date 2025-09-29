@@ -14,7 +14,7 @@ import { ProjectFooterComponent } from '../project-footer/project-footer.compone
   templateUrl: './project-card.component.html',
   styleUrls: ['./project-card.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, TranslateModule, UserAvatarComponent, ProjectFooterComponent]
+  imports: [CommonModule, IonicModule, FormsModule, TranslateModule, ProjectFooterComponent]
 })
 export class ProjectCardComponent implements OnInit {
   private authService = inject(AuthService);
@@ -38,6 +38,7 @@ export class ProjectCardComponent implements OnInit {
   collaborationMessage = '';
   creatorData = signal<UserAvatarData | null>(null);
   totalProjectStats = signal<string>('');
+  needsExpanded = signal<boolean>(false);
 
   get user() {
     return this.authService.user();
@@ -144,7 +145,7 @@ export class ProjectCardComponent implements OnInit {
   }
 
   getNeedIcon(need: Need): string {
-    return need.state === 'obtained' ? 'checkmark-circle' : 'time';
+    return need.state === 'obtained' ? 'checkmark' : 'time';
   }
 
   getNeedIconColor(need: Need): string {
@@ -278,5 +279,22 @@ export class ProjectCardComponent implements OnInit {
       message: this.collaborationMessage.trim() 
     });
     this.collaborationMessage = '';
+  }
+
+  toggleNeedsExpansion(event: Event) {
+    event.stopPropagation();
+    this.needsExpanded.set(!this.needsExpanded());
+  }
+
+  getDisplayedNeeds() {
+    const needs = this.project().needs || [];
+    if (needs.length <= 3) {
+      return needs;
+    }
+    return this.needsExpanded() ? needs : needs.slice(0, 3);
+  }
+
+  hasMoreNeeds() {
+    return (this.project().needs || []).length > 3;
   }
 }

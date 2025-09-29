@@ -133,7 +133,9 @@
     "RESET_FILTER": "Reset Filter",
     "NO_FILTERED_PROJECTS": "No Projects Found",
     "NO_FILTERED_PROJECTS_MESSAGE": "No projects match your current filter. Try adjusting the filter or create a new project.",
-    "CREATE_NEW_PROJECT": "Create New Project"
+    "CREATE_NEW_PROJECT": "Create New Project",
+    "SHOW_MORE": "Show more",
+    "SHOW_LESS": "Show less"
   },
   "SETTINGS": {
     "GENERAL": "General",
