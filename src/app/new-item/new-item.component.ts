@@ -57,6 +57,7 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   selectedCity = '';
   selectedCountry = '';
   isLocationLoading = false;
+  newNeedText = '';
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', icon: 'people' },
@@ -468,6 +469,29 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     }
   }
 
-
+  addNewNeed() {
+    if (!this.newNeedText?.trim()) return;
+    
+    const newNeed = this.newNeedText.trim();
+    
+    // Check if need already exists
+    if (this.needs.some(need => need.name === newNeed)) {
+      this.showToast('This requirement already exists', 'warning');
+      return;
+    }
+    
+    // Add the new need
+    this.needs.push({ name: newNeed, state: 'pending' });
+    
+    // Clear the input
+    this.newNeedText = '';
+    
+    this.showToast('Requirement added successfully', 'success');
+  }
+  
+  removeNeed(index: number) {
+    this.needs.splice(index, 1);
+    this.showToast('Requirement removed successfully', 'success');
+  }
 
 }

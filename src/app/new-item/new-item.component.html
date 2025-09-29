@@ -46,6 +46,56 @@
 
         <ion-item class="form-item">
           <ion-label position="stacked">{{
+            "NEW_ITEM.WHAT_WE_NEED" | translate
+          }} ({{
+            "COMMON.OPTIONAL" | translate
+          }})</ion-label>
+          <div class="needs-editor">
+            <div class="add-need-section">
+              <ion-input 
+                [(ngModel)]="newNeedText"
+                placeholder="{{ 'NEW_ITEM.NEED_PLACEHOLDER' | translate }}"
+                (keyup.enter)="addNewNeed()"
+                class="new-need-input">
+              </ion-input>
+              <ion-button 
+                fill="outline" 
+                size="small" 
+                (click)="addNewNeed()"
+                [disabled]="!newNeedText.trim()"
+                class="add-need-btn">
+                <ion-icon name="add" slot="start"></ion-icon>
+                {{ 'COMMON.ADD' | translate }}
+              </ion-button>
+            </div>
+            
+            @if (needs.length > 0) {
+            <div class="needs-list">
+              @for (need of needs; track $index) {
+              <div class="need-item">
+                <ion-chip 
+                  color="warning"
+                  class="need-chip">
+                  <ion-icon name="time" slot="start"></ion-icon>
+                  {{ need.name }}
+                </ion-chip>
+                <ion-button
+                  fill="clear"
+                  size="small"
+                  color="danger"
+                  (click)="removeNeed($index)"
+                  class="remove-need-btn">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
+              </div>
+              }
+            </div>
+            }
+          </div>
+        </ion-item>
+
+        <ion-item class="form-item">
+          <ion-label position="stacked">{{
             "NEW_ITEM.SCOPE" | translate
           }}</ion-label>
 
