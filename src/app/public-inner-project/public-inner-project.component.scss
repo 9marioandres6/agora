@@ -148,27 +148,6 @@ ion-header {
       }
     }
 
-    .project-completed-message {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      margin: 0 0 16px 0;
-      background: var(--ion-color-success-tint);
-      border: 1px solid var(--ion-color-success);
-      border-radius: 8px;
-      
-      ion-icon {
-        flex-shrink: 0;
-      }
-      
-      p {
-        margin: 0;
-        color: var(--ion-color-success-shade);
-        font-weight: 500;
-        font-size: 14px;
-      }
-    }
 
     .project-media {
       margin: 0 0 16px;

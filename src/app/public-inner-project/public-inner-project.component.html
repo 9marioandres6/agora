@@ -80,15 +80,6 @@
           >
           </ion-progress-bar>
         </div>
-        } @if (project()?.state === 'done') {
-        <div class="project-completed-message">
-          <ion-icon
-            name="checkmark-circle"
-            color="success"
-            size="large"
-          ></ion-icon>
-          <p>{{ "PROJECT.COMPLETED_MESSAGE" | translate }}</p>
-        </div>
         } @if (project()?.media?.length) {
         <div class="project-media">
           <div class="media-grid">
@@ -135,9 +126,6 @@
 
       </ion-card-content>
     </ion-card>
-
-    <!-- Project Footer -->
-    <app-project-footer [project]="project()!"></app-project-footer>
 
     <!-- Sections Section - Only show when there are chapters -->
     @if (project()?.chapters && (project()?.chapters?.length || 0) > 0) {
@@ -187,6 +175,9 @@
       </ion-card-content>
     </ion-card>
     }
+
+    <!-- Project Footer -->
+    <app-project-footer [project]="project()!"></app-project-footer>
   </div>
   } @else {
   <div class="error-container">
