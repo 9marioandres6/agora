@@ -239,25 +239,34 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   addNewNeed() {
     if (!this.newNeedText?.trim()) return;
     
-    const currentNeeds = this.editingProject().needs || [];
+    const project = this.project();
+    if (!project) return;
+    
+    const currentNeeds = project.needs || [];
     const newNeed = this.newNeedText.trim();
     
     // Check if need already exists
     if (currentNeeds.some(need => need.name === newNeed)) {
-      // You could show a toast message here about duplicate needs
+      this.showToast('This requirement already exists', 'warning');
       return;
     }
     
-    // Add the new need
-    this.editingProject.update(project => ({
-      ...project,
-      needs: [...currentNeeds, { name: newNeed, state: 'pending' }]
-    }));
+    // Add the new need directly to the project
+    const updatedNeeds = [...currentNeeds, { name: newNeed, state: 'pending' as const }];
+    
+    // Update the project directly
+    this.project.update(proj => {
+      if (!proj) return proj;
+      return {
+        ...proj,
+        needs: updatedNeeds
+      };
+    });
     
     // Clear the input
     this.newNeedText = '';
     
-    // Save the changes
+    // Save the changes to the database
     this.saveProjectField('needs');
   }
   
@@ -533,10 +542,8 @@ export class PrivateInnerProjectComponent implements OnDestroy {
           }
           break;
         case 'needs':
-          const newNeeds = this.editingProject().needs?.filter(need => need.name?.trim()) || [];
-          if (JSON.stringify(newNeeds) !== JSON.stringify(proj.needs)) {
-            updates.needs = newNeeds;
-          }
+          // For needs, we don't need to compare since we're updating directly
+          updates.needs = proj.needs?.filter(need => need.name?.trim()) || [];
           break;
       }
 
