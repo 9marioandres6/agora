@@ -82,3 +82,78 @@
     </div>
   </div>
 </div>
+
+<!-- Comments Section -->
+@if (expandedComments()) {
+<div class="comments-container">
+  <!-- Show comment input for all authenticated users -->
+  @if (user) {
+  <ion-item class="add-comment-section">
+    <ion-textarea
+      [(ngModel)]="newCommentText"
+      [placeholder]="'HOME.COMMENT_PLACEHENTER' | translate"
+      rows="2"
+      class="comment-textarea"
+      (keydown.enter)="onCommentKeydown($event)"
+    >
+    </ion-textarea>
+  </ion-item>
+  }
+
+  @if (project().comments && project().comments.length > 0) {
+  <div class="comments-list">
+    @for (comment of project().comments.slice().reverse(); track comment.id) {
+    <div class="comment-item">
+      <div class="comment-header">
+        <div class="comment-author">
+          <strong>{{ comment.creatorName }}</strong>
+        </div>
+        <div class="comment-date">
+          <small>{{ comment.createdAt | date : "short" }}</small>
+        </div>
+      </div>
+      <div class="comment-body">
+        <p class="comment-text">{{ comment.text }}</p>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
+}
+
+<!-- Collaborators Section -->
+@if (expandedCollaborators()) {
+<div class="collaborators-container">
+  <!-- Creator Section -->
+  <div class="creator-section">
+    @if (project().creator) {
+      <app-user-avatar
+        [user]="getCreatorData()"
+        [variant]="'creator'"
+        [avatarSize]="'small'"
+        [showRole]="true"
+      >
+      </app-user-avatar>
+    }
+  </div>
+
+  <!-- Current Collaborators -->
+  <div class="collaborators-list">
+    @if (project().collaborators && project().collaborators.length > 0) { 
+      @for (collaborator of project().collaborators; track collaborator.uid) {
+      <app-user-avatar
+        [user]="getCollaboratorData(collaborator)"
+        [variant]="'collaborator'"
+        [avatarSize]="'small'"
+        [showRole]="true"
+        [showJoinedDate]="true"
+      >
+      </app-user-avatar>
+      } 
+    } @else {
+    <p class="no-data">{{ "HOME.NO_COLLABORATORS" | translate }}</p>
+    }
+  </div>
+</div>
+}

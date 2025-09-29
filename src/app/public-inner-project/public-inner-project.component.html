@@ -133,56 +133,11 @@
         </div>
         }
 
-        <div class="info-row">
-          <div class="info-content">
-            <div class="members-summary" (click)="toggleMembers()">
-              <span>{{ getMembersSummary() }}</span>
-              <ion-icon
-                [name]="membersExpanded() ? 'chevron-up' : 'chevron-down'"
-                class="expand-icon"
-              >
-              </ion-icon>
-            </div>
-          </div>
-        </div>
       </ion-card-content>
     </ion-card>
 
-    <!-- Collapsible Members Section -->
-    @if (membersExpanded()) {
-    <ion-card class="members-section">
-      <ion-card-content>
-        <!-- Creator -->
-        <div class="member-item creator">
-          <app-user-avatar
-            [user]="getCreatorData()"
-            [variant]="'creator'"
-            [avatarSize]="'small'"
-            [showRole]="true"
-            [clickable]="true"
-            [showProjectSummary]="true"
-          >
-          </app-user-avatar>
-        </div>
-
-        <!-- Accepted Collaborators -->
-        @for (collaborator of project()?.collaborators || []; track
-        collaborator.uid) {
-        <div class="member-item collaborator">
-          <app-user-avatar
-            [user]="getCollaboratorData(collaborator)"
-            [variant]="'collaborator'"
-            [avatarSize]="'small'"
-            [showRole]="true"
-            [clickable]="true"
-            [showProjectSummary]="true"
-          >
-          </app-user-avatar>
-        </div>
-        }
-      </ion-card-content>
-    </ion-card>
-    }
+    <!-- Project Footer -->
+    <app-project-footer [project]="project()!"></app-project-footer>
 
     <!-- Sections Section - Only show when there are chapters -->
     @if (project()?.chapters && (project()?.chapters?.length || 0) > 0) {
