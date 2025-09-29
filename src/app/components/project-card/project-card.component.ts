@@ -36,6 +36,7 @@ export class ProjectCardComponent implements OnInit {
   newCommentText = '';
   collaborationMessage = '';
   creatorData = signal<UserAvatarData | null>(null);
+  totalProjectStats = signal<string>('');
 
   get user() {
     return this.authService.user();
@@ -43,6 +44,7 @@ export class ProjectCardComponent implements OnInit {
 
   ngOnInit() {
     this.loadCreatorData();
+    this.loadTotalProjectStats();
   }
 
   async loadCreatorData() {
@@ -51,6 +53,48 @@ export class ProjectCardComponent implements OnInit {
       this.creatorData.set(data);
     } catch (error) {
       console.error('Error loading creator data:', error);
+    }
+  }
+
+  async loadTotalProjectStats() {
+    try {
+      const project = this.project();
+      if (!project) return;
+
+      let totalBuilding = 0;
+      let totalImplementing = 0;
+      let totalDone = 0;
+
+      // Get creator stats
+      const creatorData = await this.getCreatorData();
+      if (creatorData?.projectSummary) {
+        const creatorStats = this.parseProjectSummary(creatorData.projectSummary);
+        totalBuilding += creatorStats.building;
+        totalImplementing += creatorStats.implementing;
+        totalDone += creatorStats.done;
+      }
+
+      // Get collaborator stats
+      if (project.collaborators && project.collaborators.length > 0) {
+        for (const collaborator of project.collaborators) {
+          try {
+            const collaboratorProfile = await this.userSearchService.getUserProfile(collaborator.uid);
+            if (collaboratorProfile?.projectCounts) {
+              const collaboratorStats = this.calculateProjectSummaryFromCounts(collaboratorProfile.projectCounts);
+              const parsedStats = this.parseProjectSummary(collaboratorStats);
+              totalBuilding += parsedStats.building;
+              totalImplementing += parsedStats.implementing;
+              totalDone += parsedStats.done;
+            }
+          } catch (error) {
+            console.warn('Could not load collaborator stats for:', collaborator.uid, error);
+          }
+        }
+      }
+
+      this.totalProjectStats.set(`${totalBuilding}·${totalImplementing}·${totalDone}`);
+    } catch (error) {
+      console.error('Error loading total project stats:', error);
     }
   }
 
@@ -179,6 +223,15 @@ export class ProjectCardComponent implements OnInit {
     const done = projectCounts.createdDone + projectCounts.collaboratedDone;
     
     return `${building}·${implementing}·${done}`;
+  }
+
+  private parseProjectSummary(summary: string): { building: number; implementing: number; done: number } {
+    const parts = summary.split('·');
+    return {
+      building: parseInt(parts[0]) || 0,
+      implementing: parseInt(parts[1]) || 0,
+      done: parseInt(parts[2]) || 0
+    };
   }
 
   getCollaboratorData(collaborator: any): UserAvatarData {
