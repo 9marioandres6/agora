@@ -404,22 +404,24 @@
         margin-top: 12px;
         font-size: 14px;
       }
+    }
 
-      .pending-request-section {
-        .pending-request-message {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 12px;
-          background: var(--app-warning-background, rgba(255, 193, 7, 0.1));
-          border-radius: 8px;
-          color: var(--app-warning-color, #ffc107);
-          font-size: 14px;
-          font-weight: 500;
+    .pending-request-section {
+      .pending-request-message {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 6px;
+        color: var(--app-primary);
+        font-size: 14px;
 
-          ion-icon {
-            font-size: 20px;
-          }
+        .pending-icon {
+          font-size: 20px;
+          color: var(--app-primary);
+        }
+
+        .pending-text {
+          color: var(--app-primary);
         }
       }
     }
