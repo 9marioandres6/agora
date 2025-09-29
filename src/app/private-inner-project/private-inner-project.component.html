@@ -46,6 +46,7 @@
                 </ion-chip>
               }
               <ion-chip 
+                [color]="getStateColor(project()?.state || 'building')"
                 class="state-chip" 
                 [class.clickable]="isCreator() && canAdvanceState()"
                 (click)="isCreator() && canAdvanceState() ? showStateAdvancementModal() : null">

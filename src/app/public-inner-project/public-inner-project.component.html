@@ -33,10 +33,7 @@
         <!-- All Chips in One Line -->
         <div class="project-chips-line">
           <ion-chip color="primary" class="scope-chip">
-            <ion-icon
-              [name]="getScopeIcon(project()?.scope || '')"
-              style="margin-right: 8px"
-            ></ion-icon>
+            <ion-icon [name]="getScopeIcon(project()?.scope || '')"></ion-icon>
             {{ getScopeLabel(project()?.scope || "") }}
           </ion-chip>
 

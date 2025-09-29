@@ -1163,6 +1163,15 @@ export class PrivateInnerProjectComponent implements OnDestroy {
     return stateIcons[state] || 'construct';
   }
 
+  getStateColor(state: string): string {
+    const stateColors: { [key: string]: string } = {
+      'building': 'warning',
+      'implementing': 'primary',
+      'done': 'success'
+    };
+    return stateColors[state] || 'medium';
+  }
+
 
 
   getNeedIcon(need: Need): string {
