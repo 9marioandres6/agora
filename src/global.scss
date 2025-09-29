@@ -574,8 +574,24 @@ ion-chip {
 
 /* Mobile-specific theme fixes */
 @media (max-width: 768px) {
+  /* Default mobile styles to prevent white screen */
+  ion-content {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+  }
+  
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
+  
   .dark {
     /* Force dark theme on mobile */
+    body {
+      background-color: #000000 !important;
+      color: #ffffff !important;
+    }
+    
     ion-content {
       --background: #000000 !important;
       --color: #ffffff !important;
@@ -603,6 +619,11 @@ ion-chip {
   
   .light-theme {
     /* Force light theme on mobile */
+    body {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+    
     ion-content {
       --background: #ffffff !important;
       --color: #000000 !important;
