@@ -5,6 +5,9 @@
         <ion-icon [name]="getScopeIcon(project().scope || '')" class="title-scope-icon"></ion-icon>
         <span class="title-text">{{ project().title }}</span>
         <ion-icon [name]="getStateIcon(project().state || 'building')" class="title-state-icon"></ion-icon>
+        @if (creatorData()?.projectSummary) {
+          <span class="creator-stats">{{ creatorData()!.projectSummary }}</span>
+        }
       </h3>
     </div>
   </ion-card-header>

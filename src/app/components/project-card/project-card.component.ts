@@ -147,7 +147,8 @@ export class ProjectCardComponent implements OnInit {
             displayName: userProfile.displayName || project.creator.displayName,
             email: userProfile.email || project.creator.email,
             photoURL: userProfile.photoURL || project.creator.photoURL,
-            role: 'PROJECT.CREATOR'
+            role: 'PROJECT.CREATOR',
+            projectSummary: userProfile.projectCounts ? this.calculateProjectSummaryFromCounts(userProfile.projectCounts) : undefined
           };
         }
       } catch (error) {
@@ -170,6 +171,14 @@ export class ProjectCardComponent implements OnInit {
       photoURL: undefined,
       role: 'PROJECT.CREATOR'
     };
+  }
+
+  private calculateProjectSummaryFromCounts(projectCounts: any): string {
+    const building = projectCounts.createdBuilding + projectCounts.collaboratedBuilding;
+    const implementing = projectCounts.createdImplementing + projectCounts.collaboratedImplementing;
+    const done = projectCounts.createdDone + projectCounts.collaboratedDone;
+    
+    return `${building}·${implementing}·${done}`;
   }
 
   getCollaboratorData(collaborator: any): UserAvatarData {
