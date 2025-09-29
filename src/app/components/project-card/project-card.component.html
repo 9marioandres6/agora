@@ -81,7 +81,7 @@
           (click)="onSupportButtonClick($event)"
           class="vote-button"
         >
-          {{ "HOME.SUPPORT" | translate }}
+          <ion-icon name="add"></ion-icon>
           @if ((project().supports || []).length > 0) {
           {{ (project().supports || []).length }}
           }
@@ -93,7 +93,7 @@
           (click)="onOpposeButtonClick($event)"
           class="vote-button"
         >
-          {{ "HOME.OPPOSE" | translate }}
+          <ion-icon name="remove"></ion-icon>
           @if ((project().opposes || []).length > 0) {
           {{ (project().opposes || []).length }}
           }
@@ -146,7 +146,7 @@
           (click)="onFollowButtonClick($event)"
           class="vote-button"
         >
-          {{ "HOME.FOLLOW" | translate }}
+          <ion-icon name="bookmark"></ion-icon>
           @if ((project().followers || []).length > 0) {
           {{ (project().followers || []).length }}
           }
