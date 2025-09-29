@@ -121,4 +121,36 @@
       margin: 20px 0;
     }
   }
+
+  .request-collaboration-section {
+    .collaboration-textarea {
+      --placeholder-color: var(--app-text-secondary);
+      color: var(--app-text);
+    }
+
+    .request-collaboration-button {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+  }
+
+  .pending-request-section {
+    .pending-request-message {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px;
+      color: var(--app-primary);
+      font-size: 14px;
+
+      .pending-icon {
+        font-size: 20px;
+        color: var(--app-primary);
+      }
+
+      .pending-text {
+        color: var(--app-primary);
+      }
+    }
+  }
 }

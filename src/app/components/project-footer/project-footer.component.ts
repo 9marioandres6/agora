@@ -23,6 +23,7 @@ export class ProjectFooterComponent {
   expandedComments = signal<boolean>(false);
   expandedCollaborators = signal<boolean>(false);
   newCommentText = '';
+  collaborationMessage = '';
 
   get user() {
     return this.authService.user();
@@ -174,5 +175,35 @@ export class ProjectFooterComponent {
       photoURL: collaborator.photoURL || '',
       role: 'collaborator'
     };
+  }
+
+  isProjectCreator(project: Project): boolean {
+    const currentUser = this.user;
+    if (!currentUser?.uid) return false;
+    
+    return project.createdBy === currentUser.uid || 
+           project.creator?.uid === currentUser.uid;
+  }
+
+  isProjectCollaborator(project: Project): boolean {
+    const currentUser = this.user;
+    if (!currentUser?.uid) return false;
+    return project.collaborators?.some(collaborator => collaborator.uid === currentUser.uid) || false;
+  }
+
+  hasCollaborationRequest(project: Project): boolean {
+    const currentUser = this.user;
+    if (!currentUser?.uid) return false;
+    return project.collaborationRequests?.some(req => req.uid === currentUser.uid) || false;
+  }
+
+  async submitCollaborationRequest() {
+    if (!this.collaborationMessage.trim()) return;
+    try {
+      await this.projectsService.requestCollaboration(this.project().id!, this.collaborationMessage.trim());
+      this.collaborationMessage = '';
+    } catch (error) {
+      console.error('Error requesting collaboration:', error);
+    }
   }
 }
