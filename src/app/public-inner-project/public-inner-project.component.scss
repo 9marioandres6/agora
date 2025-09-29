@@ -81,6 +81,12 @@ ion-header {
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        margin: 0 0 0 auto;
+        
+        ion-icon {
+          margin: 0 px 0 0;
+          font-size: 14px;
+        }
       }
 
       .location-chip {

@@ -92,7 +92,7 @@ export class ProjectCardComponent implements OnInit {
   getStateIcon(state: string): string {
     const stateIcons: { [key: string]: string } = {
       'building': 'construct',
-      'implementing': 'play-circle',
+      'implementing': 'build',
       'done': 'checkmark-circle'
     };
     return stateIcons[state] || 'construct';

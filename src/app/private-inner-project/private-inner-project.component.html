@@ -49,6 +49,7 @@
                 class="state-chip" 
                 [class.clickable]="isCreator() && canAdvanceState()"
                 (click)="isCreator() && canAdvanceState() ? showStateAdvancementModal() : null">
+                <ion-icon [name]="getStateIcon(project()?.state || 'building')"></ion-icon>
                 {{ getStateLabel(project()?.state || 'building') | translate }}
               </ion-chip>
             </div>

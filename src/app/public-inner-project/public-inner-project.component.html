@@ -3,17 +3,18 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ 'PUBLIC.PUBLIC_PROJECT' | translate }}</ion-title>
+    <ion-title>{{ "PUBLIC.PUBLIC_PROJECT" | translate }}</ion-title>
     <ion-buttons slot="end">
       @if (project()?.state !== 'done') {
-        <ion-button 
-          fill="clear" 
-          size="small" 
-          color="primary"
-          (click)="showCollaborationModal()"
-          class="collaborate-button">
-          {{ 'HOME.COLLABORATE' | translate }}
-        </ion-button>
+      <ion-button
+        fill="clear"
+        size="small"
+        color="primary"
+        (click)="showCollaborationModal()"
+        class="collaborate-button"
+      >
+        {{ "HOME.COLLABORATE" | translate }}
+      </ion-button>
       }
     </ion-buttons>
   </ion-toolbar>
@@ -21,201 +22,229 @@
 
 <ion-content [fullscreen]="true">
   @if (isLoading()) {
-    <div class="loading-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>{{ 'COMMON.LOADING' | translate }}</p>
-    </div>
+  <div class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>{{ "COMMON.LOADING" | translate }}</p>
+  </div>
   } @else if (project()) {
-    <div class="project-container">
-      <ion-card class="project-card">
-        <ion-card-header class="project-header">
-          <!-- All Chips in One Line -->
-          <div class="project-chips-line">
-            <ion-chip color="primary" class="scope-chip">
-              <ion-icon [name]="getScopeIcon(project()?.scope || '')" style="margin-right: 8px;"></ion-icon>
-              {{ getScopeLabel(project()?.scope || '') }}
-            </ion-chip>
-            <ion-chip [color]="getStateColor(project()?.state || 'building')" class="state-chip">
-              {{ getStateLabel(project()?.state || 'building') | translate }}
-            </ion-chip>
-            @if (project()?.scope?.place) {
-              <ion-chip color="secondary" class="location-chip">
-                <ion-icon name="location-outline" slot="start"></ion-icon>
-                {{ project()?.scope?.place }}
-              </ion-chip>
-            }
-          </div>
-          
-          <!-- Project Title -->
-          <div class="project-title-line">
-            <h1 class="project-title">{{ project()?.title }}</h1>
-          </div>
-        </ion-card-header>
+  <div class="project-container">
+    <ion-card class="project-card">
+      <ion-card-header class="project-header">
+        <!-- All Chips in One Line -->
+        <div class="project-chips-line">
+          <ion-chip color="primary" class="scope-chip">
+            <ion-icon
+              [name]="getScopeIcon(project()?.scope || '')"
+              style="margin-right: 8px"
+            ></ion-icon>
+            {{ getScopeLabel(project()?.scope || "") }}
+          </ion-chip>
 
-        <ion-card-content class="project-body">
-          <p class="project-description">{{ project()?.description }}</p>
-          
-          @if (project()?.state === 'implementing') {
-            <div class="implementation-progress">
-              <div class="progress-header">
-                <span class="progress-label">{{ "HOME.IMPLEMENTATION_PROGRESS" | translate }}</span>
-                <span class="progress-percentage">{{ project()?.implementationPercentage || 0 }}%</span>
-              </div>
-              <ion-progress-bar 
-                [value]="(project()?.implementationPercentage || 0) / 100" 
-                color="primary"
-                class="progress-bar">
-              </ion-progress-bar>
-            </div>
+          @if (project()?.scope?.place) {
+          <ion-chip color="secondary" class="location-chip">
+            <ion-icon name="location-outline" slot="start"></ion-icon>
+            {{ project()?.scope?.place }}
+          </ion-chip>
           }
-          
-          @if (project()?.state === 'done') {
-            <div class="project-completed-message">
-              <ion-icon name="checkmark-circle" color="success" size="large"></ion-icon>
-              <p>{{ 'PROJECT.COMPLETED_MESSAGE' | translate }}</p>
-            </div>
-          }
-          
-          @if (project()?.media?.length) {
-            <div class="project-media">
-              <div class="media-grid">
-                @for (media of project()?.media; track media.id) {
-                  <div class="media-item">
-                    <div class="media-preview">
-                      @if (media.type === 'image') {
-                        <img [src]="media.url" [alt]="media.caption" class="media-image">
-                      } @else if (media.type === 'video') {
-                        <div class="video-thumbnail">
-                          <video [src]="media.url" class="media-video"></video>
-                          <div class="play-overlay">
-                            <ion-icon name="play-circle" size="large"></ion-icon>
-                          </div>
-                        </div>
-                      }
-                    </div>
-                    <div class="media-info">
-                    </div>
+          <ion-chip
+            [color]="getStateColor(project()?.state || 'building')"
+            class="state-chip"
+          >
+            <ion-icon
+              [name]="getStateIcon(project()?.state || 'building')"
+            ></ion-icon>
+            {{ getStateLabel(project()?.state || "building") | translate }}
+          </ion-chip>
+        </div>
+
+        <!-- Project Title -->
+        <div class="project-title-line">
+          <h1 class="project-title">{{ project()?.title }}</h1>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content class="project-body">
+        <p class="project-description">{{ project()?.description }}</p>
+
+        @if (project()?.state === 'implementing') {
+        <div class="implementation-progress">
+          <div class="progress-header">
+            <span class="progress-label">{{
+              "HOME.IMPLEMENTATION_PROGRESS" | translate
+            }}</span>
+            <span class="progress-percentage"
+              >{{ project()?.implementationPercentage || 0 }}%</span
+            >
+          </div>
+          <ion-progress-bar
+            [value]="(project()?.implementationPercentage || 0) / 100"
+            color="primary"
+            class="progress-bar"
+          >
+          </ion-progress-bar>
+        </div>
+        } @if (project()?.state === 'done') {
+        <div class="project-completed-message">
+          <ion-icon
+            name="checkmark-circle"
+            color="success"
+            size="large"
+          ></ion-icon>
+          <p>{{ "PROJECT.COMPLETED_MESSAGE" | translate }}</p>
+        </div>
+        } @if (project()?.media?.length) {
+        <div class="project-media">
+          <div class="media-grid">
+            @for (media of project()?.media; track media.id) {
+            <div class="media-item">
+              <div class="media-preview">
+                @if (media.type === 'image') {
+                <img
+                  [src]="media.url"
+                  [alt]="media.caption"
+                  class="media-image"
+                />
+                } @else if (media.type === 'video') {
+                <div class="video-thumbnail">
+                  <video [src]="media.url" class="media-video"></video>
+                  <div class="play-overlay">
+                    <ion-icon name="play-circle" size="large"></ion-icon>
                   </div>
-                }
-              </div>
-            </div>
-          }
-          
-          @if (project()?.needs && (project()?.needs?.length || 0) > 0) {
-            <div class="project-needs">
-              <ul class="needs-list">
-                @for (need of project()?.needs || []; track need.name) {
-                  <li>
-                    <ion-icon 
-                      [name]="getNeedIcon(need)" 
-                      [color]="getNeedIconColor(need)"
-                      class="need-icon">
-                    </ion-icon>
-                    {{ need.name }}
-                  </li>
-                }
-              </ul>
-            </div>
-          }
-
-          <div class="info-row">
-            <div class="info-content">
-              <div class="members-summary" (click)="toggleMembers()">
-                <span>{{ getMembersSummary() }}</span>
-                <ion-icon 
-                  [name]="membersExpanded() ? 'chevron-up' : 'chevron-down'" 
-                  class="expand-icon">
-                </ion-icon>
-              </div>
-            </div>
-          </div>
-
-        </ion-card-content>
-      </ion-card>
-
-      <!-- Collapsible Members Section -->
-      @if (membersExpanded()) {
-        <ion-card class="members-section">
-          <ion-card-content>
-            <!-- Creator -->
-            <div class="member-item creator">
-              <app-user-avatar
-                [user]="getCreatorData()"
-                [variant]="'creator'"
-                [avatarSize]="'small'"
-                [showRole]="true"
-                [clickable]="true"
-                [showProjectSummary]="true">
-              </app-user-avatar>
-            </div>
-
-            <!-- Accepted Collaborators -->
-            @for (collaborator of project()?.collaborators || []; track collaborator.uid) {
-              <div class="member-item collaborator">
-                <app-user-avatar
-                  [user]="getCollaboratorData(collaborator)"
-                  [variant]="'collaborator'"
-                  [avatarSize]="'small'"
-                  [showRole]="true"
-                  [clickable]="true"
-                  [showProjectSummary]="true">
-                </app-user-avatar>
-              </div>
-            }
-          </ion-card-content>
-        </ion-card>
-      }
-
-      <!-- Sections Section - Only show when there are chapters -->
-      @if (project()?.chapters && (project()?.chapters?.length || 0) > 0) {
-        <ion-card class="chapters-section">
-          <ion-card-header>
-            <ion-card-title>{{ 'CHAPTERS.TITLE' | translate }}</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            @for (chapter of project()?.chapters || []; track chapter.id) {
-              <div class="chapter-item">
-                <div class="chapter-content">
-                  @if (chapter.title) {
-                    <h4 class="chapter-title-display">{{ chapter.title }}</h4>
-                  }
-                  <p class="chapter-description">{{ chapter.description }}</p>
                 </div>
-
-                <!-- Section Media -->
-                @if ((chapter.media || []).length > 0) {
-                  <div class="chapter-media">
-                    <div class="media-grid">
-                      @for (media of chapter.media || []; track media.id) {
-                        <div class="media-item">
-                          <div class="media-preview">
-                            @if (media.type === 'image') {
-                              <img [src]="media.url" [alt]="media.caption" class="media-image">
-                            } @else if (media.type === 'video') {
-                              <div class="video-thumbnail">
-                                <video [src]="media.url" class="media-video"></video>
-                                <div class="play-overlay">
-                                  <ion-icon name="play-circle" size="large"></ion-icon>
-                                </div>
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  </div>
                 }
               </div>
+              <div class="media-info"></div>
+            </div>
             }
-          </ion-card-content>
-        </ion-card>
-      }
-    </div>
+          </div>
+        </div>
+        } @if (project()?.needs && (project()?.needs?.length || 0) > 0) {
+        <div class="project-needs">
+          <ul class="needs-list">
+            @for (need of project()?.needs || []; track need.name) {
+            <li>
+              <ion-icon
+                [name]="getNeedIcon(need)"
+                [color]="getNeedIconColor(need)"
+                class="need-icon"
+              >
+              </ion-icon>
+              {{ need.name }}
+            </li>
+            }
+          </ul>
+        </div>
+        }
+
+        <div class="info-row">
+          <div class="info-content">
+            <div class="members-summary" (click)="toggleMembers()">
+              <span>{{ getMembersSummary() }}</span>
+              <ion-icon
+                [name]="membersExpanded() ? 'chevron-up' : 'chevron-down'"
+                class="expand-icon"
+              >
+              </ion-icon>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Collapsible Members Section -->
+    @if (membersExpanded()) {
+    <ion-card class="members-section">
+      <ion-card-content>
+        <!-- Creator -->
+        <div class="member-item creator">
+          <app-user-avatar
+            [user]="getCreatorData()"
+            [variant]="'creator'"
+            [avatarSize]="'small'"
+            [showRole]="true"
+            [clickable]="true"
+            [showProjectSummary]="true"
+          >
+          </app-user-avatar>
+        </div>
+
+        <!-- Accepted Collaborators -->
+        @for (collaborator of project()?.collaborators || []; track
+        collaborator.uid) {
+        <div class="member-item collaborator">
+          <app-user-avatar
+            [user]="getCollaboratorData(collaborator)"
+            [variant]="'collaborator'"
+            [avatarSize]="'small'"
+            [showRole]="true"
+            [clickable]="true"
+            [showProjectSummary]="true"
+          >
+          </app-user-avatar>
+        </div>
+        }
+      </ion-card-content>
+    </ion-card>
+    }
+
+    <!-- Sections Section - Only show when there are chapters -->
+    @if (project()?.chapters && (project()?.chapters?.length || 0) > 0) {
+    <ion-card class="chapters-section">
+      <ion-card-header>
+        <ion-card-title>{{ "CHAPTERS.TITLE" | translate }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        @for (chapter of project()?.chapters || []; track chapter.id) {
+        <div class="chapter-item">
+          <div class="chapter-content">
+            @if (chapter.title) {
+            <h4 class="chapter-title-display">{{ chapter.title }}</h4>
+            }
+            <p class="chapter-description">{{ chapter.description }}</p>
+          </div>
+
+          <!-- Section Media -->
+          @if ((chapter.media || []).length > 0) {
+          <div class="chapter-media">
+            <div class="media-grid">
+              @for (media of chapter.media || []; track media.id) {
+              <div class="media-item">
+                <div class="media-preview">
+                  @if (media.type === 'image') {
+                  <img
+                    [src]="media.url"
+                    [alt]="media.caption"
+                    class="media-image"
+                  />
+                  } @else if (media.type === 'video') {
+                  <div class="video-thumbnail">
+                    <video [src]="media.url" class="media-video"></video>
+                    <div class="play-overlay">
+                      <ion-icon name="play-circle" size="large"></ion-icon>
+                    </div>
+                  </div>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </ion-card-content>
+    </ion-card>
+    }
+  </div>
   } @else {
-    <div class="error-container">
-      <ion-icon name="alert-circle-outline" size="large" color="danger"></ion-icon>
-      <h2>{{ 'COMMON.ERROR' | translate }}</h2>
-      <p>{{ 'COMMON.PROJECT_NOT_FOUND' | translate }}</p>
-    </div>
+  <div class="error-container">
+    <ion-icon
+      name="alert-circle-outline"
+      size="large"
+      color="danger"
+    ></ion-icon>
+    <h2>{{ "COMMON.ERROR" | translate }}</h2>
+    <p>{{ "COMMON.PROJECT_NOT_FOUND" | translate }}</p>
+  </div>
   }
 </ion-content>
