@@ -111,6 +111,11 @@ export class ProjectsService {
     return this._hasLoadedProjects();
   }
 
+  // Force refresh of real-time listeners without querying Firebase
+  public forceRefreshRealTimeListeners(): void {
+    this.firebaseQueryService.forceRefreshListeners();
+  }
+
   // Lazy load scope listeners only when needed
   private ensureScopeListener(scope: string): void {
     const listenerKey = `scope_${scope}`;

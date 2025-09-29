@@ -457,6 +457,15 @@ export class FirebaseQueryService {
     this.cleanupAllListeners();
   }
 
+  // Force refresh of real-time listeners without querying Firebase
+  forceRefreshListeners(): void {
+    const currentFilter = this._currentFilter();
+    if (currentFilter) {
+      // Re-setup the real-time listener with the same filter
+      this.setupRealTimeListener(currentFilter);
+    }
+  }
+
   setCurrentFilter(filter: FilterOptions): void {
     this._currentFilter.set(filter);
   }

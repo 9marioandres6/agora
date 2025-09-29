@@ -144,6 +144,10 @@ export class HomePage implements OnInit, ViewWillEnter {
     } else {
       // Just update the current scope without querying Firebase
       this.currentScope.set(selectedScope);
+      
+      // Force refresh real-time listeners to ensure we have the latest data
+      // This ensures changes made in project pages are reflected immediately
+      this.projectsService.forceRefreshRealTimeListeners();
     }
   }
 
