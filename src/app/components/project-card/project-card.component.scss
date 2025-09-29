@@ -285,50 +285,6 @@
 
   }
 
-  .project-footer {
-    padding: 6px;
-
-    .footer-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      > div {
-        display: flex;
-        gap: 8px;
-      }
-
-      .vote-button {
-        font-size: 12px;
-        --padding-start: 6px;
-        --padding-end: 10px;
-        --color: var(--ion-color-medium);
-        --color-hover: var(--ion-color-dark);
-        --background: transparent;
-        --background-hover: var(--ion-color-light);
-        --border-color: var(--ion-color-medium);
-        --border-color-hover: var(--ion-color-dark);
-        
-        &.button-solid {
-          --background: var(--ion-color-medium);
-          --background-hover: var(--ion-color-dark);
-          --color: white;
-          --color-hover: white;
-        }
-      }
-
-      .collaborators-button,
-      .comments-button {
-        font-size: 12px;
-        --padding-start: 4px;
-        --padding-end: 4px;
-        --color: var(--ion-color-medium);
-        --color-hover: var(--ion-color-dark);
-        --background: transparent;
-        --background-hover: var(--ion-color-light);
-      }
-    }
-  }
 
   .comments-container,
   .collaborators-container {

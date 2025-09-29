@@ -7,13 +7,14 @@ import { Project, Need, Scope } from '../../services/models/project.models';
 import { AuthService } from '../../services/auth.service';
 import { UserSearchService } from '../../services/user-search.service';
 import { UserAvatarComponent, UserAvatarData } from '../user-avatar/user-avatar.component';
+import { ProjectFooterComponent } from '../project-footer/project-footer.component';
 
 @Component({
   selector: 'app-project-card',
   templateUrl: './project-card.component.html',
   styleUrls: ['./project-card.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, TranslateModule, UserAvatarComponent]
+  imports: [CommonModule, IonicModule, FormsModule, TranslateModule, UserAvatarComponent, ProjectFooterComponent]
 })
 export class ProjectCardComponent implements OnInit {
   private authService = inject(AuthService);
@@ -247,57 +248,11 @@ export class ProjectCardComponent implements OnInit {
 
 
 
-  isUserSupported(project: Project): boolean {
-    const currentUser = this.user;
-    if (!currentUser?.uid) return false;
-    return project.supports?.includes(currentUser.uid) || false;
-  }
-
-  isUserOpposed(project: Project): boolean {
-    const currentUser = this.user;
-    if (!currentUser?.uid) return false;
-    return project.opposes?.includes(currentUser.uid) || false;
-  }
-
-  isUserVerified(project: Project): boolean {
-    const currentUser = this.user;
-    if (!currentUser?.uid) return false;
-    return project.verifies?.includes(currentUser.uid) || false;
-  }
-
-  isUserFollowing(project: Project): boolean {
-    const currentUser = this.user;
-    if (!currentUser?.uid) return false;
-    return project.followers?.includes(currentUser.uid) || false;
-  }
 
   onProjectCardClick() {
     this.onProjectClick.emit(this.project());
   }
 
-  onSupportButtonClick(event: Event) {
-    this.onSupportClick.emit({ projectId: this.project().id!, event });
-  }
-
-  onOpposeButtonClick(event: Event) {
-    this.onOpposeClick.emit({ projectId: this.project().id!, event });
-  }
-
-  onVerifyButtonClick(event: Event) {
-    this.onVerifyClick.emit({ projectId: this.project().id!, event });
-  }
-
-  onFollowButtonClick(event: Event) {
-    this.onFollowClick.emit({ projectId: this.project().id!, event });
-  }
-
-  onCommentsButtonClick(event: Event) {
-    this.onCommentsToggle.emit({ projectId: this.project().id!, event });
-  }
-
-  onCollaboratorsButtonClick(event: Event) {
-    this.onCollaboratorsToggle.emit({ projectId: this.project().id!, event });
-  }
 
   onCommentKeydown(event: Event) {
     const keyboardEvent = event as KeyboardEvent;
