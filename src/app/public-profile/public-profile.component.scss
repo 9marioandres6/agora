@@ -117,7 +117,7 @@
   margin: 0;
   
   ion-card-content {
-    padding: 20px !important;
+    padding: 12px !important;
   }
   
   ion-card-header {
@@ -141,7 +141,7 @@
       
       thead {
         th {
-          padding: 12px 8px;
+          padding: 8px 4px;
           text-align: center;
           font-weight: 600;
           color: var(--app-text);
@@ -153,7 +153,7 @@
           }
           
           &.state-header {
-            min-width: 120px;
+            min-width: 80px;
           }
         }
       }
@@ -167,7 +167,7 @@
           }
           
           td {
-            padding: 12px 8px;
+            padding: 8px 4px;
             vertical-align: top;
             
             &.role-cell {
@@ -188,15 +188,15 @@
               
               .project-count {
                 display: inline-block;
-                padding: 8px 16px;
+                padding: 6px 12px;
                 background: var(--app-input-background);
-                border-radius: 20px;
+                border-radius: 16px;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                font-size: 16px;
+                font-size: 14px;
                 font-weight: 600;
                 color: var(--app-text);
-                min-width: 40px;
+                min-width: 32px;
                 text-align: center;
                 
                 &:hover {

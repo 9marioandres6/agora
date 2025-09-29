@@ -68,14 +68,20 @@
                 <thead>
                   <tr>
                     <th class="role-header">{{ 'PROFILE.ROLE' | translate }}</th>
-                    <th class="state-header">{{ 'HOME.STATE_BUILDING' | translate }}</th>
-                    <th class="state-header">{{ 'HOME.STATE_IMPLEMENTING' | translate }}</th>
-                    <th class="state-header">{{ 'HOME.STATE_DONE' | translate }}</th>
+                    <th class="state-header">
+                      <ion-icon name="construct" size="small"></ion-icon>
+                    </th>
+                    <th class="state-header">
+                      <ion-icon name="build" size="small"></ion-icon>
+                    </th>
+                    <th class="state-header">
+                      <ion-icon name="checkmark-circle" size="small"></ion-icon>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr class="role-row">
-                    <td class="role-cell creator-role">{{ 'HOME.CREATOR' | translate }}</td>
+                    <td class="role-cell creator-role">{{ 'PROFILE.AS_CREATOR' | translate }}</td>
                     <td class="state-cell">
                       <div class="project-count" (click)="navigateToProjectsByState('creator', 'building')">
                         {{ getCreatedProjectsByState('building').length }}
@@ -93,7 +99,7 @@
                     </td>
                   </tr>
                   <tr class="role-row">
-                    <td class="role-cell collaborator-role">{{ 'HOME.COLLABORATORS' | translate }}</td>
+                    <td class="role-cell collaborator-role">{{ 'PROFILE.AS_COLLABORATOR' | translate }}</td>
                     <td class="state-cell">
                       <div class="project-count" (click)="navigateToProjectsByState('collaborator', 'building')">
                         {{ getCollaboratedProjectsByState('building').length }}

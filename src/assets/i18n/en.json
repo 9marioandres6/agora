@@ -158,6 +158,8 @@
     "EMAIL_READONLY": "Email cannot be changed",
     "AUTH_REQUIRED": "Authentication Required",
     "AUTH_REQUIRED_MESSAGE": "Please log in to edit your profile",
+    "AS_CREATOR": "As creator",
+    "AS_COLLABORATOR": "As collaborator",
     "LOCATION": "Location",
     "LOCATION_DETAILS": "Location Details",
     "CITY": "City",
