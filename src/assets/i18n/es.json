@@ -209,7 +209,7 @@
     "MEDIA_UPLOAD_ERROR": "Error al subir multimedia",
     "MEDIA_DELETE_SUCCESS": "Multimedia eliminada exitosamente",
     "MEDIA_DELETE_ERROR": "Error al eliminar multimedia",
-    "SEND_PROJECT": "Enviar",
+    "SEND_PROJECT": "Crear",
     "AUTH_REQUIRED": "Autenticación Requerida",
     "AUTH_REQUIRED_MESSAGE": "Por favor inicia sesión para crear nuevos elementos",
     "COLLABORATORS": "Colaboradores",

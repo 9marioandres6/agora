@@ -209,7 +209,7 @@
     "MEDIA_UPLOAD_ERROR": "Error uploading media",
     "MEDIA_DELETE_SUCCESS": "Media deleted successfully",
     "MEDIA_DELETE_ERROR": "Error deleting media",
-    "SEND_PROJECT": "Send",
+    "SEND_PROJECT": "Create",
     "AUTH_REQUIRED": "Authentication Required",
     "AUTH_REQUIRED_MESSAGE": "Please log in to create new items",
     "COLLABORATORS": "Collaborators",
