@@ -46,10 +46,7 @@ export class ThemeService {
     } else {
       document.body.classList.remove('dark');
       document.body.classList.add('light-theme');
-    }    
-    document.body.style.display = 'none';
-    document.body.offsetHeight; // Trigger reflow
-    document.body.style.display = '';    
+    }
   }
 
   toggleTheme(): void {
