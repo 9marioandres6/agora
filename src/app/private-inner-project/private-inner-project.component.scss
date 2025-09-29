@@ -177,8 +177,6 @@
 }
 
 .info-row {
-  margin-bottom: 1rem;
-
   .info-content {
     width: 100%;
     display: flex;
@@ -612,8 +610,6 @@
 .chapter-item {
   border: none;
   border-radius: 0;
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
   background: transparent;
   transition: none;
 
@@ -655,7 +651,6 @@
   }
 
   .chapter-content {
-    margin-bottom: 1.5rem;
 
     .chapter-title-display {
       color: var(--app-text);

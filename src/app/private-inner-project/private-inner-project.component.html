@@ -372,12 +372,6 @@
           @for (chapter of project()?.chapters || []; track chapter.id; let i = $index) {
             <div class="chapter-item" [class.clickable]="!isEditingChapter(chapter.id)" (click)="!isEditingChapter(chapter.id) ? editChapter(chapter) : null">
               <div class="chapter-header">
-                <div class="chapter-title">
-                  @if (chapter.title) {
-                    <h3>{{ chapter.title }}</h3>
-                  }
-                  <p class="chapter-subtitle">{{ 'CHAPTERS.CHAPTER' | translate }} {{ i + 1 }}</p>
-                </div>
                 <div class="chapter-actions">
                   @if (isEditingChapter(chapter.id)) {
                     <ion-button fill="clear" size="small" color="success" (click)="saveChapter(); $event.stopPropagation()">
