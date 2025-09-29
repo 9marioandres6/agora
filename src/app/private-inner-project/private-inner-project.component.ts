@@ -1349,7 +1349,8 @@ export class PrivateInnerProjectComponent implements OnDestroy {
   }
 
   private getRequiredSupportThreshold(scope: string): number {
-    switch (scope) {
+    return 0;
+/*     switch (scope) {
       case 'grupal':
         return 0; // Immediate access for small group projects
       case 'local':
@@ -1362,7 +1363,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
         return 500; // International validation
       default:
         return 0;
-    }
+    } */
   }
 
   getNeedsUnlockStatus(): { current: number; required: number; progress: number; unlocked: boolean } {
