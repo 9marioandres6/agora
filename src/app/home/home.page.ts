@@ -123,18 +123,33 @@ export class HomePage implements OnInit, ViewWillEnter {
     const selectedScope = this.filterStateService.getSelectedScope();
     const previousScope = this.currentScope();
     
-    // Load projects immediately without waiting for location
+    // Update current scope
     this.currentScope.set(selectedScope);
     
-    // Start loading projects immediately
-    if (selectedScope !== 'all') {
-      await this.projectsService.setFilteredProjects(selectedScope);
-    } else {
-      await this.projectsService.resetFilteredProjects();
-    }
+    // Always load user location first to get the most current location
+    await this.loadUserLocation();
     
-    // Load user location in the background (non-blocking)
-    this.loadUserLocationInBackground();
+    // Get the current location after loading
+    const currentLocation = this.locationService.userLocation().userLocation;
+    
+    // Check if we need to query Firebase
+    const shouldQueryFirebase = this.shouldQueryFirebase(selectedScope, previousScope, currentLocation);
+    
+    if (shouldQueryFirebase) {
+      // Update filter state with current values
+      this.filterStateService.setSelectedScope(selectedScope);
+      if (currentLocation) {
+        this.filterStateService.setLastLocation(currentLocation);
+      }
+      this.filterStateService.updateLastQueryTime();
+      
+      // Load projects only if filters have changed
+      if (selectedScope !== 'all') {
+        await this.projectsService.setFilteredProjects(selectedScope);
+      } else {
+        await this.projectsService.resetFilteredProjects();
+      }
+    }
   }
 
   private shouldQueryFirebase(selectedScope: string, previousScope: string, currentLocation: any): boolean {
@@ -147,16 +162,30 @@ export class HomePage implements OnInit, ViewWillEnter {
     const hasFilteredProjects = this.projectsService.hasFilteredProjectsLoaded();
     const scopeChanged = previousScope !== selectedScope;
     const locationChanged = this.filterStateService.hasLocationChanged(currentLocation);
-    const lastQueryTime = this.filterStateService.getLastQueryTime();
-    const timeSinceLastQuery = Date.now() - lastQueryTime;
-    const shouldRefreshByTime = timeSinceLastQuery > 5 * 60 * 1000; // 5 minutes
+    const anyFilterChanged = this.filterStateService.hasAnyFilterChanged();
     
-    // Don't query if we have projects and nothing relevant has changed
-    if (hasFilteredProjects && !scopeChanged && !locationChanged && !shouldRefreshByTime) {
-      return false;
+    // Always query if no projects are loaded
+    if (!hasFilteredProjects) {
+      return true;
     }
     
-    return true;
+    // Query if scope changed
+    if (scopeChanged) {
+      return true;
+    }
+    
+    // Query if location changed (important for local/national filtering)
+    if (locationChanged) {
+      return true;
+    }
+    
+    // Query if any other filter changed or it's been a while
+    if (anyFilterChanged) {
+      return true;
+    }
+    
+    // Don't query if nothing has changed
+    return false;
   }
 
   navigateToFilterPage() {
@@ -206,40 +235,6 @@ export class HomePage implements OnInit, ViewWillEnter {
     }
   }
 
-  private async loadUserLocationInBackground() {
-    try {
-      const currentUser = this.user();
-      if (currentUser) {
-        // Use centralized location service
-        const userLocation = await this.locationService.loadUserLocation(this.userSearchService, currentUser);
-        
-        if (userLocation) {
-          // If we have coordinates but no address, get the address using the existing service
-          if (userLocation.latitude && userLocation.longitude && !userLocation.address) {
-            const locationWithAddress = await this.locationService.getLocationWithAddress();
-            if (locationWithAddress) {
-              this.locationService.setUserLocation(locationWithAddress);
-            }
-          }
-          
-          // Always check for location change when loading user location
-          await this.checkForLocationChange();
-          
-          // Refresh projects with new location data if it changed
-          const currentLocation = this.locationService.userLocation().userLocation;
-          if (currentLocation) {
-            this.filterStateService.setLastLocation(currentLocation);
-            await this.projectsService.refreshProjectsWithCurrentLocation();
-          }
-        } else {
-          await this.requestLocationAccess();
-        }
-      }
-    } catch (error) {
-      console.error('Error loading user location in background:', error);
-      // Don't show error to user for background loading
-    }
-  }
 
   async requestLocationAccess() {
     try {
@@ -273,6 +268,9 @@ export class HomePage implements OnInit, ViewWillEnter {
     // Force refresh by querying Firebase again
     const selectedScope = this.filterStateService.getSelectedScope();
     this.currentScope.set(selectedScope);
+    
+    // Update filter state to force refresh
+    this.filterStateService.updateLastQueryTime();
     
     if (selectedScope !== 'all') {
       await this.projectsService.setFilteredProjects(selectedScope);

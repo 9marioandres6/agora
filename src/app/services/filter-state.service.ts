@@ -78,6 +78,28 @@ export class FilterStateService {
     );
   }
 
+  hasFiltersChanged(currentScope: string, currentLocation: LocationData | null): boolean {
+    const lastScope = this._selectedScope();
+    const lastLocation = this._lastLocation();
+    
+    // Check if scope has changed
+    const scopeChanged = lastScope !== currentScope;
+    
+    // Check if location has changed
+    const locationChanged = this.hasLocationChanged(currentLocation);
+    
+    return scopeChanged || locationChanged;
+  }
+
+  hasAnyFilterChanged(): boolean {
+    const currentScope = this._selectedScope();
+    const lastQueryTime = this._lastQueryTime();
+    const timeSinceLastQuery = Date.now() - lastQueryTime;
+    const shouldRefreshByTime = timeSinceLastQuery > 5 * 60 * 1000; // 5 minutes
+    
+    return lastQueryTime === 0 || shouldRefreshByTime;
+  }
+
   resetFilters() {
     this._selectedScope.set('all');
     this._filterOptions.set({

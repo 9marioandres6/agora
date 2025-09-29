@@ -54,6 +54,7 @@
             <div class="add-need-section">
               <ion-input 
                 [(ngModel)]="newNeedText"
+                name="newNeedText"
                 placeholder="{{ 'NEW_ITEM.NEED_PLACEHOLDER' | translate }}"
                 (keyup.enter)="addNewNeed()"
                 class="new-need-input">
