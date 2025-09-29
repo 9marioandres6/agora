@@ -30,6 +30,10 @@ export class AuthService {
 
   constructor() {
     this.loadingService.setAuthLoading(true);
+    
+    // Check for session storage issues on mobile
+    this.checkSessionStorageAvailability();
+    
     this.initializeAuth();
     
     effect(() => {
@@ -72,7 +76,19 @@ export class AuthService {
       }
     });
 
-    this.handleRedirectResult();
+    // Handle redirect result with better error handling
+    try {
+      await this.handleRedirectResult();
+    } catch (error) {
+      console.warn('Error in auth initialization:', error);
+      // Don't let redirect errors break the auth flow
+      this.authState.update(state => ({
+        ...state,
+        loading: false,
+        error: null
+      }));
+      this.loadingService.setAuthLoading(false);
+    }
   }
 
   private async handleRedirectResult() {
@@ -105,11 +121,22 @@ export class AuthService {
       }
     } catch (error: any) {
       console.error('Error handling redirect result:', error);
-      this.authState.update(state => ({
-        ...state,
-        error: error.message,
-        loading: false
-      }));
+      
+      // Handle specific session storage errors
+      if (error.message && error.message.includes('sessionStorage')) {
+        console.warn('Session storage error detected, clearing auth state and continuing...');
+        this.authState.update(state => ({
+          ...state,
+          error: null, // Don't show session storage errors to user
+          loading: false
+        }));
+      } else {
+        this.authState.update(state => ({
+          ...state,
+          error: error.message,
+          loading: false
+        }));
+      }
       this.loadingService.setAuthLoading(false);
     }
   }
@@ -236,5 +263,48 @@ export class AuthService {
 
   clearError() {
     this.authState.update(state => ({ ...state, error: null }));
+  }
+
+  // Check if session storage is available and working
+  private checkSessionStorageAvailability() {
+    try {
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        // Test session storage
+        const testKey = 'auth_test_' + Date.now();
+        sessionStorage.setItem(testKey, 'test');
+        sessionStorage.removeItem(testKey);
+      }
+    } catch (error) {
+      console.warn('Session storage not available, clearing auth state:', error);
+      this.clearSessionStorage();
+    }
+  }
+
+  // Method to clear session storage and reset auth state
+  clearSessionStorage() {
+    try {
+      // Clear Firebase auth persistence
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        // Clear only Firebase-related session storage
+        const keys = Object.keys(sessionStorage);
+        keys.forEach(key => {
+          if (key.includes('firebase') || key.includes('auth')) {
+            sessionStorage.removeItem(key);
+          }
+        });
+      }
+      
+      // Reset auth state
+      this.authState.update(state => ({
+        ...state,
+        user: null,
+        loading: false,
+        error: null
+      }));
+      
+      this.loadingService.setAuthLoading(false);
+    } catch (error) {
+      console.warn('Error clearing session storage:', error);
+    }
   }
 }
