@@ -17,8 +17,6 @@
     <div class="container">
       <!-- Information Section -->
       <ion-card class="project-info">
-        <ion-card-header>
-        </ion-card-header>
         <ion-card-content>
           <div class="info-row">
             <div class="info-content">
@@ -26,7 +24,8 @@
                 <ion-input 
                   [ngModel]="editingProject().title || project()?.title || ''" 
                   (ngModelChange)="updateProjectField('title', $event)"
-                  placeholder="{{ 'PROJECT.TITLE_PLACEHOLDER' | translate }}">
+                  placeholder="{{ 'PROJECT.TITLE_PLACEHOLDER' | translate }}"
+                  class="title-input">
                 </ion-input>
               } @else {
                 <span>{{ project()?.title }}</span>
@@ -62,7 +61,9 @@
                   [ngModel]="editingProject().description || project()?.description || ''" 
                   (ngModelChange)="updateProjectField('description', $event)"
                   placeholder="{{ 'PROJECT.DESCRIPTION_PLACEHOLDER' | translate }}" 
-                  rows="3">
+                  rows="8"
+                  autoGrow="true"
+                  class="description-textarea">
                 </ion-textarea>
               } @else {
                 <span>{{ project()?.description }}</span>
