@@ -10,13 +10,14 @@ export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
+    // Use minimal configuration to avoid NavigatorLockAcquireTimeoutError
     this.supabase = createClient(
       environment.supabase.url,
       environment.supabase.anonKey,
       {
         auth: {
-          persistSession: true,
-          autoRefreshToken: true,
+          persistSession: false,
+          autoRefreshToken: false,
           detectSessionInUrl: false
         },
         global: {
@@ -27,6 +28,7 @@ export class SupabaseService {
       }
     );
   }
+
 
   async uploadFile(
     file: File, 
@@ -63,17 +65,6 @@ export class SupabaseService {
         url: urlData.publicUrl
       };
     } catch (error) {
-      // Handle NavigatorLockAcquireTimeoutError gracefully
-      if (error instanceof Error && error.name === 'NavigatorLockAcquireTimeoutError') {
-        // Retry once after a short delay
-        await new Promise(resolve => setTimeout(resolve, 100));
-        try {
-          return await this.uploadFile(file, bucket, folder);
-        } catch (retryError) {
-          console.error('Error in uploadFile retry:', retryError);
-          return null;
-        }
-      }
       console.error('Error in uploadFile:', error);
       return null;
     }
@@ -92,17 +83,6 @@ export class SupabaseService {
 
       return true;
     } catch (error) {
-      // Handle NavigatorLockAcquireTimeoutError gracefully
-      if (error instanceof Error && error.name === 'NavigatorLockAcquireTimeoutError') {
-        // Retry once after a short delay
-        await new Promise(resolve => setTimeout(resolve, 100));
-        try {
-          return await this.deleteFile(path, bucket);
-        } catch (retryError) {
-          console.error('Error in deleteFile retry:', retryError);
-          return false;
-        }
-      }
       console.error('Error in deleteFile:', error);
       return false;
     }
