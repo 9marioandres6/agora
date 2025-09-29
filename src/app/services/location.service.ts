@@ -108,8 +108,8 @@ export class LocationService {
             resolve(false);
           },
           {
-            enableHighAccuracy: true,
-            timeout: 10000,
+            enableHighAccuracy: false, // Faster on mobile
+            timeout: 5000, // Reduced timeout
             maximumAge: 300000
           }
         );
@@ -182,8 +182,8 @@ export class LocationService {
             resolve(null);
           },
           {
-            enableHighAccuracy: true,
-            timeout: 10000,
+            enableHighAccuracy: false, // Faster on mobile
+            timeout: 5000, // Reduced timeout
             maximumAge: 300000
           }
         );

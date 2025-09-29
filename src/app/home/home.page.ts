@@ -120,35 +120,21 @@ export class HomePage implements OnInit, ViewWillEnter {
   async ionViewWillEnter() {
     this.checkConnection();
     
-    // Always load user location to get the latest from database
-    // The location service will maintain the current state if it's newer
-    await this.loadUserLocation();
-    
     const selectedScope = this.filterStateService.getSelectedScope();
     const previousScope = this.currentScope();
-    const currentLocation = this.locationService.userLocation().userLocation;
     
-    // Only query Firebase if we don't have filtered projects loaded or if something relevant changed
-    if (this.shouldQueryFirebase(selectedScope, previousScope, currentLocation)) {
-      this.currentScope.set(selectedScope);
-      
-      // Update the filter state service with current location and query time
-      this.filterStateService.setLastLocation(currentLocation);
-      this.filterStateService.updateLastQueryTime();
-      
-      if (selectedScope !== 'all') {
-        await this.projectsService.setFilteredProjects(selectedScope);
-      } else {
-        await this.projectsService.resetFilteredProjects();
-      }
+    // Load projects immediately without waiting for location
+    this.currentScope.set(selectedScope);
+    
+    // Start loading projects immediately
+    if (selectedScope !== 'all') {
+      await this.projectsService.setFilteredProjects(selectedScope);
     } else {
-      // Just update the current scope without querying Firebase
-      this.currentScope.set(selectedScope);
-      
-      // Force refresh real-time listeners to ensure we have the latest data
-      // This ensures changes made in project pages are reflected immediately
-      this.projectsService.forceRefreshRealTimeListeners();
+      await this.projectsService.resetFilteredProjects();
     }
+    
+    // Load user location in the background (non-blocking)
+    this.loadUserLocationInBackground();
   }
 
   private shouldQueryFirebase(selectedScope: string, previousScope: string, currentLocation: any): boolean {
@@ -217,6 +203,41 @@ export class HomePage implements OnInit, ViewWillEnter {
     } catch (error) {
       console.error('Error loading user location:', error);
       await this.requestLocationAccess();
+    }
+  }
+
+  private async loadUserLocationInBackground() {
+    try {
+      const currentUser = this.user();
+      if (currentUser) {
+        // Use centralized location service
+        const userLocation = await this.locationService.loadUserLocation(this.userSearchService, currentUser);
+        
+        if (userLocation) {
+          // If we have coordinates but no address, get the address using the existing service
+          if (userLocation.latitude && userLocation.longitude && !userLocation.address) {
+            const locationWithAddress = await this.locationService.getLocationWithAddress();
+            if (locationWithAddress) {
+              this.locationService.setUserLocation(locationWithAddress);
+            }
+          }
+          
+          // Always check for location change when loading user location
+          await this.checkForLocationChange();
+          
+          // Refresh projects with new location data if it changed
+          const currentLocation = this.locationService.userLocation().userLocation;
+          if (currentLocation) {
+            this.filterStateService.setLastLocation(currentLocation);
+            await this.projectsService.refreshProjectsWithCurrentLocation();
+          }
+        } else {
+          await this.requestLocationAccess();
+        }
+      }
+    } catch (error) {
+      console.error('Error loading user location in background:', error);
+      // Don't show error to user for background loading
     }
   }
 

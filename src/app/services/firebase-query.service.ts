@@ -160,8 +160,10 @@ export class FirebaseQueryService {
         );
       }
 
-      // Apply location-based filtering
-      projects = this.filterProjectsByLocation(projects, filterOptions.location);
+      // Apply location-based filtering only if location is available
+      if (filterOptions.location) {
+        projects = this.filterProjectsByLocation(projects, filterOptions.location);
+      }
 
       const processedProjects = this.processProjects(projects);
       const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -391,8 +393,10 @@ export class FirebaseQueryService {
           });
         }
 
-        // Apply location-based filtering
-        projects = this.filterProjectsByLocation(projects, filterOptions.location);
+        // Apply location-based filtering only if location is available
+        if (filterOptions.location) {
+          projects = this.filterProjectsByLocation(projects, filterOptions.location);
+        }
 
         const processedProjects = this.processProjects(projects);
         this._filteredProjects.set(processedProjects);
@@ -638,6 +642,7 @@ export class FirebaseQueryService {
       });
 
       // Apply location-based filtering - get user location from location service
+      // If location is not available yet, skip filtering to show projects immediately
       let userLocation: LocationData | undefined;
       try {
         const locationService = inject(LocationService);
@@ -645,7 +650,11 @@ export class FirebaseQueryService {
       } catch (error) {
         console.warn('Could not get user location for filtering:', error);
       }
-      allProjects = this.filterProjectsByLocation(allProjects, userLocation);
+      
+      // Only apply location filtering if we have location data
+      if (userLocation) {
+        allProjects = this.filterProjectsByLocation(allProjects, userLocation);
+      }
 
       // Limit to requested amount
       allProjects = allProjects.slice(0, limitCount);
