@@ -162,10 +162,7 @@
     }
 
     .project-stats {
-      padding: 6px 60px;
-      background: var(--app-background-secondary);
-      border-radius: 8px;
-      border: 1px solid var(--app-border-color);
+      padding: 6px 100px;
 
       .stat-item {
         display: flex;
@@ -177,10 +174,18 @@
           margin-bottom: 0;
         }
 
+        .stat-icon {
+          font-size: 16px;
+          margin-right: 8px;
+          flex-shrink: 0;
+          color: var(--app-text-secondary);
+        }
+
         .stat-label {
           font-size: 14px;
           font-weight: 500;
           color: var(--app-text-secondary);
+          flex: 1;
         }
 
         .stat-value {
