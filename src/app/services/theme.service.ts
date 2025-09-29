@@ -27,6 +27,8 @@ export class ThemeService {
       this.setTheme(savedTheme);
     } else if (prefersDark) {
       this.setTheme('dark');
+    } else {
+      this.setTheme('light');
     }
   }
 
