@@ -1182,7 +1182,7 @@ export class PrivateInnerProjectComponent implements OnDestroy {
 
 
   getNeedIcon(need: Need): string {
-    return need.state === 'obtained' ? 'checkmark-circle' : 'time';
+    return need.state === 'obtained' ? 'checkmark' : 'time';
   }
 
   getNeedIconColor(need: Need): string {

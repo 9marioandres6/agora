@@ -209,10 +209,7 @@
                           [color]="getNeedChipColor(need)"
                           class="need-chip clickable"
                           (click)="toggleNeedState(need)">
-                          <ion-icon 
-                            [name]="getNeedIcon(need)" 
-                            [color]="getNeedIconColor(need)">
-                          </ion-icon>
+                          <ion-icon [name]="getNeedIcon(need)"></ion-icon>
                           <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
                         </ion-chip>
                         <span class="need-text">{{ need.name }}</span>
@@ -249,10 +246,7 @@
                         <ion-chip 
                           [color]="getNeedChipColor(need)"
                           class="need-chip-readonly">
-                          <ion-icon 
-                            [name]="getNeedIcon(need)" 
-                            [color]="getNeedIconColor(need)">
-                          </ion-icon>
+                          <ion-icon [name]="getNeedIcon(need)"></ion-icon>
                           <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
                         </ion-chip>
                         <span class="need-text-readonly">{{ need.name }}</span>
