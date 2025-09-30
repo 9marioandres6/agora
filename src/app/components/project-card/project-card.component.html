@@ -64,19 +64,6 @@
       </div>
       }
     </div>
-    } @if (project().state === 'done') {
-    <div class="project-stats">
-      <div class="stat-item">
-        <ion-icon name="add" class="stat-icon support-icon"></ion-icon>
-        <span class="stat-label">{{ "HOME.SUPPORT" | translate }}:</span>
-        <span class="stat-value">{{ (project().supports || []).length }}</span>
-      </div>
-      <div class="stat-item">
-        <ion-icon name="remove" class="stat-icon oppose-icon"></ion-icon>
-        <span class="stat-label">{{ "HOME.OPPOSE" | translate }}:</span>
-        <span class="stat-value">{{ (project().opposes || []).length }}</span>
-      </div>
-    </div>
     } @if (project().state === 'implementing') {
     <div class="implementation-progress">
       <div class="progress-header">

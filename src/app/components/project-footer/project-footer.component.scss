@@ -23,6 +23,10 @@
       --border-color: var(--ion-color-medium);
       --border-color-hover: var(--ion-color-dark);
       
+      ion-icon {
+        margin-right: 1px;
+      }
+      
       &.button-solid {
         --background: var(--ion-color-medium);
         --background-hover: var(--ion-color-dark);
