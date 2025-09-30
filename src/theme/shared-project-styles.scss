@@ -1,0 +1,60 @@
+.project-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--app-text);
+  line-height: 1.5;
+  letter-spacing: 1px;
+}
+
+.project-description {
+  margin: 4px 1px 20px 1px !important;
+  padding-left: 8px;
+  border-left: 1px solid var(--ion-color-primary);
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--app-text);
+}
+
+.chapter-description {
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+  color: var(--app-text);
+  margin: 0 !important;
+}
+
+.implementation-progress {
+  margin: 6px;
+  padding: 12px;
+  background: var(--app-background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--app-border-color);
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .progress-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--app-text-secondary);
+    }
+
+    .progress-percentage {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--app-text);
+    }
+  }
+
+  .progress-bar {
+    height: 2px;
+    border-radius: 1px;
+    --background: var(--app-border-color);
+    --progress-background: var(--ion-color-primary);
+  }
+}

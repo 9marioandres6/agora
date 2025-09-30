@@ -15,7 +15,7 @@
   }
 
   .project-header {
-    padding: 16px;
+    padding: 0;
     cursor: pointer;
     transition: background-color 0.2s ease;
     display: flex;
@@ -64,15 +64,9 @@
     .project-title-section {
       order: 2;
       text-align: left;
-      margin-bottom: 4px;
+      margin: 6px;
       
       .project-title {
-        margin: 0;
-        font-size: 16px;
-        font-weight: 400;
-        color: var(--app-text);
-        line-height: 1.5;
-        letter-spacing: 1px;
         display: -webkit-box;
         line-clamp: 2;
         -webkit-line-clamp: 2;
@@ -110,54 +104,12 @@
     padding: 0 !important;
 
     .project-description {
-      margin: 4px 1px 20px 1px;
-      padding-left: 8px;
-      border-left: 1px solid var(--ion-color-primary);
-      font-size: 14px;
-      line-height: 1.8;
-      font-weight: 400;
-      letter-spacing: 0.05em;
-      color: var(--app-text);
       display: -webkit-box;
       line-clamp: 10;
       -webkit-line-clamp: 10;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .implementation-progress {
-      margin: 6px;
-      padding: 12px;
-      background: var(--app-background-secondary);
-      border-radius: 8px;
-      border: 1px solid var(--app-border-color);
-
-      .progress-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-
-        .progress-label {
-          font-size: 14px;
-          font-weight: 500;
-          color: var(--app-text-secondary);
-        }
-
-        .progress-percentage {
-          font-size: 16px;
-          font-weight: 600;
-          color: var(--app-text);
-        }
-      }
-
-      .progress-bar {
-        height: 2px;
-        border-radius: 1px;
-        --background: var(--app-border-color);
-        --progress-background: var(--ion-color-primary);
-      }
     }
 
     .project-stats {

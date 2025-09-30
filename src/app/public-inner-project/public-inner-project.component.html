@@ -130,9 +130,6 @@
     <!-- Sections Section - Only show when there are chapters -->
     @if (project()?.chapters && (project()?.chapters?.length || 0) > 0) {
     <ion-card class="chapters-section">
-      <ion-card-header>
-        <ion-card-title>{{ "CHAPTERS.TITLE" | translate }}</ion-card-title>
-      </ion-card-header>
       <ion-card-content>
         @for (chapter of project()?.chapters || []; track chapter.id) {
         <div class="chapter-item">

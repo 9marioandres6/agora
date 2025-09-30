@@ -487,18 +487,19 @@ ion-toolbar app-theme-toggle ion-button {
 
 /* Global Card Styling */
 ion-card-header {
-  padding: 8px !important;
+  padding: 0;
   background: transparent !important;
   border-bottom: none !important;
 }
 
 ion-card-content {
-  padding: 8px !important;
+  padding: 0 !important;
   background: transparent !important;
 }
 
 /* You can add global styles to this file, and also import other style files */
 @import "theme/variables.scss";
+@import "theme/shared-project-styles.scss";
 
 /* Messages modal styling */
 .messages-modal {
