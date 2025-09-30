@@ -2,12 +2,12 @@
   <ion-card-header class="project-header" (click)="onProjectCardClick()">
     <div class="project-title-section">
       <h3 class="project-title">
-        <ion-icon [name]="getScopeIcon(project().scope || '')" class="title-scope-icon"></ion-icon>
-        <span class="title-text">{{ project().title }}</span>
-        <ion-icon [name]="getStateIcon(project().state || 'building')" class="title-state-icon"></ion-icon>
         @if (totalProjectStats()) {
           <span class="creator-stats">{{ totalProjectStats() }}</span>
         }
+        <span class="title-text">{{ project().title }}</span>
+        <ion-icon [name]="getScopeIcon(project().scope || '')" class="title-scope-icon"></ion-icon>
+        <ion-icon [name]="getStateIcon(project().state || 'building')" class="title-state-icon"></ion-icon>
       </h3>
     </div>
   </ion-card-header>
