@@ -137,6 +137,16 @@
     "SHOW_MORE": "Show more",
     "SHOW_LESS": "Show less"
   },
+  "TIME": {
+    "ONE_DAY_AGO": "1 day ago",
+    "DAYS_AGO": "{{days}} days ago",
+    "ONE_WEEK_AGO": "1 week ago",
+    "WEEKS_AGO": "{{weeks}} weeks ago",
+    "ONE_MONTH_AGO": "1 month ago",
+    "MONTHS_AGO": "{{months}} months ago",
+    "ONE_YEAR_AGO": "1 year ago",
+    "YEARS_AGO": "{{years}} years ago"
+  },
   "SETTINGS": {
     "GENERAL": "General",
     "LANGUAGE": "Language",
@@ -303,6 +313,8 @@
     "NEW_PROJECT": "New Project",
     "PROJECT_DESCRIPTION_PLACEHOLDER": "Project description goes here.",
         "CREATOR": "Creator",
+    "CREATED": "Created",
+    "LAST_UPDATED": "Last updated",
     "COLLABORATOR": "Collaborator",
     "ACCEPT": "Accept",
     "REJECT": "Reject",

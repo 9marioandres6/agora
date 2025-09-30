@@ -2,7 +2,7 @@ import { Component, input, output, signal, inject, OnInit } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Project, Need, Scope } from '../../services/models/project.models';
 import { AuthService } from '../../services/auth.service';
 import { UserSearchService } from '../../services/user-search.service';
@@ -19,6 +19,7 @@ import { ProjectFooterComponent } from '../project-footer/project-footer.compone
 export class ProjectCardComponent implements OnInit {
   private authService = inject(AuthService);
   private userSearchService = inject(UserSearchService);
+  private translateService = inject(TranslateService);
 
   project = input.required<Project>();
   expandedComments = input<boolean>(false);
@@ -296,5 +297,53 @@ export class ProjectCardComponent implements OnInit {
 
   hasMoreNeeds() {
     return (this.project().needs || []).length > 3;
+  }
+
+  getFormattedDate(): string {
+    const project = this.project();
+    if (!project) return '';
+    
+    const createdDate = new Date(project.createdAt);
+    const now = new Date();
+    
+    // Format creation date
+    const createdDiffTime = Math.abs(now.getTime() - createdDate.getTime());
+    const createdDiffDays = Math.ceil(createdDiffTime / (1000 * 60 * 60 * 24));
+    const createdFormatted = this.formatRelativeTime(createdDiffDays);
+    
+    // Format last update date if available
+    if (project.updatedAt && project.updatedAt !== project.createdAt) {
+      const updatedDate = new Date(project.updatedAt);
+      const updatedDiffTime = Math.abs(now.getTime() - updatedDate.getTime());
+      const updatedDiffDays = Math.ceil(updatedDiffTime / (1000 * 60 * 60 * 24));
+      const updatedFormatted = this.formatRelativeTime(updatedDiffDays);
+      
+      return `${this.translateService.instant('PROJECT.CREATED')} ${createdFormatted} - ${this.translateService.instant('PROJECT.LAST_UPDATED')} ${updatedFormatted}`;
+    }
+    
+    return `${this.translateService.instant('PROJECT.CREATED')} ${createdFormatted}`;
+  }
+
+  private formatRelativeTime(diffDays: number): string {
+    if (diffDays === 1) {
+      return this.translateService.instant('TIME.ONE_DAY_AGO');
+    } else if (diffDays < 7) {
+      return this.translateService.instant('TIME.DAYS_AGO', { days: diffDays });
+    } else if (diffDays < 30) {
+      const weeks = Math.floor(diffDays / 7);
+      return weeks === 1 ? 
+        this.translateService.instant('TIME.ONE_WEEK_AGO') : 
+        this.translateService.instant('TIME.WEEKS_AGO', { weeks });
+    } else if (diffDays < 365) {
+      const months = Math.floor(diffDays / 30);
+      return months === 1 ? 
+        this.translateService.instant('TIME.ONE_MONTH_AGO') : 
+        this.translateService.instant('TIME.MONTHS_AGO', { months });
+    } else {
+      const years = Math.floor(diffDays / 365);
+      return years === 1 ? 
+        this.translateService.instant('TIME.ONE_YEAR_AGO') : 
+        this.translateService.instant('TIME.YEARS_AGO', { years });
+    }
   }
 }

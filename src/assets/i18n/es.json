@@ -137,6 +137,16 @@
     "SHOW_MORE": "Mostrar más",
     "SHOW_LESS": "Mostrar menos"
   },
+  "TIME": {
+    "ONE_DAY_AGO": "hace 1 día",
+    "DAYS_AGO": "hace {{days}} días",
+    "ONE_WEEK_AGO": "hace 1 semana",
+    "WEEKS_AGO": "hace {{weeks}} semanas",
+    "ONE_MONTH_AGO": "hace 1 mes",
+    "MONTHS_AGO": "hace {{months}} meses",
+    "ONE_YEAR_AGO": "hace 1 año",
+    "YEARS_AGO": "hace {{years}} años"
+  },
   "SETTINGS": {
     "GENERAL": "General",
     "LANGUAGE": "Idioma",
@@ -303,6 +313,8 @@
     "NEW_PROJECT": "Nuevo Proyecto",
     "PROJECT_DESCRIPTION_PLACEHOLDER": "La descripción del proyecto va aquí.",
     "CREATOR": "Creador",
+    "CREATED": "Creado",
+    "LAST_UPDATED": "Última actualización",
     "COLLABORATOR": "Colaborador",
     "ACCEPT": "Aceptar",
     "REJECT": "Rechazar",
