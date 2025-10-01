@@ -10,7 +10,12 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  @if (userLocationData()) {
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner></ion-spinner>
+      <p>{{ 'COMMON.LOADING' | translate }}</p>
+    </div>
+  } @else if (userLocationData()) {
     <div class="location-details">
       <!-- Location Details -->
       <ion-card>
@@ -22,7 +27,7 @@
             <ion-icon name="location" slot="start" color="primary"></ion-icon>
             <ion-label>
               <h2>{{ 'HOME.FULL_ADDRESS' | translate }}</h2>
-              <p>{{ userLocationData()?.address || 'Location not available' }}</p>
+              <p>{{ userLocationData()?.address || userLocationData()?.city + ', ' + userLocationData()?.country }}</p>
             </ion-label>
           </ion-item>
           
@@ -32,6 +37,16 @@
               <ion-label>
                 <h3>{{ 'HOME.CITY' | translate }}</h3>
                 <p>{{ userLocationData()?.city }}</p>
+              </ion-label>
+            </ion-item>
+          }
+
+          @if (userLocationData()?.state) {
+            <ion-item>
+              <ion-icon name="map" slot="start" color="medium"></ion-icon>
+              <ion-label>
+                <h3>{{ 'HOME.STATE' | translate }}</h3>
+                <p>{{ userLocationData()?.state }}</p>
               </ion-label>
             </ion-item>
           }
@@ -45,89 +60,54 @@
               </ion-label>
             </ion-item>
           }
-          
-          @if (userLocationData()?.latitude && userLocationData()?.longitude) {
-            <ion-item>
-              <ion-icon name="map" slot="start" color="medium"></ion-icon>
-              <ion-label>
-                <h3>{{ 'HOME.COORDINATES' | translate }}</h3>
-                <p>{{ userLocationData()?.latitude }}, {{ userLocationData()?.longitude }}</p>
-              </ion-label>
-            </ion-item>
-          }
         </ion-card-content>
       </ion-card>
 
-      <!-- Change Address Section -->
-      @if (!showLocationChangeFlag()) {
-        <div class="change-address-section">
+      <!-- Change Location Section -->
+      @if (!showChangeLocation()) {
+        <div class="change-location-section">
           <ion-button 
-            (click)="toggleAddressInput()" 
-            fill="clear" 
-            size="small"
-            class="change-address-btn">
+            (click)="toggleChangeLocation()" 
+            expand="block"
+            fill="outline"
+            class="change-location-btn">
             <ion-icon name="create-outline" slot="start"></ion-icon>
             {{ 'HOME.CHANGE_ADDRESS' | translate }}
           </ion-button>
-            
-            @if (showAddressInput()) {
-              <div class="address-input-container">
-                <ion-item>
-                  <ion-icon name="search" slot="start"></ion-icon>
-                  <ion-input
-                    #addressInput
-                    [(ngModel)]="newAddress"
-                    [placeholder]="'HOME.SEARCH_NEW_ADDRESS' | translate"
-                    class="address-input">
-                  </ion-input>
-                </ion-item>
-                <div class="address-input-actions">
-                  <ion-button 
-                    (click)="cancelAddressChange()" 
-                    fill="clear" 
-                    size="small">
-                    {{ 'COMMON.CANCEL' | translate }}
-                  </ion-button>
-                  <ion-button 
-                    (click)="saveNewAddress()" 
-                    fill="solid" 
-                    size="small"
-                    [disabled]="!newAddress.trim()">
-                    {{ 'COMMON.SAVE' | translate }}
-                  </ion-button>
-                </div>
-              </div>
-            }
         </div>
       }
 
-      <!-- Location Change Section -->
-      @if (showLocationChangeFlag() && newLocation) {
-        <ion-card class="location-change-card">
+      <!-- Change Location Form -->
+      @if (showChangeLocation()) {
+        <ion-card>
           <ion-card-header>
-            <ion-card-title>{{ 'HOME.LOCATION_CHANGE_TITLE' | translate }}</ion-card-title>
-            <ion-card-subtitle>{{ 'HOME.LOCATION_CHANGE_MESSAGE' | translate }}</ion-card-subtitle>
+            <ion-card-title>{{ 'HOME.CHANGE_ADDRESS' | translate }}</ion-card-title>
           </ion-card-header>
           <ion-card-content>
-            <div class="location-comparison">
-              <div class="current-location">
-                <strong>{{ 'HOME.CURRENT_LOCATION' | translate }}:</strong>
-                <span>{{ newLocation.city }}, {{ newLocation.country }}</span>
-              </div>
-              <div class="saved-location">
-                <strong>{{ 'HOME.SAVED_LOCATION' | translate }}:</strong>
-                <span>{{ userLocationData()?.city }}, {{ userLocationData()?.country }}</span>
-              </div>
-            </div>
-            <div class="notification-actions">
-              <ion-button fill="outline" (click)="dismissLocationChange()">
-                {{ 'COMMON.DISMISS' | translate }}
+            <ion-item>
+              <ion-icon name="search" slot="start"></ion-icon>
+              <ion-input
+                #addressInput
+                [(ngModel)]="newAddress"
+                [placeholder]="'HOME.SEARCH_NEW_ADDRESS' | translate"
+                type="text"
+                class="address-input">
+              </ion-input>
+            </ion-item>
+
+            <div class="form-actions">
+              <ion-button 
+                (click)="cancelChange()" 
+                fill="clear" 
+                expand="block">
+                {{ 'COMMON.CANCEL' | translate }}
               </ion-button>
-              <ion-button fill="outline" (click)="chooseLocation()">
-                {{ 'HOME.CHOOSE_LOCATION' | translate }}
-              </ion-button>
-              <ion-button fill="solid" (click)="acceptLocationChange()">
-                {{ 'COMMON.UPDATE' | translate }}
+              <ion-button 
+                (click)="saveNewLocation()" 
+                expand="block"
+                [disabled]="isSaving() || !newAddress.trim()">
+                <ion-spinner *ngIf="isSaving()" name="crescent"></ion-spinner>
+                <span *ngIf="!isSaving()">{{ 'COMMON.SAVE' | translate }}</span>
               </ion-button>
             </div>
           </ion-card-content>
@@ -139,10 +119,7 @@
       <ion-icon name="location-outline" size="large" color="medium"></ion-icon>
       <h2>{{ 'HOME.NO_LOCATION' | translate }}</h2>
       <p>{{ 'HOME.NO_LOCATION_MESSAGE' | translate }}</p>
-      <ion-button (click)="requestLocationAccess()" fill="outline">
-        <ion-icon name="location" slot="start"></ion-icon>
-        {{ 'HOME.ENABLE_LOCATION' | translate }}
-      </ion-button>
     </div>
   }
 </ion-content>
+

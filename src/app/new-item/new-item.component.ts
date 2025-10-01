@@ -11,10 +11,7 @@ import { UserSearchService, UserProfile } from '../services/user-search.service'
 import { ScopeSelectorModalComponent } from '../scope-selector-modal/scope-selector-modal.component';
 import { ScopeOption } from './models/new-item.models';
 import { Need, Media, Collaborator, Scope } from '../services/models/project.models';
-import { LocationService } from '../services/location.service';
 import { ImageFallbackDirective } from '../directives/image-fallback.directive';
-
-declare var google: any;
 
 @Component({
   selector: 'app-new-item',
@@ -36,7 +33,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   private supabaseService = inject(SupabaseService);
   private userSearchService = inject(UserSearchService);
   private toastCtrl = inject(ToastController);
-  private locationService = inject(LocationService);
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
@@ -327,13 +323,7 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   }
 
   scopeSelected() {
-    setTimeout(() => {
-      if (this.scope === 'local' && this.cityInput) {
-        this.autocompleteCity();
-      } else if (this.scope === 'national' && this.countryInput) {
-        this.autocompleteCountry();
-      }
-    }, 300);
+    // Scope selected - no autocomplete needed since we removed Google Maps
   }
 
   openScopeSelector() {
@@ -349,70 +339,28 @@ export class NewItemComponent implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     await this.loadUserLocation();
-    this.initializeLocationData();
   }
-
-  autocompleteCity() {
-    this.cityInput.getInputElement().then((element) => {
-      const autocomplete = new google.maps.places.Autocomplete(element, {
-        types: ['(cities)']
-      });
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        // Format as "City, Country"
-        const city = place.address_components?.find((component: any) => 
-          component.types.includes('locality')
-        )?.long_name || place.name;
-        const country = place.address_components?.find((component: any) => 
-          component.types.includes('country')
-        )?.long_name || '';
-        
-        this.selectedCity = country ? `${city}, ${country}` : place.name;
-      });
-    });
-  }
-
-  autocompleteCountry() {
-    this.countryInput.getInputElement().then((element) => {
-      const autocomplete = new google.maps.places.Autocomplete(element, {
-        types: ['country']
-      });
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        this.selectedCountry = place.name;
-      });
-    });
-  }
-
 
   async loadUserLocation() {
     try {
       const currentUser = this.user();
       if (currentUser) {
-        const location = this.locationService.userLocation().userLocation;
-        if (location) {
-          this.userLocation = location;
+        // Load user profile to get location from Firebase
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        if (userProfile?.location) {
+          this.selectedCity = userProfile.location.city || 'Córdoba Capital';
+          this.selectedCountry = userProfile.location.country || 'Argentina';
         } else {
-          await this.requestLocationAccess();
+          // Use default location
+          this.selectedCity = 'Córdoba Capital';
+          this.selectedCountry = 'Argentina';
         }
       }
     } catch (error) {
       console.error('Error loading user location:', error);
-      await this.requestLocationAccess();
-    }
-  }
-
-  async requestLocationAccess() {
-    try {
-      const hasPermission = await this.locationService.requestLocationPermission();
-      if (hasPermission) {
-        const locationData = await this.locationService.getLocationWithAddress();
-        if (locationData) {
-          this.userLocation = locationData;
-        }
-      }
-    } catch (error) {
-      console.error('Error requesting location access:', error);
+      // Use default location on error
+      this.selectedCity = 'Córdoba Capital';
+      this.selectedCountry = 'Argentina';
     }
   }
 
@@ -434,40 +382,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     await toast.present();
   }
 
-  async initializeLocationData() {
-    if (!this.userLocation?.city && !this.userLocation?.country) {
-      this.isLocationLoading = true;
-      try {
-        const locationWithAddress = await this.locationService.getLocationWithAddress();
-        if (locationWithAddress) {
-          this.selectedCity = locationWithAddress.city || '';
-          this.selectedCountry = locationWithAddress.country || '';
-        }
-      } catch (error) {
-        console.warn('Could not get location data:', error);
-      } finally {
-        this.isLocationLoading = false;
-      }
-    } else {
-      this.selectedCity = this.userLocation?.city || '';
-      this.selectedCountry = this.userLocation?.country || '';
-    }
-  }
-
-  async refreshLocation() {
-    this.isLocationLoading = true;
-    try {
-      const locationWithAddress = await this.locationService.getLocationWithAddress();
-      if (locationWithAddress) {
-        this.selectedCity = locationWithAddress.city || '';
-        this.selectedCountry = locationWithAddress.country || '';
-      }
-    } catch (error) {
-      await this.showToast('Could not get current location', 'warning');
-    } finally {
-      this.isLocationLoading = false;
-    }
-  }
 
   addNewNeed() {
     if (!this.newNeedText?.trim()) return;

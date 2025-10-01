@@ -1,60 +1,48 @@
-.location-details {
-  .location-change-card {
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  
+  ion-spinner {
     margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+  }
+}
+
+.location-details {
+  ion-card {
+    margin-bottom: 16px;
+  }
+  
+  ion-item {
+    --padding-start: 0;
     
-    .location-comparison {
-      margin-bottom: 16px;
-      
-      .current-location,
-      .saved-location {
-        margin-bottom: 8px;
-        
-        strong {
-          color: var(--ion-color-primary);
-        }
-      }
+    ion-icon {
+      margin-right: 16px;
     }
-    
-            .notification-actions {
-              display: flex;
-              gap: 8px;
-              justify-content: flex-end;
-              flex-wrap: wrap;
-              
-              ion-button {
-                flex: 1;
-                min-width: 100px;
-                max-width: 120px;
-              }
-            }
   }
 
-  .change-address-section {
+  .change-location-section {
     margin-top: 16px;
+    margin-bottom: 16px;
     
-    .change-address-btn {
-      --color: var(--ion-color-medium);
-      --color-hover: var(--ion-color-primary);
-      --background: transparent;
-      --background-hover: var(--app-primary-light);
-      border-radius: 8px;
+    .change-location-btn {
       margin: 0;
     }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
     
-    .address-input-container {
-      margin-top: 16px;
-      background: var(--app-card-background);
-      border: 1px solid var(--app-border-color);
-      border-radius: 8px;
-      padding: 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      
-      .address-input-actions {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        margin-top: 12px;
-      }
+    ion-button {
+      flex: 1;
     }
   }
 }
@@ -81,3 +69,4 @@
     color: var(--ion-color-medium);
   }
 }
+

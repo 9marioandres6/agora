@@ -7,7 +7,6 @@ import { LoadingService } from './loading.service';
 import { FirebaseQueryService, FilterOptions } from './firebase-query.service';
 import { FilterStateService } from './filter-state.service';
 import { UserSearchService } from './user-search.service';
-import { LocationData, LocationService } from './location.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +19,6 @@ export class ProjectsService {
   private firebaseQueryService = inject(FirebaseQueryService);
   private filterStateService = inject(FilterStateService);
   private userSearchService = inject(UserSearchService);
-  private locationService = inject(LocationService);
 
   // Reactive signals for real-time data
   private _projects = signal<Project[]>([]);
@@ -1260,18 +1258,9 @@ export class ProjectsService {
     // Clean up unused scope listeners to free up resources
     this.cleanupUnusedScopeListeners([scope]);
 
-    // Get user's SET location from location service (not profile or GPS location)
-    let userLocation: LocationData | undefined;
-    try {
-      userLocation = this.locationService.userLocation().userLocation || undefined;
-    } catch (error) {
-      console.warn('Could not get user location for filtering:', error);
-    }
-
     const filterOptions: FilterOptions = {
       scope,
-      userId: currentUser.uid,
-      location: userLocation
+      userId: currentUser.uid
     };
 
     try {
@@ -1323,22 +1312,13 @@ export class ProjectsService {
         return false;
       }
       
-      // Get user's SET location from location service (not profile or GPS location)
-      let userLocation: LocationData | undefined;
-      try {
-        userLocation = this.locationService.userLocation().userLocation || undefined;
-      } catch (error) {
-        console.warn('Could not get user location for filtering:', error);
-      }
-      
       // Set up the filter for 'all' scope if not already set
       const currentFilter = this.firebaseQueryService.currentFilter();
       if (!currentFilter || currentFilter.scope !== 'all') {
         // Set the current filter for 'all' scope
         this.firebaseQueryService.setCurrentFilter({
           scope: 'all',
-          userId: currentUser.uid,
-          location: userLocation
+          userId: currentUser.uid
         });
       }
       
@@ -1374,17 +1354,9 @@ export class ProjectsService {
       // Clean up any unused scope listeners
       this.cleanupUnusedScopeListeners(publicScopes);
       
-      // Get user's SET location from location service (not profile or GPS location)
-      let userLocation: LocationData | undefined;
-      try {
-        userLocation = this.locationService.userLocation().userLocation || undefined;
-      } catch (error) {
-        console.warn('Could not get user location for filtering:', error);
-      }
-      
       await this.firebaseQueryService.loadAllProjects(8, showLoading);
       this.firebaseQueryService.setupRealTimeListener(
-        { scope: 'all', userId: currentUser.uid, location: userLocation },
+        { scope: 'all', userId: currentUser.uid },
         () => {
           if (showLoading) {
             this.loadingService.setFilteredProjectsLoading(false);
@@ -1405,33 +1377,6 @@ export class ProjectsService {
     return this.firebaseQueryService.filteredProjects().length;
   }
 
-  public async refreshProjectsWithCurrentLocation(): Promise<void> {
-    const currentUser = this.authService.user();
-    if (!currentUser?.uid) return;
-
-    // Get current scope from filter state
-    const currentScope = this.filterStateService.getSelectedScope();
-    
-    try {
-      // Update the query time to indicate we're doing a fresh query
-      this.filterStateService.updateLastQueryTime();
-      
-      if (currentScope === 'all') {
-        await this.resetFilteredProjects(false); // Silent refresh - no loading spinner
-      } else {
-        await this.setFilteredProjects(currentScope, false); // Silent refresh - no loading spinner
-      }
-      
-      // Mark that we've loaded projects (this will be set by the callback, but set it here too for safety)
-      this._hasLoadedProjects.set(true);
-    } catch (error) {
-      console.error('Error refreshing projects with current location:', error);
-    }
-  }
-
-  public refreshUserLocation() {
-    // This is now handled by the FirebaseQueryService
-  }
 
 
   public getProjectsByState(state: 'building' | 'implementing' | 'done'): Project[] {

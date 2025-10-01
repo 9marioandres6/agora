@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Firestore, collection, query, where, getDocs, doc, setDoc, getDoc } from '@angular/fire/firestore';
+import { LocationData } from './models/auth.models';
 
 export interface UserProfile {
   uid: string;
@@ -8,6 +9,7 @@ export interface UserProfile {
   photoURL?: string;
   createdAt: string;
   updatedAt: string;
+  location?: LocationData;
   projectCounts?: {
     createdBuilding: number;
     createdImplementing: number;

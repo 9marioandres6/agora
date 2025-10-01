@@ -6,25 +6,11 @@
       </ion-button>
     </ion-buttons>
     
-    @if (isAuthenticated() && userLocation().userLocation) {
+    @if (isAuthenticated() && userLocation()) {
       <div class="location-container">
-        <div class="location-info" (click)="showLocationModal()">
-          @if (showLocationChangeFlag() && !locationChangeDismissed()) {
-            <ion-icon name="location" class="location-icon"></ion-icon>
-          }
+        <div class="location-info" (click)="navigateToLocation()">
+          <ion-icon name="location" class="location-icon"></ion-icon>
           <span class="location-text">{{ getFormattedAddress() }}</span>
-        </div>
-      </div>
-    } @else if (isAuthenticated() && isRequestingLocation()) {
-      <div class="location-container">
-        <div class="location-info location-requesting">
-          <span class="location-text">{{ 'AUTH.LOCATION_ACCESSING' | translate }}</span>
-        </div>
-      </div>
-    } @else if (isAuthenticated()) {
-      <div class="location-container">
-        <div class="location-info location-request" (click)="requestLocationAccess()">
-          <span class="location-text">{{ 'AUTH.LOCATION_CLICK_TO_ENABLE' | translate }}</span>
         </div>
       </div>
     } @else {

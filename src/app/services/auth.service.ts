@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AuthState } from './models/auth.models';
 import { LoadingService } from './loading.service';
 import { UserSearchService } from './user-search.service';
-import { LocationService, LocationData } from './location.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,6 @@ export class AuthService {
   private router = inject(Router);
   private loadingService = inject(LoadingService);
   private userSearchService = inject(UserSearchService);
-  private locationService = inject(LocationService);
   private googleProvider = new GoogleAuthProvider();
 
   private authState = signal<AuthState>({
@@ -141,17 +139,6 @@ export class AuthService {
     }
   }
 
-  private async getUserLocation(): Promise<LocationData | null> {
-    try {
-      const hasPermission = await this.locationService.requestLocationPermission();
-      if (hasPermission) {
-        return await this.locationService.getLocationWithAddress();
-      }
-    } catch (error) {
-      console.warn('Could not get user location:', error);
-    }
-    return null;
-  }
 
   async signInWithGoogle() {
     try {

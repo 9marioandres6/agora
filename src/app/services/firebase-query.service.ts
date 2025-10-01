@@ -16,13 +16,19 @@ import {
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { Project } from './models/project.models';
-import { LocationData, LocationService } from './location.service';
 import { UserSearchService } from './user-search.service';
+import { LocationData } from './models/auth.models';
+
+// Default location for users without a set location
+const DEFAULT_LOCATION = {
+  city: 'Córdoba Capital',
+  state: 'Córdoba',
+  country: 'Argentina'
+};
 
 export interface FilterOptions {
   scope: string;
   userId?: string;
-  location?: LocationData;
   searchTerm?: string;
   state?: 'building' | 'implementing' | 'done';
   status?: 'active' | 'completed' | 'cancelled';
@@ -160,10 +166,6 @@ export class FirebaseQueryService {
         );
       }
 
-      // Apply location-based filtering only if location is available
-      if (filterOptions.location) {
-        projects = this.filterProjectsByLocation(projects, filterOptions.location);
-      }
 
       const processedProjects = this.processProjects(projects);
       const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -270,8 +272,6 @@ export class FirebaseQueryService {
         );
       }
 
-      // Apply location-based filtering
-      newProjects = this.filterProjectsByLocation(newProjects, currentFilter.location);
 
       const processedNewProjects = this.processProjects(newProjects);
       const allProjects = [
@@ -393,10 +393,6 @@ export class FirebaseQueryService {
           });
         }
 
-        // Apply location-based filtering only if location is available
-        if (filterOptions.location) {
-          projects = this.filterProjectsByLocation(projects, filterOptions.location);
-        }
 
         const processedProjects = this.processProjects(projects);
         this._filteredProjects.set(processedProjects);
@@ -526,9 +522,20 @@ export class FirebaseQueryService {
     });
   }
 
-  private filterProjectsByLocation(projects: Project[], userLocation?: LocationData): Project[] {
-    if (!userLocation) {
-      return projects;
+  private async filterProjectsByLocation(projects: Project[], userId: string): Promise<Project[]> {
+    // Get user location from Firebase profile or use default
+    let userLocation = DEFAULT_LOCATION;
+    try {
+      const userProfile = await this.userSearchService.getUserProfile(userId);
+      if (userProfile?.location) {
+        userLocation = {
+          city: userProfile.location.city || DEFAULT_LOCATION.city,
+          state: userProfile.location.state || DEFAULT_LOCATION.state,
+          country: userProfile.location.country || DEFAULT_LOCATION.country
+        };
+      }
+    } catch (error) {
+      console.warn('Could not get user location from profile, using default:', error);
     }
 
     return projects.filter(project => {
@@ -641,20 +648,8 @@ export class FirebaseQueryService {
         return dateB.getTime() - dateA.getTime();
       });
 
-      // Apply location-based filtering - get user location from location service
-      // If location is not available yet, skip filtering to show projects immediately
-      let userLocation: LocationData | undefined;
-      try {
-        const locationService = inject(LocationService);
-        userLocation = locationService.userLocation().userLocation || undefined;
-      } catch (error) {
-        console.warn('Could not get user location for filtering:', error);
-      }
-      
-      // Only apply location filtering if we have location data
-      if (userLocation) {
-        allProjects = this.filterProjectsByLocation(allProjects, userLocation);
-      }
+      // Apply location-based filtering using user profile location or default
+      allProjects = await this.filterProjectsByLocation(allProjects, currentUser.uid);
 
       // Limit to requested amount
       allProjects = allProjects.slice(0, limitCount);

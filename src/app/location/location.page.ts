@@ -1,14 +1,11 @@
-import { Component, inject, signal, OnInit, computed, ViewChild } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, IonInput } from '@ionic/angular';
+import { IonicModule, NavController, ToastController, IonInput } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
-import { LocationService } from '../services/location.service';
 import { UserSearchService } from '../services/user-search.service';
-import { ProjectsService } from '../services/projects.service';
-import { FilterStateService } from '../services/filter-state.service';
-import { ActivatedRoute } from '@angular/router';
+import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 
 declare var google: any;
 
@@ -21,237 +18,73 @@ declare var google: any;
 })
 export class LocationPage implements OnInit {
   private authService = inject(AuthService);
-  private locationService = inject(LocationService);
   private userSearchService = inject(UserSearchService);
-  private projectsService = inject(ProjectsService);
-  private filterStateService = inject(FilterStateService);
   private navCtrl = inject(NavController);
-  private route = inject(ActivatedRoute);
+  private firestore = inject(Firestore);
+  private toastCtrl = inject(ToastController);
+
+  @ViewChild('addressInput', { static: false }) addressInput!: IonInput;
 
   user = this.authService.user;
   isAuthenticated = this.authService.isAuthenticated;
-  locationState = this.locationService.location;
   
-  userLocation = this.locationService.userLocation;
-  showLocationChangeFlag = signal(false);
-  newLocation: any = null;
-  locationChangeDismissed = signal(false);
-  private isGettingAddress = false;
-  private userProfileCache: any = null;
-
-  @ViewChild('addressInput', { static: false }) addressInput!: IonInput;
+  userLocation = signal<any>(null);
+  isLoading = signal(false);
+  showChangeLocation = signal(false);
+  isSaving = signal(false);
   
-  showAddressInputFlag = signal(false);
+  // New location input
   newAddress = '';
   selectedPlace: any = null;
 
   userLocationData = computed(() => {
-    return this.userLocation().userLocation || this.userProfileCache?.location || null;
+    return this.userLocation();
   });
 
-  showAddressInput = computed(() => this.showAddressInputFlag());
-
-  ngOnInit() {
-            // Check if we have navigation state data first
-            const navigationState = history.state;
-            if (navigationState && navigationState.userLocation) {
-              this.locationService.setUserLocation(navigationState.userLocation);
-              this.showLocationChangeFlag.set(navigationState.showLocationChangeFlag || false);
-              this.newLocation = navigationState.newLocation;
-              this.locationChangeDismissed.set(navigationState.locationChangeDismissed || false);
-            } else {
-              // If no navigation state or no user location, load from services
-              this.loadUserLocation();
-            }
+  async ngOnInit() {
+    await this.loadUserLocation();
   }
 
   async loadUserLocation() {
     try {
+      this.isLoading.set(true);
       const currentUser = this.user();
       if (currentUser) {
-        // First check if we have cached user profile
-        if (!this.userProfileCache) {
-          this.userProfileCache = await this.userSearchService.getUserProfile(currentUser.uid);
-        }
-        
-        if (this.userProfileCache?.location) {
-          this.locationService.setUserLocation(this.userProfileCache.location);
-          
-          // Only get address if we don't have it and we have coordinates
-          const currentLocation = this.userLocation().userLocation;
-          if (currentLocation?.latitude && currentLocation?.longitude && !currentLocation?.address) {
-            const locationWithAddress = await this.locationService.getLocationWithAddress();
-            if (locationWithAddress) {
-              this.locationService.setUserLocation(locationWithAddress);
-              // Update the cache
-              this.userProfileCache.location = locationWithAddress;
-            }
-          }
-          
-          // Always check for location change when loading user location
-          await this.checkForLocationChange();
+        const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
+        if (userProfile?.location) {
+          this.userLocation.set(userProfile.location);
         } else {
-          // If no saved location, check if location service has current location
-          const currentLocationState = this.locationState();
-          if (currentLocationState.location) {
-            this.locationService.setUserLocation(currentLocationState.location);
-          }
+          // Set default location
+          this.userLocation.set({
+            city: 'Córdoba Capital',
+            state: 'Córdoba',
+            country: 'Argentina'
+          });
         }
       }
     } catch (error) {
       console.error('Error loading user location:', error);
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
-  async requestLocationAccess() {
-    try {
-      const hasPermission = await this.locationService.requestLocationPermission();
-      if (hasPermission) {
-                const locationData = await this.locationService.getLocationWithAddress();
-                if (locationData) {
-                  this.locationService.setUserLocation(locationData);
-                  
-                  // Update cache
-                  if (this.userProfileCache) {
-                    this.userProfileCache.location = locationData;
-                  }
-                  
-                }
-      }
-    } catch (error) {
-      console.error('Error requesting location access:', error);
-    }
-  }
-
-  async checkForLocationChange() {
-    try {
-      if (this.locationChangeDismissed()) {
-        return;
-      }
-      
-      const currentLocation = await this.locationService.getLocationWithAddress();
-      const savedLocation = this.userLocation().userLocation;
-      
-      if (currentLocation && savedLocation) {
-        // Check if city has changed - normalize cities for comparison
-        const currentCity = (currentLocation.city || '').toLowerCase().trim();
-        const savedCity = (savedLocation.city || '').toLowerCase().trim();
-        
-        // Only show location change if cities are different and both are valid
-        if (currentCity && savedCity && currentCity !== savedCity) {
-          this.newLocation = currentLocation;
-          this.showLocationChangeFlag.set(true);
-        } else {
-          // If cities match, ensure the flag is false
-          this.showLocationChangeFlag.set(false);
-        }
-      }
-    } catch (error) {
-      console.error('Error checking for location change:', error);
-    }
-  }
-
-  async acceptLocationChange() {
-    // Store the new location before clearing it
-    const locationToAccept = this.newLocation;
+  toggleChangeLocation() {
+    const currentShow = this.showChangeLocation();
+    this.showChangeLocation.set(!currentShow);
     
-    // Hide the location change element immediately
-    this.showLocationChangeFlag.set(false);
-    this.newLocation = null;
-    this.locationChangeDismissed.set(true);
-    
-    try {
-      if (locationToAccept) {
-        this.locationService.setUserLocation(locationToAccept);
-        
-        // Update cache
-        if (this.userProfileCache) {
-          this.userProfileCache.location = locationToAccept;
-        }
-        
-        // Update filter state service to track location change
-        this.filterStateService.setLastLocation(locationToAccept);
-        
-        // Refresh projects with the new location
-        await this.projectsService.refreshProjectsWithCurrentLocation();
-      }
-    } catch (error) {
-      console.error('Error accepting location change:', error);
-    }
-  }
-
-  dismissLocationChange() {
-    this.showLocationChangeFlag.set(false);
-    this.newLocation = null;
-    this.locationChangeDismissed.set(true);
-  }
-
-  chooseLocation() {
-    // Hide the location change notification
-    this.showLocationChangeFlag.set(false);
-    this.newLocation = null;
-    this.locationChangeDismissed.set(true);
-    
-    // Show the address input to let user choose a different location
-    this.toggleAddressInput();
-  }
-
-  goBack() {
-    this.navCtrl.back();
-  }
-
-  toggleAddressInput() {
-    this.showAddressInputFlag.set(!this.showAddressInputFlag());
-    if (this.showAddressInputFlag()) {
-      // Initialize autocomplete after a short delay to ensure the input is rendered
+    if (!currentShow) {
+      // Initialize Google Places Autocomplete after view is ready
       setTimeout(() => {
         this.initializeAutocomplete();
       }, 100);
     }
   }
 
-  cancelAddressChange() {
-    this.showAddressInputFlag.set(false);
+  cancelChange() {
+    this.showChangeLocation.set(false);
     this.newAddress = '';
     this.selectedPlace = null;
-  }
-
-  async saveNewAddress() {
-    if (!this.selectedPlace || !this.newAddress.trim()) {
-      return;
-    }
-
-    try {
-      const place = this.selectedPlace;
-      const locationData = {
-        latitude: place.geometry.location.lat(),
-        longitude: place.geometry.location.lng(),
-        address: place.formatted_address,
-        city: this.extractAddressComponent(place, 'locality') || this.extractAddressComponent(place, 'administrative_area_level_2'),
-        state: this.extractAddressComponent(place, 'administrative_area_level_1'),
-        country: this.extractAddressComponent(place, 'country'),
-        accuracy: 0,
-        timestamp: Date.now()
-      };
-
-      this.locationService.setUserLocation(locationData);
-      
-      // Update cache
-      if (this.userProfileCache) {
-        this.userProfileCache.location = locationData;
-      }
-      
-      // Update filter state service to track location change
-      this.filterStateService.setLastLocation(locationData);
-      
-      // Close the input immediately
-      this.cancelAddressChange();
-
-      // Refresh projects with the new location
-      await this.projectsService.refreshProjectsWithCurrentLocation();
-    } catch (error) {
-      console.error('Error saving new address:', error);
-    }
   }
 
   private initializeAutocomplete() {
@@ -280,4 +113,65 @@ export class LocationPage implements OnInit {
     );
     return component?.long_name || '';
   }
+
+  async saveNewLocation() {
+    if (!this.selectedPlace || !this.newAddress.trim()) {
+      await this.showToast('Please select a location from the suggestions', 'warning');
+      return;
+    }
+
+    try {
+      this.isSaving.set(true);
+      const currentUser = this.user();
+      
+      if (currentUser) {
+        const place = this.selectedPlace;
+        const newLocation = {
+          latitude: place.geometry.location.lat(),
+          longitude: place.geometry.location.lng(),
+          address: place.formatted_address,
+          city: this.extractAddressComponent(place, 'locality') || this.extractAddressComponent(place, 'administrative_area_level_2'),
+          state: this.extractAddressComponent(place, 'administrative_area_level_1'),
+          country: this.extractAddressComponent(place, 'country'),
+          accuracy: 0,
+          timestamp: Date.now()
+        };
+
+        // Update in Firestore
+        const userRef = doc(this.firestore, `users/${currentUser.uid}`);
+        await updateDoc(userRef, {
+          location: newLocation,
+          updatedAt: new Date().toISOString()
+        });
+
+        // Update local state
+        this.userLocation.set(newLocation);
+        this.showChangeLocation.set(false);
+        this.newAddress = '';
+        this.selectedPlace = null;
+        
+        await this.showToast('Location updated successfully', 'success');
+      }
+    } catch (error) {
+      console.error('Error saving location:', error);
+      await this.showToast('Error updating location', 'danger');
+    } finally {
+      this.isSaving.set(false);
+    }
+  }
+
+  private async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      color,
+      position: 'bottom'
+    });
+    await toast.present();
+  }
+
+  goBack() {
+    this.navCtrl.back();
+  }
 }
+
