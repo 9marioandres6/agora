@@ -37,6 +37,16 @@ export class UserSearchService {
     return collection(this.firestore, 'users');
   }
 
+  // Method to clear cache for a specific user
+  clearUserCache(userId: string) {
+    this.userProfileCache.delete(userId);
+  }
+
+  // Method to clear entire cache
+  clearAllCache() {
+    this.userProfileCache.clear();
+  }
+
   async searchUsers(searchTerm: string): Promise<UserProfile[]> {
     if (!searchTerm.trim() || searchTerm.length < 2) {
       this._searchResults.set([]);

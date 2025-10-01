@@ -158,6 +158,9 @@ export class HomePage implements OnInit, ViewWillEnter {
   async ionViewWillEnter() {
     this.checkConnection();
     
+    // Reload user location every time we enter the page
+    await this.loadUserLocation();
+    
     const selectedScope = this.filterStateService.getSelectedScope();
     const previousScope = this.currentScope();
     

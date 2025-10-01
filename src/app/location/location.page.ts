@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, NavController, ToastController, IonInput } from '@ionic/angular';
+import { IonicModule, NavController, ToastController, IonInput, ViewWillEnter } from '@ionic/angular';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
@@ -16,7 +16,7 @@ declare var google: any;
   standalone: true,
   imports: [IonicModule, CommonModule, TranslateModule, FormsModule]
 })
-export class LocationPage implements OnInit {
+export class LocationPage implements OnInit, ViewWillEnter {
   private authService = inject(AuthService);
   private userSearchService = inject(UserSearchService);
   private navCtrl = inject(NavController);
@@ -42,6 +42,11 @@ export class LocationPage implements OnInit {
   });
 
   async ngOnInit() {
+    await this.loadUserLocation();
+  }
+
+  async ionViewWillEnter() {
+    // Reload location data every time the page is entered
     await this.loadUserLocation();
   }
 
@@ -143,6 +148,9 @@ export class LocationPage implements OnInit {
           location: newLocation,
           updatedAt: new Date().toISOString()
         });
+
+        // Clear the user cache so the next fetch gets fresh data
+        this.userSearchService.clearUserCache(currentUser.uid);
 
         // Update local state
         this.userLocation.set(newLocation);
