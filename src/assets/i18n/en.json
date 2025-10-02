@@ -191,6 +191,10 @@
   },
   "NEW_ITEM": {
     "CREATE_NEW": "Propose",
+    "STEP_1_TITLE": "Describe it",
+    "STEP_2_TITLE": "Requirements?",
+    "STEP_3_TITLE": "Set the cope",
+    "STEP_4_TITLE": "Add Media",
     "TITLE": "What",
     "TITLE_PLACEHOLDER": "Write here what you want to propose",
     "DESCRIPTION": "How",

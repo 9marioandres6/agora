@@ -38,6 +38,9 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   isAuthenticated = this.authService.isAuthenticated;
   isDark = signal(this.themeService.isDarkMode());
 
+  currentStep = 1;
+  totalSteps = 4;
+
   title = '';
   description = '';
   needs: Need[] = [];
@@ -382,6 +385,50 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     await toast.present();
   }
 
+  nextStep() {
+    if (!this.canProceedToNextStep()) {
+      return;
+    }
+    if (this.currentStep < this.totalSteps) {
+      this.currentStep++;
+    }
+  }
+
+  previousStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  canProceedToNextStep(): boolean {
+    switch (this.currentStep) {
+      case 1:
+        return this.title.trim().length > 0;
+      case 2:
+        return true;
+      case 3:
+        return this.scope !== '';
+      case 4:
+        return true;
+      default:
+        return true;
+    }
+  }
+
+  getStepTitle(): string {
+    switch (this.currentStep) {
+      case 1:
+        return 'NEW_ITEM.STEP_1_TITLE';
+      case 2:
+        return 'NEW_ITEM.STEP_2_TITLE';
+      case 3:
+        return 'NEW_ITEM.STEP_3_TITLE';
+      case 4:
+        return 'NEW_ITEM.STEP_4_TITLE';
+      default:
+        return '';
+    }
+  }
 
   addNewNeed() {
     if (!this.newNeedText?.trim()) return;
@@ -399,13 +446,10 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     
     // Clear the input
     this.newNeedText = '';
-    
-    this.showToast('Requirement added successfully', 'success');
   }
   
   removeNeed(index: number) {
     this.needs.splice(index, 1);
-    this.showToast('Requirement removed successfully', 'success');
   }
 
 }

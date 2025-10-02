@@ -191,6 +191,10 @@
   },
   "NEW_ITEM": {
     "CREATE_NEW": "Propone",
+    "STEP_1_TITLE": "Decrbíbelo",
+    "STEP_2_TITLE": "Requerimientos?",
+    "STEP_3_TITLE": "Define el alcance",
+    "STEP_4_TITLE": "Agrega Multimedia",
     "TITLE": "Qué",
     "TITLE_PLACEHOLDER": "Escribe aquí qué quieres proponer",
     "DESCRIPTION": "Cómo",

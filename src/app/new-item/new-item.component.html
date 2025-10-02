@@ -7,6 +7,21 @@
     </ion-buttons>
     <ion-title>{{ "NEW_ITEM.CREATE_NEW" | translate }}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <div class="step-indicator">
+      @for (step of [1, 2, 3, 4]; track step) {
+        <div class="step-item" [class.active]="currentStep === step" [class.completed]="currentStep > step">
+          <div class="step-circle">
+            @if (currentStep > step) {
+              <ion-icon name="checkmark"></ion-icon>
+            } @else {
+              {{ step }}
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
@@ -14,6 +29,7 @@
   <form class="new-item-form">
     <ion-card class="form-card">
       <ion-card-content>
+        @if (currentStep === 1) {
         <ion-item class="form-item">
           <ion-label position="stacked">{{
             "NEW_ITEM.TITLE" | translate
@@ -43,7 +59,9 @@
           >
           </ion-textarea>
         </ion-item>
+        }
 
+        @if (currentStep === 2) {
         <ion-item class="form-item">
           <ion-label position="stacked">{{
             "NEW_ITEM.WHAT_WE_NEED" | translate
@@ -94,7 +112,9 @@
             }
           </div>
         </ion-item>
+        }
 
+        @if (currentStep === 3) {
         <ion-item class="form-item">
           <ion-label position="stacked">{{
             "NEW_ITEM.SCOPE" | translate
@@ -265,7 +285,9 @@
           </div>
         </ion-item>
         }
+        }
 
+        @if (currentStep === 4) {
         <ion-item class="form-item">
           <ion-label position="stacked"
             >{{ "NEW_ITEM.MEDIA" | translate }} ({{
@@ -327,21 +349,45 @@
             }
           </div>
         </ion-item>
+        }
 
         <div class="form-actions">
-          <ion-button
-            expand="block"
-            (click)="saveItem()"
-            [disabled]="!title.trim() || !scope || isSaving"
-            [color]="isSaving ? 'medium' : 'primary'"
-            class="send-button"
-          >
-            {{
-              isSaving
-                ? ("COMMON.LOADING" | translate)
-                : ("NEW_ITEM.SEND_PROJECT" | translate)
-            }}
-          </ion-button>
+          <div class="navigation-buttons">
+            @if (currentStep > 1) {
+            <ion-button
+              fill="outline"
+              (click)="previousStep()"
+              class="nav-button"
+            >
+              <ion-icon name="arrow-back" slot="start"></ion-icon>
+              {{ "COMMON.PREVIOUS" | translate }}
+            </ion-button>
+            }
+
+            @if (currentStep < totalSteps) {
+            <ion-button
+              (click)="nextStep()"
+              [disabled]="!canProceedToNextStep()"
+              class="nav-button"
+            >
+              {{ "COMMON.NEXT" | translate }}
+              <ion-icon name="arrow-forward" slot="end"></ion-icon>
+            </ion-button>
+            } @else {
+            <ion-button
+              (click)="saveItem()"
+              [disabled]="!title.trim() || !scope || isSaving"
+              [color]="isSaving ? 'medium' : 'primary'"
+              class="nav-button"
+            >
+              {{
+                isSaving
+                  ? ("COMMON.LOADING" | translate)
+                  : ("NEW_ITEM.SEND_PROJECT" | translate)
+              }}
+            </ion-button>
+            }
+          </div>
         </div>
       </ion-card-content>
     </ion-card>
