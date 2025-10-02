@@ -115,8 +115,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     } else {
       this.searchResults = [];
     }
-    
-    this.showToast('Collaborator added successfully', 'success');
   }
 
   removeCollaborator(collaborator: Collaborator) {
@@ -126,8 +124,6 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     if (this.searchTerm.trim().length >= 2) {
       this.searchUsers();
     }
-    
-    this.showToast('Collaborator removed successfully', 'success');
   }
 
   clearSearch() {
