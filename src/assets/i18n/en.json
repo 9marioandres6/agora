@@ -190,15 +190,14 @@
     "LOADING_PROJECTS": "Loading projects..."
   },
   "NEW_ITEM": {
-    "CREATE_NEW": "Propose",
-    "STEP_1_TITLE": "Describe it",
+    "STEP_1_TITLE": "Describe your idea",
     "STEP_2_TITLE": "Requirements?",
     "STEP_3_TITLE": "Set the cope",
     "STEP_4_TITLE": "Add Media",
     "TITLE": "What",
     "TITLE_PLACEHOLDER": "Write here what you want to propose",
     "DESCRIPTION": "How",
-    "DESCRIPTION_PLACEHOLDER": "Explain it",
+    "DESCRIPTION_PLACEHOLDER": "Explain how to do it",
     "WHAT_WE_NEED": "Requirements",
     "NEED_PLACEHOLDER": "Add requirement",
     "SCOPE": "Scope",
