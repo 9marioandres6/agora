@@ -144,18 +144,18 @@ ion-select {
 }
 
 .needs-editor {
+  width: 100%;
+  
   .add-need-section {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 1rem;
     align-items: center;
     padding: 0.5rem;
-    background: var(--app-background-secondary);
-    border-radius: 8px;
-    border: 1px solid var(--app-border-color);
 
     .new-need-input {
       flex: 1;
+      align-self: center;
     }
 
     .add-need-btn {
@@ -163,6 +163,13 @@ ion-select {
       --color: var(--app-text);
       --border-color: var(--app-text);
       --background: transparent;
+      --border-radius: 50%;
+      --padding-start: 8px;
+      --padding-end: 8px;
+      min-width: 40px;
+      height: 40px;
+      margin-top: 6px;
+      align-self: center;
     }
   }
 

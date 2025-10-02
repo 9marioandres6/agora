@@ -63,11 +63,6 @@
 
         @if (currentStep === 2) {
         <ion-item class="form-item">
-          <ion-label position="stacked">{{
-            "NEW_ITEM.WHAT_WE_NEED" | translate
-          }} ({{
-            "COMMON.OPTIONAL" | translate
-          }})</ion-label>
           <div class="needs-editor">
             <div class="add-need-section">
               <ion-input 
@@ -83,8 +78,7 @@
                 (click)="addNewNeed()"
                 [disabled]="!newNeedText.trim()"
                 class="add-need-btn">
-                <ion-icon name="add" slot="start"></ion-icon>
-                {{ 'COMMON.ADD' | translate }}
+                <ion-icon name="add" slot="icon-only"></ion-icon>
               </ion-button>
             </div>
             
@@ -116,9 +110,6 @@
 
         @if (currentStep === 3) {
         <ion-item class="form-item">
-          <ion-label position="stacked">{{
-            "NEW_ITEM.SCOPE" | translate
-          }}</ion-label>
 
           <div class="scope-selector-container">
             @if (scope) {
@@ -289,11 +280,6 @@
 
         @if (currentStep === 4) {
         <ion-item class="form-item">
-          <ion-label position="stacked"
-            >{{ "NEW_ITEM.MEDIA" | translate }} ({{
-              "COMMON.OPTIONAL" | translate
-            }})</ion-label
-          >
           <div class="media-section">
             @if (!projectMedia || projectMedia.length === 0) {
             <ion-button
