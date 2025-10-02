@@ -5,7 +5,7 @@
         <ion-icon name="arrow-back" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>{{ "NEW_ITEM.CREATE_NEW" | translate }}</ion-title>
+    <ion-title>{{ getStepTitle() | translate }}</ion-title>
   </ion-toolbar>
   <ion-toolbar>
     <div class="step-indicator">
@@ -110,26 +110,36 @@
 
         @if (currentStep === 3) {
         <ion-item class="form-item">
-
-          <div class="scope-selector-container">
-            @if (scope) {
-              <ion-icon [name]="getScopeIcon(scope)" class="scope-icon"></ion-icon>
-            }
-            <ion-select
-              [(ngModel)]="scope"
-              name="scope"
-              (ionChange)="scopeSelected()"
-              placeholder="{{ 'NEW_ITEM.SCOPE_PLACEHOLDER' | translate }}"
-              interface="popover"
-              class="scope-select"
-            >
-              @for (option of scopeOptions; track option.value) {
-              <ion-select-option [value]="option.value">
+          @if (!scope) {
+          <div class="scope-options-grid">
+            @for (option of scopeOptions; track option.value) {
+            <div 
+              class="scope-option-card"
+              (click)="scope = option.value; scopeSelected()">
+              <ion-icon [name]="option.icon" class="scope-option-icon"></ion-icon>
+              <span class="scope-option-label">
                 {{ "NEW_ITEM.SCOPE_" + option.value.toUpperCase() | translate }}
-              </ion-select-option>
-              }
-            </ion-select>
+              </span>
+            </div>
+            }
           </div>
+          } @else {
+          <div class="selected-scope-display">
+            <div class="scope-option-card selected">
+              <ion-icon [name]="getScopeIcon(scope)" class="scope-option-icon"></ion-icon>
+              <span class="scope-option-label">
+                {{ "NEW_ITEM.SCOPE_" + scope.toUpperCase() | translate }}
+              </span>
+            </div>
+            <ion-button 
+              fill="clear" 
+              size="small" 
+              (click)="scope = ''"
+              class="change-scope-btn">
+              <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+          }
         </ion-item>
 
         @if (scope === 'local') {
