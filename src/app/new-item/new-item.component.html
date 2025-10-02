@@ -9,26 +9,36 @@
   </ion-toolbar>
   <ion-toolbar>
     <div class="step-indicator">
-      @for (step of [1, 2, 3, 4]; track step) {
-        <div class="step-item" [class.active]="currentStep === step" [class.completed]="currentStep > step">
-          <div class="step-circle">
-            @if (currentStep > step) {
-              <ion-icon name="checkmark"></ion-icon>
-            } @else {
-              {{ step }}
-            }
-          </div>
+      <div class="step-item" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
+        <div class="step-circle">
+          <ion-icon name="document-text-outline"></ion-icon>
         </div>
-      }
+      </div>
+      <div class="step-item" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
+        <div class="step-circle">
+          <ion-icon name="list-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="step-item" [class.active]="currentStep === 3" [class.completed]="currentStep > 3">
+        <div class="step-circle">
+          <ion-icon name="location-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="step-item" [class.active]="currentStep === 4" [class.completed]="currentStep > 4">
+        <div class="step-circle">
+          <ion-icon name="images-outline"></ion-icon>
+        </div>
+      </div>
     </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true">
   @if (isAuthenticated()) {
   <form class="new-item-form">
     <ion-card class="form-card">
       <ion-card-content>
+        <div class="form-content-scroll">
         @if (currentStep === 1) {
         <ion-item class="form-item">
           <ion-label position="stacked">{{
@@ -346,6 +356,7 @@
           </div>
         </ion-item>
         }
+        </div>
 
         <div class="form-actions">
           <div class="navigation-buttons">
