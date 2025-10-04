@@ -58,6 +58,20 @@
           </ion-card>
         }
       </div>
+    } @else if ((isFilterActive() && projects().length === 0) || isResettingFilter()) {
+      <div class="empty-state">
+        <ion-icon name="search-outline" size="large" color="medium"></ion-icon>
+        <h2>{{ 'HOME.NO_FILTERED_PROJECTS' | translate }}</h2>
+        <p>{{ 'HOME.TRY_DIFFERENT_FILTER' | translate }}</p>
+        <ion-button (click)="resetFilter()" fill="outline" [disabled]="isResettingFilter()">
+          @if (isResettingFilter()) {
+            <ion-spinner name="crescent" slot="start" style="margin-right: 8px;"></ion-spinner>
+          } @else {
+            <ion-icon name="refresh" slot="start"></ion-icon>
+          }
+          {{ 'HOME.RESET_FILTER' | translate }}
+        </ion-button>
+      </div>
     } @else {
       <div class="projects-feed">
         @for (project of projects(); track project.id) {

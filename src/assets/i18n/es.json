@@ -136,6 +136,7 @@
     "RESET_FILTER": "Restablecer Filtro",
     "NO_FILTERED_PROJECTS": "No Se Encontraron Proyectos",
     "NO_FILTERED_PROJECTS_MESSAGE": "Ningún proyecto coincide con tu filtro actual. Intenta ajustar el filtro o crear un nuevo proyecto.",
+    "TRY_DIFFERENT_FILTER": "Intenta una combinación de filtros diferente para encontrar proyectos.",
     "CREATE_NEW_PROJECT": "Crear Nuevo Proyecto",
     "SHOW_MORE": "Mostrar más",
     "SHOW_LESS": "Mostrar menos"

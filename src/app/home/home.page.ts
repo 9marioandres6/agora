@@ -41,6 +41,7 @@ export class HomePage implements OnInit, ViewWillEnter {
   isLoadingMore = false;
   userLocation = signal<any>(null);
   hasInitiallyLoaded = signal(false);
+  isResettingFilter = signal(false);
 
   isInitialLoading = computed(() => {
     const hasProjects = this.projects().length > 0;
@@ -250,10 +251,24 @@ export class HomePage implements OnInit, ViewWillEnter {
     this.navCtrl.back();
   }
 
-  resetFilter() {
+  async resetFilter() {
+    this.isResettingFilter.set(true);
     this.currentScope.set('all');
-    this.projectsService.resetFilteredProjects();
-    this.navCtrl.back();
+    await this.projectsService.resetFilteredProjects();
+    
+    let attempts = 0;
+    const maxAttempts = 30;
+    
+    const checkProjects = () => {
+      attempts++;
+      if (this.projects().length > 0 || attempts >= maxAttempts) {
+        this.isResettingFilter.set(false);
+      } else {
+        setTimeout(checkProjects, 100);
+      }
+    };
+    
+    setTimeout(checkProjects, 100);
   }
 
 
