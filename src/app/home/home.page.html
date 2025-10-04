@@ -58,11 +58,6 @@
           </ion-card>
         }
       </div>
-    } @else if (isLoadingFiltered() && isFilterActive()) {
-      <div class="loading-state">
-        <ion-spinner name="crescent"></ion-spinner>
-        <p>{{ 'COMMON.LOADING' | translate }}</p>
-      </div>
     } @else {
       <div class="projects-feed">
         @for (project of projects(); track project.id) {
