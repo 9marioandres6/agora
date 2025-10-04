@@ -40,31 +40,6 @@
         <ion-spinner name="crescent"></ion-spinner>
         <p>{{ 'COMMON.LOADING' | translate }}</p>
       </div>
-    } @else if (projects().length === 0) {
-      <div class="empty-state">
-        <ion-icon name="document-outline" size="large" color="medium"></ion-icon>
-        @if (isFilterActive()) {
-          <h2>{{ 'HOME.NO_FILTERED_PROJECTS' | translate }}</h2>
-          <p>{{ 'HOME.NO_FILTERED_PROJECTS_MESSAGE' | translate }}</p>
-          <div class="empty-state-actions">
-            <ion-button (click)="resetFilter()" fill="outline" class="reset-filter-btn">
-              <ion-icon name="refresh" slot="start"></ion-icon>
-              {{ 'HOME.RESET_FILTER' | translate }}
-            </ion-button>
-            <ion-button (click)="createNew()" fill="outline">
-              <ion-icon name="add" slot="start"></ion-icon>
-              {{ 'HOME.CREATE_NEW_PROJECT' | translate }}
-            </ion-button>
-          </div>
-        } @else {
-          <h2>{{ 'HOME.NO_PROJECTS' | translate }}</h2>
-          <p>{{ 'HOME.NO_PROJECTS_MESSAGE' | translate }}</p>
-          <ion-button (click)="createNew()" fill="outline">
-            <ion-icon name="add" slot="start"></ion-icon>
-            {{ 'HOME.CREATE_FIRST_PROJECT' | translate }}
-          </ion-button>
-        }
-      </div>
     } @else {
       <div class="projects-feed">
         @for (project of projects(); track project.id) {
