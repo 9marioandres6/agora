@@ -13,6 +13,8 @@ import { ScopeOption } from './models/new-item.models';
 import { Need, Media, Collaborator, Scope } from '../services/models/project.models';
 import { ImageFallbackDirective } from '../directives/image-fallback.directive';
 
+declare var google: any;
+
 @Component({
   selector: 'app-new-item',
   templateUrl: './new-item.component.html',
@@ -57,6 +59,8 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   selectedCountry = '';
   isLocationLoading = false;
   newNeedText = '';
+  selectedCityPlace: any = null;
+  selectedCountryPlace: any = null;
 
   scopeOptions: ScopeOption[] = [
     { value: 'grupal', icon: 'people' },
@@ -322,18 +326,72 @@ export class NewItemComponent implements OnInit, AfterViewInit {
   }
 
   scopeSelected() {
-    // Scope selected - no autocomplete needed since we removed Google Maps
+    if (this.scope === 'local') {
+      setTimeout(() => {
+        this.initializeCityAutocomplete();
+      }, 100);
+    } else if (this.scope === 'national') {
+      setTimeout(() => {
+        this.initializeCountryAutocomplete();
+      }, 100);
+    }
   }
 
   openScopeSelector() {
-    // Temporarily clear scope to show the dropdown, but don't reset other values
     const currentScope = this.scope;
     this.scope = '';
     
-    // After a brief moment, the ion-select will be visible and we can trigger it
     setTimeout(() => {
-      // The ion-select should now be visible and clickable
     }, 50);
+  }
+
+  private initializeCityAutocomplete() {
+    if (!this.cityInput || typeof google === 'undefined') {
+      return;
+    }
+
+    this.cityInput.getInputElement().then((element) => {
+      const autocomplete = new google.maps.places.Autocomplete(element, {
+        types: ['(cities)']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          this.selectedCityPlace = place;
+          this.selectedCity = this.extractAddressComponent(place, 'locality') || 
+                              this.extractAddressComponent(place, 'administrative_area_level_2') ||
+                              place.name;
+        }
+      });
+    });
+  }
+
+  private initializeCountryAutocomplete() {
+    if (!this.countryInput || typeof google === 'undefined') {
+      return;
+    }
+
+    this.countryInput.getInputElement().then((element) => {
+      const autocomplete = new google.maps.places.Autocomplete(element, {
+        types: ['(regions)']
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          this.selectedCountryPlace = place;
+          this.selectedCountry = this.extractAddressComponent(place, 'country') || place.name;
+        }
+      });
+    });
+  }
+
+  private extractAddressComponent(place: any, type: string): string {
+    const component = place.address_components?.find((comp: any) => 
+      comp.types.includes(type)
+    );
+    return component?.long_name || '';
   }
 
   async ngOnInit() {
@@ -344,20 +402,26 @@ export class NewItemComponent implements OnInit, AfterViewInit {
     try {
       const currentUser = this.user();
       if (currentUser) {
-        // Load user profile to get location from Firebase
         const userProfile = await this.userSearchService.getUserProfile(currentUser.uid);
         if (userProfile?.location) {
+          this.userLocation = userProfile.location;
           this.selectedCity = userProfile.location.city || 'Córdoba Capital';
           this.selectedCountry = userProfile.location.country || 'Argentina';
         } else {
-          // Use default location
+          this.userLocation = {
+            city: 'Córdoba Capital',
+            country: 'Argentina'
+          };
           this.selectedCity = 'Córdoba Capital';
           this.selectedCountry = 'Argentina';
         }
       }
     } catch (error) {
       console.error('Error loading user location:', error);
-      // Use default location on error
+      this.userLocation = {
+        city: 'Córdoba Capital',
+        country: 'Argentina'
+      };
       this.selectedCity = 'Córdoba Capital';
       this.selectedCountry = 'Argentina';
     }
@@ -403,7 +467,14 @@ export class NewItemComponent implements OnInit, AfterViewInit {
       case 2:
         return true;
       case 3:
-        return this.scope !== '';
+        if (this.scope === '') return false;
+        if (this.scope === 'local') {
+          return this.selectedCity.trim().length > 0;
+        }
+        if (this.scope === 'national') {
+          return this.selectedCountry.trim().length > 0;
+        }
+        return true;
       case 4:
         return true;
       default:
