@@ -40,6 +40,23 @@ export class HomePage implements OnInit, ViewWillEnter {
   currentScope = signal('all');
   isLoadingMore = false;
   userLocation = signal<any>(null);
+  hasInitiallyLoaded = signal(false);
+
+  isInitialLoading = computed(() => {
+    const hasProjects = this.projects().length > 0;
+    const isFilterActive = this.currentScope() !== 'all';
+    const hasLoadedBefore = this.hasInitiallyLoaded();
+    
+    if (isFilterActive || hasLoadedBefore) {
+      return false;
+    }
+    
+    if (hasProjects) {
+      return false;
+    }
+    
+    return true;
+  });
 
   projects = computed(() => {
     const filteredProjects = this.projectsService.filteredProjects();
@@ -68,8 +85,15 @@ export class HomePage implements OnInit, ViewWillEnter {
   });
 
   constructor() {
-    // Remove the automatic loading effect that was causing unnecessary queries
-    // Projects will now only be loaded when explicitly needed in ionViewWillEnter
+    effect(() => {
+      const hasProjects = this.projects().length > 0;
+      const allProjects = this.allProjects().length > 0;
+      const filteredProjects = this.filteredProjects().length > 0;
+      
+      if (hasProjects || allProjects || filteredProjects) {
+        this.hasInitiallyLoaded.set(true);
+      }
+    });
   }
 
   async presentSettingsModal() {

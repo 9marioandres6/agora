@@ -142,6 +142,33 @@ ion-content { --background: var(--app-background); }
   }
 }
 
+.project-skeleton {
+  margin: 8px !important;
+  background: var(--ion-card-background, var(--ion-background-color));
+  
+  .skeleton-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .skeleton-header-text {
+      flex: 1;
+    }
+  }
+  
+  ion-skeleton-text {
+    --background: var(--ion-color-light-shade);
+    --background-rgb: var(--ion-color-light-shade-rgb, 200, 200, 200);
+  }
+}
+
+:host-context(.dark) .project-skeleton {
+  ion-skeleton-text {
+    --background: rgba(255, 255, 255, 0.1);
+    --background-rgb: 255, 255, 255;
+  }
+}
+
 .welcome-section {
   text-align: center;
   padding: 40px 20px;
