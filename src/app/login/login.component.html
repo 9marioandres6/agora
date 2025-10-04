@@ -24,7 +24,11 @@
 
         <div class="ion-margin-top ion-margin-bottom">
           <ion-button expand="block" (click)="signIn()" [disabled]="loading()">
-            {{ 'COMMON.LOGIN' | translate }}
+            @if (loading()) {
+              <ion-spinner></ion-spinner>
+            } @else {
+              {{ 'COMMON.LOGIN' | translate }}
+            }
           </ion-button>
         </div>
 
@@ -34,8 +38,12 @@
 
         <div class="ion-margin-bottom">
           <ion-button expand="block" fill="outline" (click)="signInWithGoogle()" [disabled]="googleLoading">
-            <ion-icon name="logo-google" slot="start"></ion-icon>
-            {{ 'FORMS.CONTINUE_WITH_GOOGLE' | translate }}
+            @if (googleLoading) {
+              <ion-spinner></ion-spinner>
+            } @else {
+              <ion-icon name="logo-google" slot="start"></ion-icon>
+              {{ 'FORMS.CONTINUE_WITH_GOOGLE' | translate }}
+            }
           </ion-button>
         </div>
 
