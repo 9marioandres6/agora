@@ -1,88 +1,101 @@
 <ion-card class="project-card" [class.user-project]="isUserProject(project())">
-  <ion-card-header class="project-header" (click)="onProjectCardClick()">
-    <div class="project-title-section">
-      <h3 class="project-title">
-        @if (totalProjectStats()) {
-          <span class="creator-stats">{{ totalProjectStats() }}</span>
-        }
-        <span class="title-text">{{ project().title }}</span>
-        <ion-icon [name]="getScopeIcon(project().scope || '')" class="title-scope-icon"></ion-icon>
-        <ion-icon [name]="getStateIcon(project().state || 'building')" class="title-state-icon"></ion-icon>
-      </h3>
+  <div class="card-layout" (click)="onProjectCardClick()">
+    <!-- Left Column: Stats, Scope, State -->
+    <div class="left-column">
+      @if (totalProjectStats()) {
+        <div class="stats-numbers">{{ totalProjectStats() }}</div>
+      }
+      <div class="scope-info">
+        <ion-icon [name]="getScopeIcon(project().scope || '')" class="scope-icon"></ion-icon>
+      </div>
+      <div class="state-info">
+        <ion-icon [name]="getStateIcon(project().state || 'building')" class="state-icon"></ion-icon>
+      </div>
     </div>
-  </ion-card-header>
 
-  <ion-card-content class="project-body" (click)="onProjectCardClick()">
-    @if (project().description.trim() !== '') {
-    <p class="project-description">{{ project().description }}</p>
-    } @if (project().media?.length) {
-    <div class="project-media">
-      <div class="media-grid">
-        @for (media of project().media; track media.id) {
-        <div class="media-item">
-          <div class="media-preview">
-            @if (media.type === 'image') {
-            <img [src]="media.url" [alt]="media.caption" class="media-image" />
-            } @else if (media.type === 'video') {
-            <div class="video-thumbnail">
-              <video [src]="media.url" class="media-video"></video>
-              <div class="play-overlay">
-                <ion-icon name="play-circle" size="large"></ion-icon>
+    <!-- Right Column: All other content -->
+    <div class="right-column">
+      <ion-card-header class="project-header">
+        <div class="project-title-section">
+          <h3 class="project-title">
+            <span class="title-text">{{ project().title }}</span>
+          </h3>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content class="project-body">
+        @if (project().description.trim() !== '') {
+        <p class="project-description">{{ project().description }}</p>
+        } @if (project().media?.length) {
+        <div class="project-media">
+          <div class="media-grid">
+            @for (media of project().media; track media.id) {
+            <div class="media-item">
+              <div class="media-preview">
+                @if (media.type === 'image') {
+                <img [src]="media.url" [alt]="media.caption" class="media-image" />
+                } @else if (media.type === 'video') {
+                <div class="video-thumbnail">
+                  <video [src]="media.url" class="media-video"></video>
+                  <div class="play-overlay">
+                    <ion-icon name="play-circle" size="large"></ion-icon>
+                  </div>
+                </div>
+                }
               </div>
+              <div class="media-info"></div>
             </div>
             }
           </div>
-          <div class="media-info"></div>
+        </div>
+        } @if (project().needs && project().needs.length > 0) {
+        <div class="project-needs">
+          <ul class="needs-list">
+            @for (need of getDisplayedNeeds(); track need.name) {
+            <li>
+              <ion-icon [name]="getNeedIcon(need)" class="need-icon"></ion-icon>
+              {{ need.name }}
+            </li>
+            }
+          </ul>
+          @if (hasMoreNeeds()) {
+          <div class="needs-expand-container">
+            <button 
+              class="needs-expand-button" 
+              (click)="toggleNeedsExpansion($event)"
+              [attr.aria-expanded]="needsExpanded()">
+              <ion-icon 
+                [name]="needsExpanded() ? 'chevron-up' : 'chevron-down'" 
+                class="expand-icon">
+              </ion-icon>
+              <span class="expand-text">
+                {{ needsExpanded() ? ('HOME.SHOW_LESS' | translate) : ('HOME.SHOW_MORE' | translate) }}
+              </span>
+            </button>
+          </div>
+          }
+        </div>
+        } @if (project().state === 'implementing') {
+        <div class="implementation-progress">
+          <div class="progress-header">
+            <span class="progress-label">{{ "HOME.IMPLEMENTATION_PROGRESS" | translate }}</span>
+            <span class="progress-percentage">{{ project().implementationPercentage || 0 }}%</span>
+          </div>
+          <ion-progress-bar 
+            [value]="(project().implementationPercentage || 0) / 100" 
+            color="primary"
+            class="progress-bar">
+          </ion-progress-bar>
         </div>
         }
-      </div>
-    </div>
-    } @if (project().needs && project().needs.length > 0) {
-    <div class="project-needs">
-      <ul class="needs-list">
-        @for (need of getDisplayedNeeds(); track need.name) {
-        <li>
-          <ion-icon [name]="getNeedIcon(need)" class="need-icon"></ion-icon>
-          {{ need.name }}
-        </li>
-        }
-      </ul>
-      @if (hasMoreNeeds()) {
-      <div class="needs-expand-container">
-        <button 
-          class="needs-expand-button" 
-          (click)="toggleNeedsExpansion($event)"
-          [attr.aria-expanded]="needsExpanded()">
-          <ion-icon 
-            [name]="needsExpanded() ? 'chevron-up' : 'chevron-down'" 
-            class="expand-icon">
-          </ion-icon>
-          <span class="expand-text">
-            {{ needsExpanded() ? ('HOME.SHOW_LESS' | translate) : ('HOME.SHOW_MORE' | translate) }}
-          </span>
-        </button>
-      </div>
-      }
-    </div>
-    } @if (project().state === 'implementing') {
-    <div class="implementation-progress">
-      <div class="progress-header">
-        <span class="progress-label">{{ "HOME.IMPLEMENTATION_PROGRESS" | translate }}</span>
-        <span class="progress-percentage">{{ project().implementationPercentage || 0 }}%</span>
-      </div>
-      <ion-progress-bar 
-        [value]="(project().implementationPercentage || 0) / 100" 
-        color="primary"
-        class="progress-bar">
-      </ion-progress-bar>
-    </div>
-    }
-  </ion-card-content>
+      </ion-card-content>
 
-  <app-project-footer [project]="project()"></app-project-footer>
-  
-  <!-- Date line -->
-  <div class="project-date">
-    <span class="date-text">{{ getFormattedDate() }}</span>
+      <app-project-footer [project]="project()"></app-project-footer>
+      
+      <!-- Date line -->
+      <div class="project-date">
+        <span class="date-text">{{ getFormattedDate() }}</span>
+      </div>
+    </div>
   </div>
 </ion-card>
