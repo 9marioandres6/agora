@@ -14,12 +14,12 @@
       <ion-card-content>
         <ion-item class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'COMMON.EMAIL' | translate }}</ion-label>
-          <ion-input type="email" [(ngModel)]="email" [placeholder]="'COMMON.EMAIL' | translate"></ion-input>
+          <ion-input type="email" [(ngModel)]="email" [placeholder]="'COMMON.EMAIL' | translate" autocomplete="off"></ion-input>
         </ion-item>
 
         <ion-item class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'COMMON.PASSWORD' | translate }}</ion-label>
-          <ion-input type="password" [(ngModel)]="password" [placeholder]="'COMMON.PASSWORD' | translate"></ion-input>
+          <ion-input type="password" [(ngModel)]="password" [placeholder]="'COMMON.PASSWORD' | translate" autocomplete="new-password"></ion-input>
         </ion-item>
 
         <div class="ion-margin-top ion-margin-bottom">
