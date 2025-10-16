@@ -1,5 +1,9 @@
 ion-content { 
   --background: var(--app-background); 
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 12px;
+  --padding-bottom: 24px;
 }
 
 ion-header {
@@ -96,7 +100,6 @@ ion-header {
     position: relative;
 
     .project-media {
-      margin: 0 0 16px;
       
       .media-grid {
         display: grid;
@@ -110,12 +113,13 @@ ion-header {
           background: transparent;
 
           .media-preview {
+            border-radius: 8px;
             position: relative;
             cursor: default;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 200px;
+          min-height: 200px;
             background: var(--app-media-background);
             overflow: hidden;
 
@@ -149,13 +153,6 @@ ion-header {
               }
             }
           }
-
-          .media-info {
-            padding: 0.5rem;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-          }
         }
       }
     }
@@ -187,7 +184,7 @@ ion-header {
     padding: 0 !important;
 
     .chapter-item {
-      padding: 8px;
+      padding: 16px 0 0 0 !important;
       border: none;
       border-radius: 0;
       background: transparent;
@@ -221,7 +218,6 @@ ion-header {
               display: flex;
               align-items: center;
               justify-content: center;
-              min-height: 200px;
               background: var(--app-media-background);
               overflow: hidden;
 
@@ -254,10 +250,6 @@ ion-header {
                   text-shadow: 0 2px 4px rgba(0,0,0,0.5);
                 }
               }
-            }
-
-            .media-info {
-              margin-top: 8px;
             }
           }
         }
@@ -317,5 +309,12 @@ ion-header {
   .chapters-section .media-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 0.75rem;
+  }
+}
+
+@media (min-width: 769px) {
+  ion-content {
+    --padding-start: 24px;
+    --padding-end: 24px;
   }
 }
