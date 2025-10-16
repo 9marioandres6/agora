@@ -166,6 +166,10 @@ export class FirebaseQueryService {
         );
       }
 
+      // Apply location-based filtering
+      if (filterOptions.userId) {
+        projects = await this.filterProjectsByLocation(projects, filterOptions.userId);
+      }
 
       const processedProjects = this.processProjects(projects);
       const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
@@ -272,6 +276,10 @@ export class FirebaseQueryService {
         );
       }
 
+      // Apply location-based filtering
+      if (currentFilter.userId) {
+        newProjects = await this.filterProjectsByLocation(newProjects, currentFilter.userId);
+      }
 
       const processedNewProjects = this.processProjects(newProjects);
       const allProjects = [
@@ -393,23 +401,38 @@ export class FirebaseQueryService {
           });
         }
 
+        // Apply location-based filtering
+        if (filterOptions.userId) {
+          this.filterProjectsByLocation(projects, filterOptions.userId).then((locFiltered) => {
+            const processedProjects = this.processProjects(locFiltered);
+            this._filteredProjects.set(processedProjects);
+            this._hasMore.set(
+              locFiltered.length === (filterOptions.limitCount || this.DEFAULT_LIMIT)
+            );
+            if (querySnapshot.docs.length > 0) {
+              this._lastDocument.set(
+                querySnapshot.docs[querySnapshot.docs.length - 1]
+              );
+            }
+            this._isLoading.set(false);
+            if (onLoadingComplete) {
+              onLoadingComplete();
+            }
+          });
+          return;
+        }
 
         const processedProjects = this.processProjects(projects);
         this._filteredProjects.set(processedProjects);
         this._hasMore.set(
           projects.length === (filterOptions.limitCount || this.DEFAULT_LIMIT)
         );
-
         if (querySnapshot.docs.length > 0) {
           this._lastDocument.set(
             querySnapshot.docs[querySnapshot.docs.length - 1]
           );
         }
-
-        // Set loading to false only after we receive data
         this._isLoading.set(false);
-
-        // Notify that loading is complete
         if (onLoadingComplete) {
           onLoadingComplete();
         }

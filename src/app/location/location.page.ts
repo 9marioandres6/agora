@@ -5,6 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { UserSearchService } from '../services/user-search.service';
+import { FilterStateService } from '../services/filter-state.service';
+import { ProjectsService } from '../services/projects.service';
 import { Firestore, doc, updateDoc } from '@angular/fire/firestore';
 
 declare var google: any;
@@ -22,6 +24,8 @@ export class LocationPage implements OnInit, ViewWillEnter {
   private navCtrl = inject(NavController);
   private firestore = inject(Firestore);
   private toastCtrl = inject(ToastController);
+  private filterStateService = inject(FilterStateService);
+  private projectsService = inject(ProjectsService);
 
   @ViewChild('addressInput', { static: false }) addressInput!: IonInput;
 
@@ -157,6 +161,13 @@ export class LocationPage implements OnInit, ViewWillEnter {
         this.showChangeLocation.set(false);
         this.newAddress = '';
         this.selectedPlace = null;
+        this.filterStateService.updateLastQueryTime();
+        const selectedScope = this.filterStateService.getSelectedScope();
+        if (selectedScope === 'all') {
+          await this.projectsService.resetFilteredProjects();
+        } else {
+          await this.projectsService.setFilteredProjects(selectedScope);
+        }
         
         await this.showToast('Location updated successfully', 'success');
       }
