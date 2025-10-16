@@ -201,21 +201,19 @@
                     </div>
                     
                     <!-- Existing needs list -->
-                    @for (need of editingProject().needs || project()?.needs || []; track $index) {
-                      <div class="need-item">
-                        <ion-chip 
-                          [color]="getNeedChipColor(need)"
-                          class="need-chip clickable"
-                          (click)="toggleNeedState(need)">
-                          <ion-icon [name]="getNeedIcon(need)"></ion-icon>
-                          <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
-                        </ion-chip>
-                        <span class="need-text">{{ need.name }}</span>
-                        <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
-                          <ion-icon name="trash-outline"></ion-icon>
-                        </ion-button>
-                      </div>
-                    }
+                    <ul class="needs-list">
+                      @for (need of editingProject().needs || project()?.needs || []; track $index) {
+                        <li>
+                          <span class="need-content">
+                            <ion-icon [name]="getNeedIcon(need)" [color]="getNeedChipColor(need)"></ion-icon>
+                            {{ need.name }}
+                          </span>
+                          <ion-button fill="clear" color="danger" size="small" (click)="removeProjectNeed($index)">
+                            <ion-icon name="trash-outline"></ion-icon>
+                          </ion-button>
+                        </li>
+                      }
+                    </ul>
                   </div>
                 } @else {
                   <div class="needs-locked">
@@ -238,19 +236,14 @@
                 }
               } @else {
                 <div class="needs-display">
-                  <div class="needs-list-readonly">
+                  <ul class="needs-list">
                     @for (need of project()?.needs || []; track need) {
-                      <div class="need-item-readonly">
-                        <ion-chip 
-                          [color]="getNeedChipColor(need)"
-                          class="need-chip-readonly">
-                          <ion-icon [name]="getNeedIcon(need)"></ion-icon>
-                          <ion-label>{{ getNeedStateText(need) | translate }}</ion-label>
-                        </ion-chip>
-                        <span class="need-text-readonly">{{ need.name }}</span>
-                      </div>
+                      <li>
+                        <ion-icon [name]="getNeedIcon(need)" [color]="getNeedChipColor(need)"></ion-icon>
+                        {{ need.name }}
+                      </li>
                     }
-                  </div>
+                  </ul>
                 </div>
               }
             </div>
