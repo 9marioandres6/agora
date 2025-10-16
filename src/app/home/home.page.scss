@@ -146,13 +146,34 @@ ion-content { --background: var(--app-background); }
   margin: 8px !important;
   background: var(--ion-card-background, var(--ion-background-color));
   
-  .skeleton-header {
+  .skeleton-card-layout {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    
-    .skeleton-header-text {
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+
+    .skeleton-left-column {
+      flex: 0 0 6%;
+      min-width: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .skeleton-right-column {
       flex: 1;
+      min-width: 0;
+
+      .skeleton-header {
+        padding: 0;
+        margin-bottom: 8px;
+      }
+
+      .skeleton-content {
+        padding: 0 !important;
+      }
     }
   }
   
