@@ -317,7 +317,7 @@ export class ProjectCardComponent implements OnInit {
       const updatedDiffTime = Math.abs(now.getTime() - updatedDate.getTime());
       const updatedDiffDays = Math.ceil(updatedDiffTime / (1000 * 60 * 60 * 24));
       const updatedFormatted = this.formatRelativeTime(updatedDiffDays);
-      
+      return updatedFormatted;
       return `${this.translateService.instant('PROJECT.CREATED')} ${createdFormatted} - ${this.translateService.instant('PROJECT.LAST_UPDATED')} ${updatedFormatted}`;
     }
     

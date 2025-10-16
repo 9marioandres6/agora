@@ -1,19 +1,18 @@
 <div class="project-footer">
   <div class="footer-actions">
-    <!-- Left side: Following, Support, Reject -->
-    <div class="left-actions">
-      <ion-button
-        [fill]="isUserFollowing(project()) ? 'solid' : 'clear'"
-        size="small"
-        (click)="onFollowButtonClick($event)"
-        class="vote-button"
-      >
-        <ion-icon name="bookmark"></ion-icon>
-        @if ((project().followers || []).length > 0) {
-        {{ (project().followers || []).length }}
-        }
-      </ion-button>
+    <ion-button
+      [fill]="isUserFollowing(project()) ? 'solid' : 'clear'"
+      size="small"
+      (click)="onFollowButtonClick($event)"
+      class="vote-button"
+    >
+      <ion-icon name="bookmark"></ion-icon>
+      @if ((project().followers || []).length > 0) {
+      {{ (project().followers || []).length }}
+      }
+    </ion-button>
 
+    <div class="vote-group">
       <ion-button
         [fill]="isUserSupported(project()) ? 'solid' : 'clear'"
         size="small"
@@ -37,49 +36,47 @@
         {{ (project().opposes || []).length }}
         }
       </ion-button>
+    </div>
 
-      @if (project().state === 'done') {
-      <ion-button
-        [fill]="isUserVerified(project()) ? 'solid' : 'clear'"
-        size="small"
-        (click)="onVerifyButtonClick($event)"
-        class="vote-button"
-      >
-        <ion-icon name="shield-checkmark"></ion-icon>
-        @if ((project().verifies || []).length > 0) {
-        {{ (project().verifies || []).length }}
-        }
-      </ion-button>
+    @if (project().state === 'done') {
+    <ion-button
+      [fill]="isUserVerified(project()) ? 'solid' : 'clear'"
+      size="small"
+      (click)="onVerifyButtonClick($event)"
+      class="vote-button"
+    >
+      <ion-icon name="shield-checkmark"></ion-icon>
+      @if ((project().verifies || []).length > 0) {
+      {{ (project().verifies || []).length }}
       }
-    </div>
+    </ion-button>
+    }
 
-    <!-- Right side: Comments, Collaborators -->
-    <div class="right-actions">
-      <ion-button
-        fill="clear"
-        size="small"
-        (click)="onCommentsButtonClick($event)"
-        class="comments-button"
-        [color]="expandedComments() ? 'primary' : ''"
-      >
-        <ion-icon name="chatbubble-outline"></ion-icon>
-        @if ((project().comments || []).length > 0) {
-        {{ (project().comments || []).length }}
-        }
-      </ion-button>
-      <ion-button
-        fill="clear"
-        size="small"
-        (click)="onCollaboratorsButtonClick($event)"
-        class="collaborators-button"
-        [color]="expandedCollaborators() ? 'primary' : ''"
-      >
-        <ion-icon name="people-outline"></ion-icon>
-        @if ((project().collaborators || []).length > 0) {
-        {{ (project().collaborators || []).length }}
-        }
-      </ion-button>
-    </div>
+    <ion-button
+      fill="clear"
+      size="small"
+      (click)="onCommentsButtonClick($event)"
+      class="comments-button"
+      [color]="expandedComments() ? 'primary' : ''"
+    >
+      <ion-icon name="chatbubble-outline"></ion-icon>
+      @if ((project().comments || []).length > 0) {
+      {{ (project().comments || []).length }}
+      }
+    </ion-button>
+    
+    <ion-button
+      fill="clear"
+      size="small"
+      (click)="onCollaboratorsButtonClick($event)"
+      class="collaborators-button"
+      [color]="expandedCollaborators() ? 'primary' : ''"
+    >
+      <ion-icon name="people-outline"></ion-icon>
+      @if ((project().collaborators || []).length > 0) {
+      {{ (project().collaborators || []).length }}
+      }
+    </ion-button>
   </div>
 </div>
 

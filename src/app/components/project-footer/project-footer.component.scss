@@ -5,11 +5,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 4px;
 
-    .left-actions,
-    .right-actions {
+    .vote-group {
       display: flex;
-      gap: 8px;
+      gap: 2px;
     }
 
     .vote-button {
