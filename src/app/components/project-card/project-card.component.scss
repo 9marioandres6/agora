@@ -17,8 +17,8 @@
   .card-layout {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
-    padding: 8px 16px;
+    gap: 8px;
+    padding: 8px;
     cursor: pointer;
     transition: background-color 0.2s ease;
     
@@ -35,15 +35,14 @@
       gap: 12px;
 
       .stats-numbers {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
         color: var(--ion-color-primary);
         text-align: center;
         background: rgba(var(--ion-color-primary-rgb), 0.1);
         padding: 2px 4px;
-        border-radius: 8px;
+        border-radius: 6px;
         border: 1px solid rgba(var(--ion-color-primary-rgb), 0.2);
-        min-width: 50px;
         margin: 4px 0 8px 0;
       }
 
