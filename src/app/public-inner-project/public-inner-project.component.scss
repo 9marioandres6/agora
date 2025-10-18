@@ -61,9 +61,11 @@ ion-header {
         --background: var(--app-primary);
         --color: white;
         font-weight: 500;
-        
+
+        /* Ensure the icon inside the primary chip appears blue to match stats */
         ion-icon {
-          color: white;
+          /* Use primary color for the icon itself */
+          color: var(--ion-color-primary);
           margin: 0 6px 0 0;
           font-size: 14px;
         }

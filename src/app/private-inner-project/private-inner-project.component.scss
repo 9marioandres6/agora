@@ -182,48 +182,31 @@ ion-content {
   }
 
   .needs-list {
-    list-style: none;
-    padding: 0;
     margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
+    padding-left: 20px;
+    color: var(--app-text-secondary);
 
-    .need-chip {
-      margin: 0;
-      font-size: 12px;
-      flex-shrink: 0;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      
-      &.clickable {
-        cursor: pointer;
-        
-        &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        &:active {
-          transform: translateY(0);
-        }
-      }
-      
-      ion-icon {
-        font-size: 14px;
-        margin-right: 4px;
-      }
-      
-      ion-label {
-        font-size: 12px;
-        font-weight: 500;
-      }
-    }
-
-    .need-text {
-      flex: 1;
+    li {
+      margin-bottom: 6px;
       font-size: 14px;
-      color: var(--app-text);
-      line-height: 1.4;
+      line-height: 1.2;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      ion-icon {
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .need-content,
+      .need-text {
+        color: var(--app-text);
+      }
     }
   }
 }
@@ -290,33 +273,25 @@ ion-content {
 
 .needs-display {
   .needs-list {
-    list-style: none;
-    padding: 0;
     margin: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
+    padding-left: 20px;
+    color: var(--app-text-secondary);
 
     li {
+      margin-bottom: 6px;
       font-size: 14px;
-      color: var(--app-text);
-      background: rgba(99, 102, 241, 0.08);
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-sm);
-      border: 1px solid rgba(99, 102, 241, 0.15);
-      font-weight: 500;
+      line-height: 1.2;
       display: flex;
-      align-items: center;
       gap: 8px;
+      align-items: center;
 
-      .need-content {
-        display: flex;
-        align-items: center;
-        gap: 4px;
+      &:last-child {
+        margin-bottom: 0;
       }
 
       ion-icon {
         font-size: 16px;
+        flex-shrink: 0;
       }
 
       ion-button {
