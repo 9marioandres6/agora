@@ -760,10 +760,3 @@ ion-content {
     min-height: 150px;
   }
 }
-
-@media (min-width: 769px) {
-  ion-content {
-    --padding-start: 24px;
-    --padding-end: 24px;
-  }
-}
