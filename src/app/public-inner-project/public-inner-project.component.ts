@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ProjectsService } from '../services/projects.service';
 import { Project, Need, Scope } from '../services/models/project.models';
+import { getProjectStatusColor } from '../services/project-status-color';
 import { AuthService } from '../services/auth.service';
 import { ProjectFooterComponent } from '../components/project-footer/project-footer.component';
 
@@ -99,12 +100,7 @@ export class PublicInnerProjectComponent implements OnInit, OnDestroy {
   }
   
   getStateColor(state: string): string {
-    const stateColors: { [key: string]: string } = {
-      'building': 'warning',
-      'implementing': 'primary',
-      'done': 'success'
-    };
-    return stateColors[state] || 'medium';
+    return getProjectStatusColor(state);
   }
   
   getStateLabel(state: string): string {

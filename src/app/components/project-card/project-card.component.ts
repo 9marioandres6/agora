@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Project, Need, Scope } from '../../services/models/project.models';
+import { getProjectStatusColor } from '../../services/project-status-color';
 import { AuthService } from '../../services/auth.service';
 import { UserSearchService } from '../../services/user-search.service';
 import { UserAvatarComponent, UserAvatarData } from '../user-avatar/user-avatar.component';
@@ -119,12 +120,7 @@ export class ProjectCardComponent implements OnInit {
 
 
   getStateColor(state: string): string {
-    const stateColors: { [key: string]: string } = {
-      'building': 'warning',
-      'implementing': 'primary',
-      'done': 'success'
-    };
-    return stateColors[state] || 'medium';
+    return getProjectStatusColor(state);
   }
 
   getStateLabel(state: string): string {
