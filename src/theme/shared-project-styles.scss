@@ -1,9 +1,9 @@
 .project-title {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--app-text);
-  line-height: 1.5;
+  line-height: 1.4;
   letter-spacing: 1px;
   font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
@@ -12,9 +12,8 @@
   margin: 4px 0 8px 0 !important;
   padding-left: 8px;
   border-left: 2px solid var(--ion-color-primary);
-  font-size: 15px !important;
-  line-height: 1.8 !important;
-  font-weight: 400;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
   letter-spacing: 0.05em;
   color: var(--app-text);
 }
@@ -73,7 +72,6 @@
       font-size: 14px;
       line-height: 1.2;
       display: flex;
-      align-items: center;
       gap: 8px;
 
       &:last-child {

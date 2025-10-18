@@ -44,6 +44,7 @@
         border-radius: 8px;
         border: 1px solid rgba(var(--ion-color-primary-rgb), 0.2);
         min-width: 50px;
+        margin: 4px 0 8px 0;
       }
 
       .scope-info {
@@ -54,7 +55,8 @@
 
         .scope-icon {
           font-size: 20px;
-          color: var(--app-text-secondary);
+          /* Match the stats numbers blue color */
+          color: var(--ion-color-primary);
         }
       }
 
@@ -66,7 +68,8 @@
 
         .state-icon {
           font-size: 20px;
-          color: var(--app-text-secondary);
+          /* Match the stats numbers blue color */
+          color: var(--ion-color-primary);
         }
       }
     }
@@ -87,13 +90,6 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
-
-            .title-text {
-              font-size: 20px;
-              font-weight: 600;
-              color: var(--app-text);
-              line-height: 1.4;
-            }
           }
         }
       }
