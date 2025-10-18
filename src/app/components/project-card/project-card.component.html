@@ -90,12 +90,12 @@
         }
       </ion-card-content>
 
-      <app-project-footer [project]="project()"></app-project-footer>
-      
-      <!-- Date line -->
+    </div>
+  </div>
+  <app-project-footer [project]="project()"></app-project-footer>
+        <!-- Date line -->
       <div class="project-date">
         <span class="date-text">{{ getFormattedDate() }}</span>
       </div>
-    </div>
-  </div>
+  <hr style="width: 100%; border-top: 0.5px solid var(--ion-color-light-shade); opacity: 0.15; margin-top: 8px; margin-bottom: 0px;">
 </ion-card>
