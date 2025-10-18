@@ -228,53 +228,52 @@
   }
 }
 
-@media (max-width: 576px) {
-  .profile-container {
-    margin: 4px;
-  }
-  
-  .profile-header {
-    padding: 16px 0;
-    
-    .profile-avatar {
-      width: 64px;
-      height: 64px;
-      margin-right: 12px;
-      
-      ion-icon {
-        font-size: 24px;
-      }
-    }
-    
-    .profile-info {
-      .profile-name {
-        font-size: 20px;
-      }
-      
-      .profile-email {
-        font-size: 14px;
-      }
+/* Mobile adjustments (applied globally for phone-only app) */
+.profile-container {
+  margin: 4px;
+}
+
+.profile-header {
+  padding: 16px 0;
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    margin-right: 12px;
+
+    ion-icon {
+      font-size: 24px;
     }
   }
-  
-  .projects-card {
-    margin: 0;
+
+  .profile-info {
+    .profile-name {
+      font-size: 20px;
+    }
+
+    .profile-email {
+      font-size: 14px;
+    }
   }
-  
-  .projects-table {
-    .projects-table-content {
-      font-size: 12px;
-      
-      thead th,
-      tbody td {
-        padding: 8px 4px;
-      }
-      
-      .project-count {
-        font-size: 14px;
-        padding: 6px 12px;
-        min-width: 30px;
-      }
+}
+
+.projects-card {
+  margin: 0;
+}
+
+.projects-table {
+  .projects-table-content {
+    font-size: 12px;
+
+    thead th,
+    tbody td {
+      padding: 8px 4px;
+    }
+
+    .project-count {
+      font-size: 14px;
+      padding: 6px 12px;
+      min-width: 30px;
     }
   }
 }

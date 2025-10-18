@@ -157,41 +157,40 @@
   }
 }
 
-@media (max-width: 576px) {
-  .profile-container {
-    margin: 4px;
-  }
-  
-  .profile-header {
-    padding: 16px 0;
-    
-    .profile-avatar {
-      width: 64px;
-      height: 64px;
-      margin-right: 12px;
-      
-      ion-icon {
-        font-size: 24px;
-      }
-    }
-    
-    .profile-info {
-      .profile-name {
-        font-size: 20px;
-      }
-      
-      .profile-email {
-        font-size: 14px;
-      }
+/* Mobile adjustments applied globally (phone-only app) */
+.profile-container {
+  margin: 4px;
+}
+
+.profile-header {
+  padding: 16px 0;
+
+  .profile-avatar {
+    width: 64px;
+    height: 64px;
+    margin-right: 12px;
+
+    ion-icon {
+      font-size: 24px;
     }
   }
-  
-  .profile-form-card {
-    margin: 0;
+
+  .profile-info {
+    .profile-name {
+      font-size: 20px;
+    }
+
+    .profile-email {
+      font-size: 14px;
+    }
   }
-  
-  .profile-form .form-item ion-input {
-    --padding-start: 12px;
-    --padding-end: 12px;
-  }
+}
+
+.profile-form-card {
+  margin: 0;
+}
+
+.profile-form .form-item ion-input {
+  --padding-start: 12px;
+  --padding-end: 12px;
 }

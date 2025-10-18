@@ -573,81 +573,79 @@ ion-chip {
   border-color: #e0e0e0;
 }
 
-/* Mobile-specific theme fixes */
-@media (max-width: 768px) {
-  /* Default mobile styles to prevent white screen */
-  ion-content {
-    --background: #ffffff !important;
-    --color: #000000 !important;
+/* Mobile-specific theme fixes (applied globally since app is phone-only) */
+/* Default mobile styles to prevent white screen */
+ion-content {
+  --background: #ffffff !important;
+  --color: #000000 !important;
+}
+
+body {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.dark {
+  /* Force dark theme */
+  body {
+    background-color: #000000 !important;
+    color: #ffffff !important;
   }
-  
+
+  ion-content {
+    --background: #000000 !important;
+    --color: #ffffff !important;
+  }
+
+  ion-header {
+    --background: #2d2d2d !important;
+  }
+
+  ion-toolbar {
+    --background: #2d2d2d !important;
+    --color: #ffffff !important;
+  }
+
+  ion-card {
+    --background: #2d2d2d !important;
+    --color: #ffffff !important;
+  }
+
+  ion-item {
+    --background: transparent !important;
+    --color: #ffffff !important;
+  }
+}
+
+.light-theme {
+  /* Force light theme */
   body {
     background-color: #ffffff !important;
     color: #000000 !important;
   }
-  
-  .dark {
-    /* Force dark theme on mobile */
-    body {
-      background-color: #000000 !important;
-      color: #ffffff !important;
-    }
-    
-    ion-content {
-      --background: #000000 !important;
-      --color: #ffffff !important;
-    }
-    
-    ion-header {
-      --background: #2d2d2d !important;
-    }
-    
-    ion-toolbar {
-      --background: #2d2d2d !important;
-      --color: #ffffff !important;
-    }
-    
-    ion-card {
-      --background: #2d2d2d !important;
-      --color: #ffffff !important;
-    }
-    
-    ion-item {
-      --background: transparent !important;
-      --color: #ffffff !important;
-    }
+
+  ion-content {
+    --background: #ffffff !important;
+    --color: #000000 !important;
   }
-  
-  .light-theme {
-    /* Force light theme on mobile */
-    body {
-      background-color: #ffffff !important;
-      color: #000000 !important;
-    }
-    
-    ion-content {
-      --background: #ffffff !important;
-      --color: #000000 !important;
-    }
-    
-    ion-header {
-      --background: #ffffff !important;
-    }
-    
-    ion-toolbar {
-      --background: #ffffff !important;
-      --color: #000000 !important;
-    }
-    
-    ion-card {
-      --background: #ffffff !important;
-      --color: #000000 !important;
-    }
-    
-    ion-item {
-      --background: transparent !important;
-      --color: #000000 !important;
-    }
+
+  ion-header {
+    --background: #ffffff !important;
+  }
+
+  ion-toolbar {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+  }
+
+  ion-card {
+    --background: #ffffff !important;
+    --color: #000000 !important;
+  }
+
+  ion-item {
+    --background: transparent !important;
+    --color: #000000 !important;
   }
 }
 

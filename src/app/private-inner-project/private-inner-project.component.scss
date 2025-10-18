@@ -716,50 +716,48 @@ ion-content {
   }
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 0.5rem;
-  }
+/* Mobile adjustments applied globally (phone-only app) */
+.container {
+  padding: 0.5rem;
+}
 
-  .media-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-  }
+.media-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
 
-  .info-row {
-    flex-direction: column;
+.info-row {
+  flex-direction: column;
 
-    label {
-      margin-bottom: 0.5rem;
-    }
-  }
-
-  .pending-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-
-    .request-actions {
-      width: 100%;
-      justify-content: space-between;
-    }
-  }
-
-  .edit-actions {
-    flex-direction: column;
+  label {
+    margin-bottom: 0.5rem;
   }
 }
 
-@media (max-width: 480px) {
-  .media-grid {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
+.pending-item {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 
-  .media-item {
-    .media-preview {
-      min-height: 150px;
-    }
+  .request-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.edit-actions {
+  flex-direction: column;
+}
+
+/* Extra small screen adjustments */
+.media-grid {
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.media-item {
+  .media-preview {
+    min-height: 150px;
   }
 }
 

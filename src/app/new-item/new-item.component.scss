@@ -791,16 +791,13 @@ ion-select {
   }
 }
 
-@media (max-width: 576px) {
-  .form-card {
-    margin: 4px;
-  }
-  
-  .form-item ion-input,
-  .form-item ion-textarea {
-    --padding-start: 12px;
-    --padding-end: 12px;
-  }
-  
+/* Mobile adjustments applied globally (phone-only app) */
+.form-card {
+  margin: 4px;
+}
 
+.form-item ion-input,
+.form-item ion-textarea {
+  --padding-start: 12px;
+  --padding-end: 12px;
 }

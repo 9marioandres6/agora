@@ -306,12 +306,10 @@ ion-header {
   }
 }
 
-@media (max-width: 768px) {
-
-  .chapters-section .media-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.75rem;
-  }
+/* Mobile adjustments applied globally (phone-only app) */
+.chapters-section .media-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
 }
 
 @media (min-width: 769px) {
