@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ "PUBLIC.PUBLIC_PROJECT" | translate }}</ion-title>
+    <ion-title>{{ project()?.title || 'Project' }}</ion-title>
     <ion-buttons slot="end">
       @if (project()?.state !== 'done') {
       <ion-button

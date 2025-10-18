@@ -9,7 +9,7 @@
         <ion-icon [name]="getScopeIcon(project().scope || '')" class="scope-icon"></ion-icon>
       </div>
       <div class="state-info">
-        <ion-icon [name]="getStateIcon(project().state || 'building')" class="state-icon"></ion-icon>
+        <ion-icon [name]="getStateIcon(project().state || 'building')" [color]="getStateColor(project().state || 'building')" class="state-icon"></ion-icon>
       </div>
     </div>
 
