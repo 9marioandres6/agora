@@ -77,7 +77,6 @@ ion-item {
 }
 
 ion-text {
-  margin-top: 15px;
   
   p {
     margin: 10px 0;
@@ -91,6 +90,13 @@ ion-text {
   ion-text {
     margin-top: 0;
   }
+}
+
+.register-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 /* Theme-aware styles */

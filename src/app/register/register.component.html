@@ -7,10 +7,6 @@
 <ion-content [fullscreen]="true">
   <div class="ion-padding ion-text-center" style="max-width: 400px; margin: 0 auto;">
     <ion-card>
-      <ion-card-header>
-        <ion-card-title>{{ 'AUTH.REGISTER_TITLE' | translate }}</ion-card-title>
-      </ion-card-header>
-
       <ion-card-content>
         <ion-item class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'FORMS.DISPLAY_NAME' | translate }}</ion-label>
@@ -68,9 +64,14 @@
         }
 
         <div class="ion-margin-top ion-text-center">
-          <ion-text color="medium">
-            <p>{{ 'AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <ion-button fill="clear" size="small" routerLink="/login">{{ 'COMMON.LOGIN' | translate }}</ion-button></p>
-          </ion-text>
+          <div class="register-row">
+            <ion-text color="medium">
+              {{ 'AUTH.ALREADY_HAVE_ACCOUNT' | translate }}
+            </ion-text>
+            <ion-button fill="clear" size="small" routerLink="/login">
+              {{ 'COMMON.LOGIN' | translate }}
+            </ion-button>
+          </div>
         </div>
       </ion-card-content>
     </ion-card>
