@@ -758,3 +758,20 @@ ion-content {
     min-height: 150px;
   }
 }
+
+.scope-location-chip {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 0 16px;
+  min-width: 160px;
+  --background: var(--app-primary);
+  --color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  ion-icon {
+    color: var(--ion-color-primary);
+    margin-right: 6px;
+    font-size: 14px;
+  }
+}

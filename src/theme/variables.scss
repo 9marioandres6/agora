@@ -1,2 +1,10 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
+
+:root {
+  --app-border-strong: #d0d0d0;
+}
+
+.dark {
+  --app-border-strong: #6e6e6e;
+}

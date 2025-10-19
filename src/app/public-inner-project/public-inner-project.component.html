@@ -32,17 +32,12 @@
       <ion-card-header class="project-header">
         <!-- All Chips in One Line -->
         <div class="project-chips-line">
-          <ion-chip color="primary" class="scope-chip">
+          <ion-chip color="primary" class="scope-location-chip">
             <ion-icon [name]="getScopeIcon(project()?.scope || '')"></ion-icon>
             {{ getScopeLabel(project()?.scope || "") }}
+            <ng-container *ngIf="project()?.scope?.place">: {{ project()?.scope?.place }}</ng-container>
           </ion-chip>
 
-          @if (project()?.scope?.place) {
-          <ion-chip color="secondary" class="location-chip">
-            <ion-icon name="location-outline" slot="start"></ion-icon>
-            {{ project()?.scope?.place }}
-          </ion-chip>
-          }
           <ion-chip
             [color]="getStateColor(project()?.state || 'building')"
             class="state-chip"
