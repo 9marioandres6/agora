@@ -244,14 +244,6 @@ ion-content { --background: var(--app-background); }
   animation: slideDown 0.3s ease-out;
 }
 
-.location-change-card {
-  max-width: 500px;
-  margin: 0 auto;
-  border-left: 4px solid var(--ion-color-warning);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  background: var(--ion-color-light);
-}
-
 .notification-content {
   display: flex;
   align-items: flex-start;
