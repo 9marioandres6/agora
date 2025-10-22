@@ -146,17 +146,22 @@ ion-header {
   --background: var(--app-card-background);
   margin: 0;
   transition: all 0.3s ease;
+  border-radius: 8px;
   
   ion-icon {
     margin-right: 16px;
     font-size: 22px;
-    color: var(--ion-color-danger);
+    color: var(--app-text-secondary);
   }
   
   ion-label {
     font-size: 16px;
-    font-weight: 500;
-    color: var(--ion-color-danger);
+    font-weight: 400;
+    color: var(--app-text-secondary);
+  }
+  
+  &:hover {
+    --background: var(--app-card-hover-background);
   }
 }
 
