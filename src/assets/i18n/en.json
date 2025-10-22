@@ -154,6 +154,7 @@
   "SETTINGS": {
     "GENERAL": "General",
     "LANGUAGE": "Language",
+    "SELECT_LANGUAGE": "Select Language",
     "THEME": "Theme",
     "LIGHT_THEME": "Light Theme",
     "DARK_THEME": "Dark Theme",

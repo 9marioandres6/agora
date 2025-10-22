@@ -435,53 +435,84 @@ ion-toolbar app-theme-toggle ion-button {
 /* (removed) Settings modal styling */
 
 /* Language selector popover theme styling */
-.light-theme-popover {
-  --background: #ffffff;
-  --color: #000000;
+.popover-wrapper {
+  --width: 280px;
   
-  .popover-content {
-    --background: #ffffff !important;
-    --color: #000000 !important;
-  }
-  
-  ion-item {
-    --background: #ffffff !important;
-    --color: #000000 !important;
-    --border-color: #e0e0e0 !important;
-  }
-  
-  ion-radio {
-    --color: var(--ion-color-primary) !important;
-    --color-checked: var(--ion-color-primary) !important;
-  }
-  
-  ion-label {
-    color: #000000 !important;
+  .ion-popover {
+    background: var(--app-card-background) !important;
+    color: var(--app-text) !important;
+
+    &::part(content) {
+      color: var(--app-text) !important;
+    }
+    border: 1px solid var(--app-border-color) !important;
+    border-radius: 8px !important;
+    
+    &::part(content) {
+      background: var(--app-card-background) !important;
+    }
+    
+    ion-list {
+      background: var(--app-card-background) !important;
+      color: var(--app-text) !important;
+    }
+    
+    ion-item {
+      --background: var(--app-card-background) !important;
+      --color: var(--app-text) !important;
+      --border-color: var(--app-border-color) !important;
+      color: var(--app-text) !important;
+      
+      &:hover {
+        --background: var(--app-primary-light) !important;
+      }
+      
+      &.item-radio-checked {
+        --background: var(--app-primary-light) !important;
+      }
+      
+      ion-label {
+        color: var(--app-text) !important;
+        opacity: 1 !important;
+      }
+      
+      &::part(native) {
+        color: var(--app-text) !important;
+      }
+      
+      &::part(content) {
+        color: var(--app-text) !important;
+      }
+      
+      ion-radio {
+        --color: var(--app-text) !important;
+        --color-checked: var(--app-primary) !important;
+      }
+    }
   }
 }
 
+/* Header styles for popovers */
+.popover-header {
+  background: var(--app-card-background) !important;
+  color: var(--app-text) !important;
+  border-bottom: 1px solid var(--app-border-color) !important;
+  padding: 16px !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+}
+
+/* Light theme specific overrides */
+.light-theme-popover {
+  .ion-popover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  }
+}
+
+/* Dark theme specific overrides */
 .dark-theme-popover {
-  --background: #2d2d2d;
-  --color: #ffffff;
-  
-  .popover-content {
-    --background: #2d2d2d !important;
-    --color: #ffffff !important;
-  }
-  
-  ion-item {
-    --background: #2d2d2d !important;
-    --color: #ffffff !important;
-    --border-color: #404040 !important;
-  }
-  
-  ion-radio {
-    --color: var(--ion-color-primary) !important;
-    --color-checked: var(--ion-color-primary) !important;
-  }
-  
-  ion-label {
-    color: #ffffff !important;
+  .ion-popover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
   }
 }
 

@@ -30,3 +30,96 @@
   position: absolute;
   z-index: -1;
 }
+
+:host ::ng-deep {
+  .ion-popover {
+    --background: var(--app-card-background) !important;
+    --color: var(--app-text) !important;
+
+    .popover-content {
+      background: var(--app-card-background) !important;
+      color: var(--app-text) !important;
+    }
+
+    ion-list {
+      background: var(--app-card-background) !important;
+      
+      ion-item {
+        --background: var(--app-card-background) !important;
+        --color: var(--app-text) !important;
+        color: var(--app-text) !important;
+        
+        &:hover {
+          --background: var(--app-primary-light) !important;
+        }
+        
+        &.item-radio-checked {
+          --background: var(--app-primary-light) !important;
+          --color: var(--app-text) !important;
+        }
+        
+        ion-label {
+          color: var(--app-text) !important;
+        }
+
+        ion-radio {
+          --color: var(--app-text) !important;
+          --color-checked: var(--app-primary) !important;
+        }
+      }
+    }
+    
+    .popover-title {
+      color: var(--app-text) !important;
+      background: var(--app-card-background) !important;
+      border-bottom: 1px solid var(--app-border-color) !important;
+      padding: 1rem !important;
+      font-weight: 500 !important;
+    }
+  }
+
+  /* Light theme specific overrides */
+  .light-theme-popover {
+    .ion-popover {
+      --background: var(--app-card-background) !important;
+      --width: 250px !important;
+      --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    }
+  }
+
+  /* Dark theme specific overrides */
+  .dark-theme-popover {
+    .ion-popover {
+      --background: var(--app-card-background) !important;
+      --width: 250px !important;
+      --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    }
+  }
+
+  /* Override any Ionic default styles that might interfere */
+  ion-select-popover {
+    ion-list {
+      padding: 0 !important;
+    }
+
+    ion-item {
+      --padding-start: 1rem !important;
+      --padding-end: 1rem !important;
+      --min-height: 48px !important;
+
+      &::part(native) {
+        background: var(--app-card-background) !important;
+        color: var(--app-text) !important;
+      }
+    }
+  }
+}
+
+/* Global popover header styles */
+:host ::ng-deep .popover-header {
+  background: var(--app-card-background) !important;
+  color: var(--app-text) !important;
+  border-color: var(--app-border-color) !important;
+  padding: 1rem !important;
+  font-weight: 500 !important;
+}

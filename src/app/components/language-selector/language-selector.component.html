@@ -10,7 +10,10 @@
     [value]="currentLang$ | async" 
     (ionChange)="onLanguageChange($event)"
     interface="popover"
-    [interfaceOptions]="{ cssClass: getPopoverClass() }"
+    [interfaceOptions]="{ 
+      cssClass: getPopoverClass(),
+      header: 'SETTINGS.SELECT_LANGUAGE' | translate
+    }"
     class="hidden-select">
     @for (lang of availableLanguages; track lang) {
       <ion-select-option [value]="lang">
